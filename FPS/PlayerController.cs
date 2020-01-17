@@ -1,17 +1,17 @@
 ﻿
 using UnityEngine;
 [RequireComponent(typeof(PlayerMotor))]
-
+[RequireComponent(typeof(ConfigurableJoint))]
+[RequireComponent(typeof(Animator))]
 public class PlayerController : MonoBehaviour
 {
 
-    private ConfigurableJoint pJoint;
+
     [Header("Spring Settings: ")]
     [SerializeField] private float yDrivePositionSpring = 20;
     [SerializeField] private float yDriveMaximumForce = 1000;
 
-
-    private PlayerMotor pMotor;
+   
     [Header("PlayerMotor Settings: ")]
     [SerializeField] private float speed = 5.0f;
     [SerializeField] private float rotationSpeed = 15.0f;
@@ -20,11 +20,17 @@ public class PlayerController : MonoBehaviour
 
     float cameraRotation = 0.0f;
 
+    // Components Required
+    private PlayerMotor pMotor;
+    private ConfigurableJoint pJoint;
+    private Animator pAnimator;
     // Start is called before the first frame update
     void Start()
     {
         pMotor = GetComponent<PlayerMotor>();
         pJoint = GetComponent<ConfigurableJoint>();
+        pAnimator = GetComponent<Animator>();
+        
         SetConfigurableJoint();
     }
 
@@ -32,8 +38,8 @@ public class PlayerController : MonoBehaviour
     void Update()
     {
         //Get direction information from keyboard
-        float xMove = Input.GetAxisRaw("Horizontal");
-        float zMove = Input.GetAxisRaw("Vertical");
+        float xMove = Input.GetAxis("Horizontal");
+        float zMove = Input.GetAxis("Vertical");
 
         //Get yRotation input
         float yRotate = Input.GetAxisRaw("Mouse X");
@@ -60,6 +66,10 @@ public class PlayerController : MonoBehaviour
 
         //Set ThrustForce to PlayerMotor
         pMotor.JumpPlayer(yJump * jumpForce);
+
+
+        // Animate movement
+        pAnimator.SetFloat("ForwardVelocity", zMove);
     }
 
     private void SetConfigurableJoint()

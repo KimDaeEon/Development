@@ -5,7 +5,7 @@ using UnityEngine;
 public class PlayerWeapon
 {
     public string weaponName = "Global~~";
-    public float damage = 10.0f;
+    public int damage = 10;
     public float range = 100.0f;
     // Start is called before the first frame update
     void Start()
