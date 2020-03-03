@@ -120,4 +120,47 @@ public class WeaponManager : NetworkBehaviour
             animator.SetTrigger("Reloading");
         }
     }
+
+    public void OnScopedBroadCast()
+    {
+        CmdOnScopedBroadCast();
+    }
+    [Command]
+    public void CmdOnScopedBroadCast()
+    {
+        RpcOnScopedBroadCast();
+    }
+
+    [ClientRpc]
+    public void RpcOnScopedBroadCast()
+    {
+        Animator animator = currentWeaponGraphics.GetComponent<Animator>(); ;
+        if (animator != null)
+        {
+            animator.SetBool("Scoped", true);
+            Debug.Log(this.name + "'s Scope Animation is set to True!");
+        }
+        else
+        {
+            Debug.Log(this.name + "'s animator is null!");
+        }
+    }
+
+
+    public void OnUnScopedBroadCast()
+    {
+        CmdOnUnScopedBroadCast();
+    }
+    [Command]
+    public void CmdOnUnScopedBroadCast()
+    {
+        RpcOnUnScopedBroadCast();
+    }
+
+    [ClientRpc]
+    public void RpcOnUnScopedBroadCast()
+    {
+        Animator animator = currentWeaponGraphics.GetComponent<Animator>();
+        animator.SetBool("Scoped", false);
+    }
 }

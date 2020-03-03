@@ -7,7 +7,7 @@ public class PlayerMotor : MonoBehaviour
     [SerializeField] Camera pCam;
     private Vector3 velocity = Vector3.zero;
     private Vector3 rotationPlayer = Vector3.zero;
-    private float rotationCamera;
+    public float rotationCamera;
     private float jumpForce = 0;
     [SerializeField] private float cameraRotationLimit = 85f;
    
@@ -33,7 +33,8 @@ public class PlayerMotor : MonoBehaviour
         if(pCam != null) // rotate player vertically,(camera)
         {
             rotationCamera =  Mathf.Clamp(rotationCamera, -cameraRotationLimit, cameraRotationLimit); // clamp cameraRotation for not being reversed
-            pCam.transform.localEulerAngles = new Vector3(rotationCamera, 0f, 0f);
+            pCam.transform.localRotation = Quaternion.RotateTowards(pCam.transform.localRotation, Quaternion.Euler(rotationCamera, 0f, 0f), 240.0f * Time.deltaTime);
+          //  pCam.transform.localEulerAngles = new Vector3(rotationCamera, 0f, 0f);
         }
 
         if(jumpForce > 0) // if player push jump button, constantly add jump force

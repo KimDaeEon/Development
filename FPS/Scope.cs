@@ -11,6 +11,7 @@ public class Scope : NetworkBehaviour
     public GameObject weaponCamera;
     public Camera thisMainCamera;
     public GameObject playerOBJ;
+    private WeaponManager weaponManager;
 
 
     private bool isScopeAllocated = false;
@@ -26,7 +27,7 @@ public class Scope : NetworkBehaviour
     // Update is called once per frame
     void Update()
     {
-        
+
         if (!isPlayerOBJAllocated)
         {
             playerOBJ = this.transform.parent.parent.parent.gameObject; // this is playerObject
@@ -34,7 +35,7 @@ public class Scope : NetworkBehaviour
             if (playerOBJ != null)
             {
                 isPlayerOBJAllocated = true;
-                if(playerOBJ.layer == LayerMask.NameToLayer("LocalPlayer"))
+                if (playerOBJ.layer == LayerMask.NameToLayer("LocalPlayer"))
                 {
                     isLocalPlayerScopeVersion = true;
                 }
@@ -56,7 +57,7 @@ public class Scope : NetworkBehaviour
         {
             GameObject UIObject = GameObject.FindGameObjectWithTag("PlayerUI");
             scopeOverlay = UIObject.GetComponent<PlayerUI>().scopeOverlay;
-            
+
 
             if (scopeOverlay != null)
             {
@@ -76,14 +77,25 @@ public class Scope : NetworkBehaviour
             }
         }
 
-        
-
-
 
         if (scopeOverlay == null)
         {
             return;
         }
+
+        if (weaponManager == null) weaponManager = playerOBJ.GetComponent<WeaponManager>();
+
+        if (weaponManager.GetCurrentWeapon().currentBullets <= 0)
+        {
+            animator.SetBool("Scoped", false); // scope animation activated
+
+            weaponManager.OnUnScopedBroadCast();
+            onUnScoped();
+            isScoped = false;
+            weaponManager.Reload();
+            return;
+        }
+
         if (Input.GetButtonDown("Fire2") && !PauseMenu.IsPauseOn)
         {
             //Debug.Log("GetButtonDown is true");
@@ -91,10 +103,12 @@ public class Scope : NetworkBehaviour
             animator.SetBool("Scoped", isScoped); // scope animation activated
             if (isScoped)
             {
+                weaponManager.OnScopedBroadCast();
                 StartCoroutine(onScoped());
             }
             else
             {
+                weaponManager.OnUnScopedBroadCast();
                 onUnScoped();
             }
         }
@@ -102,11 +116,9 @@ public class Scope : NetworkBehaviour
 
 
 
-
-
-
-
     }
+
+
     IEnumerator onScoped()
     {
         yield return new WaitForSeconds(0.2f);
@@ -114,6 +126,7 @@ public class Scope : NetworkBehaviour
         weaponCamera.SetActive(!isScoped); // Gun disappears
         thisMainCamera.fieldOfView = scopedFOV; // Main Camera zooms in
     }
+
 
     public void onUnScoped()
     {

@@ -1,12 +1,15 @@
-﻿using UnityEngine.Networking;
+using UnityEngine.Networking;
 using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
 
 
+
+
 [RequireComponent(typeof(WeaponManager))]
 public class PlayerShoot : NetworkBehaviour
 {
+
     private const string PLAYER_TAG = "Player";
 
     [SerializeField] LayerMask mask;
@@ -15,9 +18,13 @@ public class PlayerShoot : NetworkBehaviour
 
     private PlayerWeapon currentWeapon;
     private WeaponManager weaponManager;
+    private PlayerController playerController;
 
     private float shotDelay;
     public float remainShotDelay = 0f;
+
+    private bool isLoad = false;
+    private bool isRegister = false;
 
 
     void Start()
@@ -28,6 +35,7 @@ public class PlayerShoot : NetworkBehaviour
             this.enabled = false;
         }
 
+        playerController = GetComponent<PlayerController>();
         weaponManager = GetComponent<WeaponManager>();
 
     }
@@ -99,7 +107,11 @@ public class PlayerShoot : NetworkBehaviour
         currentGraphics.muzzleFlash.Play();
         currentGraphics.muzzleFlashSound.Play();
 
+        playerController.cameraRotation += (currentWeapon.impactForce / 90);
+
     }
+
+
 
     //It is called on the server when we hit something
     //It takes in position and normal vector
@@ -121,7 +133,7 @@ public class PlayerShoot : NetworkBehaviour
         {
             if (hitObj.GetComponent<Rigidbody>() != null)
             {
-                Debug.Log("Addforce activated to "+ hitObj.name);
+                Debug.Log("Addforce activated to " + hitObj.name);
                 hitObj.GetComponent<Rigidbody>().AddForce(-_normal * weaponManager.GetCurrentWeapon().impactForce);
             }
         }
@@ -148,7 +160,6 @@ public class PlayerShoot : NetworkBehaviour
         }
 
         CmdOnSHoot();
-
         currentWeapon.currentBullets--;
 
         if (currentWeapon.currentBullets <= 0)

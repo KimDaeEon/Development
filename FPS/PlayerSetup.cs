@@ -114,6 +114,7 @@ public class PlayerSetup : NetworkBehaviour
             myDB.UpdateThisUserData(CurrentUserInfo.info);
 
             Cursor.lockState = CursorLockMode.None;
+            Cursor.visible = true;
 
         }
 

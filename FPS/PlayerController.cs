@@ -37,7 +37,7 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private float cameraRotationSpeed = 15.0f;
     [SerializeField] private float jumpForce = 10.0f;
     
-    float cameraRotation = 0.0f;
+    public float cameraRotation = 0.0f;
 
     // Components Required
     private PlayerMotor pMotor;
@@ -60,6 +60,7 @@ public class PlayerController : MonoBehaviour
             if(Cursor.lockState != CursorLockMode.None)
             {
                 Cursor.lockState = CursorLockMode.None;
+                Cursor.visible = true;
             }
             pMotor.Move(Vector3.zero); // while pause cannot move
 
@@ -82,6 +83,7 @@ public class PlayerController : MonoBehaviour
         if(Cursor.lockState != CursorLockMode.Locked)
         {
             Cursor.lockState = CursorLockMode.Locked;
+            Cursor.visible = false;
         }
 
         RaycastHit _hit;
