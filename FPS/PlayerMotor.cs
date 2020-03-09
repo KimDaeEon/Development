@@ -1,4 +1,4 @@
-﻿
+
 using UnityEngine;
 [RequireComponent(typeof(Rigidbody))]
 public class PlayerMotor : MonoBehaviour
@@ -7,7 +7,7 @@ public class PlayerMotor : MonoBehaviour
     [SerializeField] Camera pCam;
     private Vector3 velocity = Vector3.zero;
     private Vector3 rotationPlayer = Vector3.zero;
-    public float rotationCamera;
+    private float rotationCamera;
     private float jumpForce = 0;
     [SerializeField] private float cameraRotationLimit = 85f;
    

@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -9,7 +9,7 @@ public class KillFeed : MonoBehaviour
     void Start()
     {
         GameManager.instance.onPlayerKilledCallBack = OnKill; 
-        //if '=' is not +=, is t here a problem? @@ 
+        //if '=' is not +=, is there a problem? @@ 
     } 
 
     
