@@ -14,6 +14,11 @@ public class WeaponManager : NetworkBehaviour
 
     public int maxWeaponCount = 4;
 
+    //for weaponSwitching
+    [SyncVar] public int selectedWeapon = 0;
+    public int previousSelectedWeapon = 0;
+
+
     // Start is called before the first frame update
     void Start()
     {
@@ -23,7 +28,52 @@ public class WeaponManager : NetworkBehaviour
         {
             Debug.Log("Start Weapon is NULl!!!!");
         }
+        SelectWeapon();
     }
+
+    void Update()
+    {
+
+        if (isLocalPlayer)
+        {
+            if (Input.GetAxis("Mouse ScrollWheel") > 0f)
+            {
+                if (selectedWeapon >= weaponHolder.childCount - 1) CmdSwitchWeaponBroadCast(0);
+                else CmdSwitchWeaponBroadCast(selectedWeapon + 1);
+            }
+            if (Input.GetAxis("Mouse ScrollWheel") < 0f)
+            {
+                if (selectedWeapon <= 0) CmdSwitchWeaponBroadCast(weaponHolder.childCount - 1);
+                else CmdSwitchWeaponBroadCast(selectedWeapon - 1);
+            }
+
+            if (Input.GetKeyDown(KeyCode.Alpha1))
+            {
+                CmdSwitchWeaponBroadCast(0);
+            }
+            if (Input.GetKeyDown(KeyCode.Alpha2) && weaponHolder.childCount >= 2)
+            {
+                CmdSwitchWeaponBroadCast(1);
+            }
+            if (Input.GetKeyDown(KeyCode.Alpha3) && weaponHolder.childCount >= 3)
+            {
+                CmdSwitchWeaponBroadCast(2);
+            }
+            if (Input.GetKeyDown(KeyCode.Alpha4) && weaponHolder.childCount >= 4)
+            {
+                CmdSwitchWeaponBroadCast(3);
+            }
+        }
+
+
+
+        if (previousSelectedWeapon != selectedWeapon)
+        {
+            SelectWeapon();
+            previousSelectedWeapon = selectedWeapon;
+        }
+    }
+
 
     public PlayerWeapon GetCurrentWeapon()
     {
@@ -162,5 +212,29 @@ public class WeaponManager : NetworkBehaviour
     {
         Animator animator = currentWeaponGraphics.GetComponent<Animator>();
         animator.SetBool("Scoped", false);
+    }
+
+
+    [Command]
+    void CmdSwitchWeaponBroadCast(int _selectedWeapon)
+    {
+        selectedWeapon = _selectedWeapon;
+    }
+
+
+    public void SelectWeapon()
+    {
+        int i = 0;
+        foreach (Transform weapon in weaponHolder)
+        {
+            if (i == selectedWeapon)
+            {
+                weapon.gameObject.SetActive(true);
+                this.EquipWeapon(weapon.GetComponent<PlayerWeapon>());
+            }
+            else weapon.gameObject.SetActive(false);
+
+            i++;
+        }
     }
 }
