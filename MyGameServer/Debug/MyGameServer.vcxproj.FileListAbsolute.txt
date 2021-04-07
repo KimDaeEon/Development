@@ -1,0 +1,2 @@
+C:\Users\밥벌레\Desktop\git_portfolio\MyGameServer\MyGameServer\Debug\MyGameServer.lib
+C:\git_portfolio\GameDevelopment\MyGameServer\MyGameServer\Debug\MyGameServer.lib
