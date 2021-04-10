@@ -38,3 +38,19 @@ public:
 
 	DWORD GetLength(VOID);
 };
+
+/// <summary>
+/// CStream 클래스를 스마트 포인터로 관리하기 위해 생성된 클래스입니다.
+/// 스마트 포인터를 이용하여 사용하기 위해서 -> 연산자를 재정의(override) 하였습니다.
+/// </summary>
+class CStreamSP {
+public:
+	CStreamSP(VOID){ Stream = new CStream(); }
+	~CStreamSP(VOID) { delete Stream; }
+
+	CStream* operator ->(VOID) { return Stream; }
+	operator CStream* (VOID) { return Stream; }
+
+private:
+	CStream* Stream;
+};
