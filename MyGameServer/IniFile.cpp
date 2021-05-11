@@ -1,4 +1,6 @@
 #include "IniFile.h"
+// IniFile 에서 데이터를 가져올 때에 문자열로 가져오는 것을 기본으로 한다. 그래서 중간 중간 형변환 과정이 있다. 이것이 Registry 와의 차이점이다.
+
 
 CIniFile::CIniFile(VOID) {
 	ZeroMemory(mFileName, sizeof(mFileName));
@@ -127,6 +129,13 @@ BOOL CIniFile::SetValue(LPCTSTR keyName, LPCTSTR valueName, LPCTSTR value) {
 	return TRUE;
 }
 
+/// <summary>
+/// FLOAT 형 데이터를 입력할 때에 사용
+/// </summary>
+/// <param name="keyName"></param>
+/// <param name="valueName"></param>
+/// <param name="value"></param>
+/// <returns></returns>
 BOOL CIniFile::SetValue(LPCTSTR keyName, LPCTSTR valueName, FLOAT value) {
 
 	if (!keyName || !valueName)
