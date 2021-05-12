@@ -3,16 +3,16 @@
 #include<fstream>
 #include<tchar.h>
 #include<pchannel.h>
-#define MAX_BUFFER_LENGTH 4096  // TODO: 이거 책에 설명이 없어서 일단 마이크로소프트 예제에서 이런 식으로 설정하니 일단 이렇게 쓰자. 추후 확인.
+#define MAX_BUFFER_LENGTH 4096  // TODO: 이거 책에 설명이 없어서 일단 마이크로소프트 예제에서 이런 식으로 설정하니 이렇게 쓰자. 추후 서버 돌려보면서 이 값 확인
 
 /// <summary>
 /// 로그 클래스이다. 파일, 콘솔 화면, 디버그 창 3곳에 출력된다.
 /// </summary>
 class CLog {
 public:
-	static BOOL WriteLog(LPTSTR data, ...) { // TDOO: 이 부분 관련 가변인자 함수, _vstprintf 들 따로 디버그 찍으면서 잘 뜯어보자.
+	static BOOL WriteLog(LPTSTR data, ...) {
 		SYSTEMTIME systemTime;
-		TCHAR CurrentDate[32] = { 0, };
+		TCHAR CurrentDate[32] = { 0, }; // 0은 문자열 종료 문자(NULL)라고 보면 된다.
 		TCHAR CurrentFileName[MAX_PATH] = { 0, };
 		FILE* FilePtr = NULL;
 		TCHAR DebugLog[MAX_BUFFER_LENGTH] = { 0, };
@@ -42,22 +42,23 @@ public:
 			systemTime.wDay,
 			systemTime.wHour);
 
-		FilePtr = _tfopen(CurrentDate, _T("a")); // TODO: 이거 _sntprintf 가 제대로 종료되지 않을 수 있다는데.. 찾아보자. 그리고 "a" 이것만 넣는게 맞는지도 확인
+		FilePtr = _tfopen(CurrentFileName, _T("a"));
 		if (!FilePtr)
 			return FALSE;
 
 		// 파일에 출력
-		_ftprintf(FilePtr, _T("[%s] %S\n"), CurrentDate, Log);
+		_ftprintf(FilePtr, _T("[%s] %s\n"), CurrentDate, Log);
 
-		// 콘솔 화면에 출력 TODO: 맞는지 확인 필요
-		_sntprintf(DebugLog, MAX_BUFFER_LENGTH, _T("[%s] %S\n"), CurrentDate, Log);
+		_sntprintf(DebugLog, MAX_BUFFER_LENGTH, _T("[%s] %\n"), CurrentDate, Log);
 
 		fflush(FilePtr);
 
 		fclose(FilePtr);
 
-		// 디버그 창에 출력 TODO: 맞는지 확인 필요
+		// 디버그 창에 출력
 		OutputDebugString(DebugLog);
+
+		// 콘솔 창에 출력
 		_tprintf(_T("%s"), DebugLog);
 
 		return TRUE;
