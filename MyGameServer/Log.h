@@ -24,6 +24,7 @@ public:
 		TCHAR Log[MAX_BUFFER_LENGTH] = { 0, };
 
 		va_start(ap, data);
+		// vstprintf: formatted printing with va_list to a string (with TCHAR), TCHAR 형을 담는 va_list 를 문자열에 프린트하는 것.
 		_vstprintf(Log, data, ap);
 		va_end(ap);
 

@@ -178,6 +178,7 @@ BOOL CStream::WriteDWORD(DWORD data) {
 BOOL CStream::WriteDWORD_PTR(DWORD_PTR data) {
 	CopyMemory(mBufferPointer + mLength, &data, sizeof(DWORD_PTR));
 	mLength += sizeof(DWORD_PTR);
+	return true;
 }
 
 /// <summary>
