@@ -10,7 +10,7 @@
 /// </summary>
 class CLog {
 public:
-	static BOOL WriteLog(LPTSTR data, ...) {
+	static BOOL WriteLog(LPCTSTR data, ...) { // TODO: 책에서는 LPTSTR 로 적혀 있어서 그렇게 적었었는데, 사용해보니 LPCTSTR 이 맞고 오타를 치신 것 같다. 이 변수를 바꿀 일도 없고.. 혹시 모르니 추후에 확인.
 		SYSTEMTIME systemTime;
 		TCHAR CurrentDate[32] = { 0, }; // 0은 문자열 종료 문자(NULL)라고 보면 된다.
 		TCHAR CurrentFileName[MAX_PATH] = { 0, };
