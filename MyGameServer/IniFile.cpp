@@ -28,7 +28,7 @@ BOOL CIniFile::Open(LPCTSTR fileName) {
 }
 
 BOOL CIniFile::Close(VOID) {
-	// TODO: 이거 맞나? 뭔가 빠진 거 같은데, 일단 ZeroMemory 추가
+	// TODO: 사실 아무것도 안하는데 왜 Close 라고 이름을 붙이셨을까.. 나중에 무슨 내용을 채우려 하신 것인가? 일단 ZeroMemory 추가
 	ZeroMemory(mFileName, sizeof(mFileName));
 	return TRUE;
 }

@@ -21,7 +21,7 @@ public:
 		return returnPointer;
 	}
 
-	static VOID operator delete(VOID* deletePointer) { // TODO: 예외 처리 안해도 된다. 혹시나 실수했을 수 있으니 다시 보자.
+	static VOID operator delete(VOID* deletePointer) { // 프로그램 종료 시에는 자동으로 메모리가 내려가고, 사실 여기 올린 메모리는 내릴 일이 거의 없는 것이라서..
 		*reinterpret_cast<UCHAR**>(deletePointer) = mFreePointer; // 반환되는 메모리 블럭 기준 현재 mFreePointer 를 다음 메모리 블럭으로 설정
 		mFreePointer = static_cast<UCHAR*>(deletePointer); // mFreePointer 가 반환된 메모리 블럭을 가리키도록 설정, 이렇게 구현하면 mFreePointer 를 deletePointer 에 넣어도 딱히 예외 처리할 필요가 없다!! 
 	}

@@ -47,6 +47,5 @@ BOOL CCrypt::Decrypt(BYTE* source, BYTE* destination, DWORD length) {
 		destination[i] = source[i] ^ key >> 8; // 이전에 XOR 했었던 값으로 다시 XOR 연산을 한다. 그러면 원래 값으로 돌아온다.
 		key = (previousBlock + key) * c1 + c2;
 	}
-
 	return TRUE;
 }
