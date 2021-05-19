@@ -43,8 +43,8 @@ BOOL CCrypt::Decrypt(BYTE* source, BYTE* destination, DWORD length) {
 		return FALSE;
 
 	for (i = 0; i < length; i++) {
-		previousBlock = source[i]; // Encrypt 에서 이 값을 XOR 연산에 사용하는 key 로 이용했으므로 일단 저장해둬야 한다.
-		destination[i] = source[i] ^ key >> 8; // 이전에 XOR 했었던 값으로 다시 XOR 연산을 한다. 그러면 원래 값으로 돌아온다.
+		previousBlock	= source[i]; // Encrypt 에서 이 값을 XOR 연산에 사용하는 key 로 이용했으므로 일단 저장해둬야 한다.
+		destination[i]	= source[i] ^ key >> 8; // 이전에 XOR 했었던 값으로 다시 XOR 연산을 한다. 그러면 원래 값으로 돌아온다.
 		key = (previousBlock + key) * c1 + c2;
 	}
 	return TRUE;

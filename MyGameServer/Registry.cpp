@@ -5,8 +5,8 @@
 /// </summary>
 /// <param name=""></param>
 CRegistry::CRegistry(VOID) {
-	mRootKey = NULL;	// 사용할 레지스트리 키를 저장하는 변수
-	mIsOpened = FALSE;	// 해달 레지스트리를 열었는지 체크하는 변수
+	mRootKey	= NULL;	// 사용할 레지스트리 키를 저장하는 변수
+	mIsOpened	= FALSE;	// 해달 레지스트리를 열었는지 체크하는 변수
 }
 
 CRegistry::~CRegistry(VOID) {

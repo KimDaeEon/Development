@@ -30,13 +30,13 @@ private:
 	static VOID allockBlock() {
 		mFreePointer = new UCHAR[sizeof(T) * ALLOC_BLOCK_SIZE]; // T 형 타입의 크기만큼 50개씩 할당
 		
-		UCHAR** current = reinterpret_cast<UCHAR**>(mFreePointer); // 할당한 메모리 블럭의 포인터를 current 에 할당
-		UCHAR* next = mFreePointer; // 현재는 할당된 첫 메모리 블럭의 주소, 아래 연산에서 다음 블럭의 주소를 가리키는 용도로 사용된다.
+		UCHAR** current	= reinterpret_cast<UCHAR**>(mFreePointer); // 할당한 메모리 블럭의 포인터를 current 에 할당
+		UCHAR* next		= mFreePointer; // 현재는 할당된 첫 메모리 블럭의 주소, 아래 연산에서 다음 블럭의 주소를 가리키는 용도로 사용된다.
 
 		for(INT i = 0; i < ALLOC_BLOCK_SIZE - 1; ++i) {
-			next += sizeof(T); // 다음 블럭 주소만큼 이동.
-			*current = next; // current 가 다음 블럭의 주소를 가리키도록 해당 값을 할당.
-			current = reinterpret_cast<UCHAR**>(next); // UCHAR* 형식을 유지하면서 메모리 블럭의 맨 첫 4바이트에 다음 블럭의 주소 값을 할당하기 위해 UCHAR ** 형으로 변환.
+			next		+= sizeof(T); // 다음 블럭 주소만큼 이동.
+			*current	= next; // current 가 다음 블럭의 주소를 가리키도록 해당 값을 할당.
+			current		= reinterpret_cast<UCHAR**>(next); // UCHAR* 형식을 유지하면서 메모리 블럭의 맨 첫 4바이트에 다음 블럭의 주소 값을 할당하기 위해 UCHAR ** 형으로 변환.
 		}
 
 		*current = 0; // 마지막 블럭의 경우는 다음 블럭이 없으므로 첫 4바이트를 NULL 로 할당.

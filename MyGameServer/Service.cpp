@@ -132,6 +132,11 @@ BOOL CService::Begin(LPTSTR serviceName) {
 		return FALSE;
 
 	// StartServiceCtrlDispatcher 에서 등록할 서비스 환경 정보.
+	// Dispatcher: A piece of software responsible for assigning priorities and resources to tasks waiting to be scheduled.
+	// Dispatcher 는 CPU 의 제어권을 STS (Short-Term Scheduling) 에 의하여 선택된 Process 에 넘겨주는 모듈이다.
+	// Context Switching, User Mode 로 전환, 사용자 프로그램의 재시작을 위해 해당 주소로 이동, 3가지 기능을 한다.
+	// Scheduler 와의 차이점은 해야할 일을 정하는 것 까지가 Scheduelr, 실제로 CPU 를 Process 에 할당하는 것이 Dispatcher 의 일이다.
+	// 넓은 의미로 Scheduling 은 Scheduler 와 Dispatche 기능을 모두 내포한 말이다.
 	SERVICE_TABLE_ENTRY DispatchTable[] = {
 		{serviceName, ::RunCallback},  // 전역 범위에 있는 RunCallback 을 호출하기 위해 :: 연산자를 붙인 것이다.
 		{NULL, NULL}
@@ -142,8 +147,11 @@ BOOL CService::Begin(LPTSTR serviceName) {
 	OnStarted();
 
 
-	if (!StartServiceCtrlDispatcher(DispatchTable)) {
-		// 실패인 경우
+	if (!StartServiceCtrlDispatcher(DispatchTable)) { // 서비스 프로세스의 메인 스레드를 SCM에 연결한다. 해당 작업을 메인으로 SCM 에서 처리하게 된다는 뜻.
+		// StartServiceCtrlDispatcher 는 성공 후에 SERVICE_STOPPED 상태가 되지 않는 한 리턴을 하지 않는다.
+		// 실패인 경우, 또는 디버그 모드인 경우
+		// 서비스 형식은 디버깅이 어려워서 추후에 다른 스레드에서 서버 프로그램을 동작 시키고, getchar() 로 멈춰서 동작을 확인하는 식으로 하는 것이다.
+		// TODO: 메인 스레드가 멈추면 다른 스레드들이 동작된다고 쓰여 있는데, 추후 가용한 시간에 스레드들의 동작 순서 및 자원 할당 관련해서 운영체제와 다른 스레드 프로그래밍 서적을 찾아봐야 할 것 같다.
 		_tprintf(_T("## Debug console mode ##\n"));
 		getchar();
 	}
@@ -168,23 +176,23 @@ BOOL CService::End(VOID) {
 /// </summary>
 /// <param name="argumentCount"></param>
 /// <param name="arguments"></param>
-VOID CService::RunCallback(DWORD argumentCount, LPTSTR* arguments) { // TODO: 추후 여기에 뭘 넣어서 어떻게 사용하는지 정확히 파악하자. dwCheckPoint 도 증가하는지 확인하자.
+VOID CService::RunCallback(DWORD argumentCount, LPTSTR* arguments) { // TODO: 이거 찾아보니 디버그로 서비스 작동 과정을 확인 못하는 거 같은데.. 일단 다른 것도 해야해서 넘어가고 추후 시간나면 확인.
 	DWORD Status;
 
 	// 현재 사용하고 있는 서비스 상태이므로 멤버인 mServiceStatus 에 값을 직접 등록하여 사용.
 	// 아래 Status 내용들 헷갈리면 https://docs.microsoft.com/en-us/windows/win32/api/winsvc/ns-winsvc-service_status <- 링크 참조.
-	mServiceStatus.dwServiceType = SERVICE_WIN32; // SERVICE_WIN32_OWN_PROCESS 와 같다. 프로세스 내에서 실행된다는 뜻. 다른 장치 드라이버에 있는 서비스도 있나보다.
-	mServiceStatus.dwCurrentState = SERVICE_START_PENDING; // 서비스가 시작된다는 뜻이 아니라, 시작할 것인데 미뤄지고 있다는 의미다. 서비스는 시작 시나 정지 시에 특정 작업이 필요한데 그것을 하는 중이란 뜻이다.
+	mServiceStatus.dwServiceType				= SERVICE_WIN32; // SERVICE_WIN32_OWN_PROCESS 와 같다. 프로세스 내에서 실행된다는 뜻. 다른 장치 드라이버에 있는 서비스도 있나보다.
+	mServiceStatus.dwCurrentState				= SERVICE_START_PENDING; // 서비스가 시작된다는 뜻이 아니라, 시작할 것인데 미뤄지고 있다는 의미다. 서비스는 시작 시나 정지 시에 특정 작업이 필요한데 그것을 하는 중이란 뜻이다.
 	// 초기화가 끝나고 SCM 의 Service Control 을 받을 수 있는 상태가 'SERVICE_RUNNING'이다. SERVICE_RUNNING 상태가 아니면 서비스 실행이 실패되었다고 SCM 은 표시한다.
 	// https://docs.microsoft.com/en-us/windows/win32/services/service-status-transitions <- 자세한 내용 헷갈리면 다시 참고.
-	mServiceStatus.dwControlsAccepted = SERVICE_ACCEPT_STOP | SERVICE_ACCEPT_PAUSE_CONTINUE; //  정지나 일시정지, 재시작이 가능하다.
+	mServiceStatus.dwControlsAccepted			= SERVICE_ACCEPT_STOP | SERVICE_ACCEPT_PAUSE_CONTINUE; //  정지나 일시정지, 재시작이 가능하다.
 	
-	mServiceStatus.dwWin32ExitCode = 0; // 시작 시나 실패 시에 리턴할 에러코드, 0은 NO_ERROR 와 같다. 서비스 별로 특별한 에러코드를 설정하지 않는 한, 보통 이렇게 세팅한다고 쓰여 있다.
-	mServiceStatus.dwServiceSpecificExitCode = 0; // dwWin32ExitCode 값이 ERROR_SERVICE_SPECIFIC_ERROR 가 아닌 이상에야 이 값을 설정하는 것은 무의미.
-	mServiceStatus.dwCheckPoint = 0; // 서비스가 어떤 작업을 진행할 때에 오래 걸리면 start, stop, pause, continue 에서 pending 상태가 되는데 이 때에 값을 추적하려고 설정한다. 추적하지 않으려면 0으로 설정.
-	mServiceStatus.dwWaitHint = 0; // start, stop, pause, continue 작업이 끝날 시간을 예측해서 밀리 세컨드로 나타내는 것. 이 시간이 설정되면 이 시간을 넘게 되면 dwCheckPoint 등도 무시하고 서비스가 특정 작업 중 실패했다고 간주한다.
+	mServiceStatus.dwWin32ExitCode				= 0; // 시작 시나 실패 시에 리턴할 에러코드, 0은 NO_ERROR 와 같다. 서비스 별로 특별한 에러코드를 설정하지 않는 한, 보통 이렇게 세팅한다고 쓰여 있다.
+	mServiceStatus.dwServiceSpecificExitCode	= 0; // dwWin32ExitCode 값이 ERROR_SERVICE_SPECIFIC_ERROR 가 아닌 이상에야 이 값을 설정하는 것은 무의미.
+	mServiceStatus.dwCheckPoint					= 0; // 서비스가 어떤 작업을 진행할 때에 오래 걸리면 start, stop, pause, continue 에서 pending 상태가 되는데 이 때에 값을 추적하려고 설정한다. 추적하지 않으려면 0으로 설정.
+	mServiceStatus.dwWaitHint					= 0; // start, stop, pause, continue 작업이 끝날 시간을 예측해서 밀리 세컨드로 나타내는 것. 이 시간이 설정되면 이 시간을 넘게 되면 dwCheckPoint 등도 무시하고 서비스가 특정 작업 중 실패했다고 간주한다.
 
-	// 서비스 상태를 SERVICE_START_PENDING 으로 해놓고 Control Callback 등록
+	// 서비스 상태를 SERVICE_START_PENDING 으로 해놓고 Control Callback 등록, SERVICE_START_PENDING 을 하는 이유는 구체적으로 이러한 작업을 해주어야 하기 때문이다.
 	mServiceStatusHandle = RegisterServiceCtrlHandler(mServiceName, ::CtrlHandlerCallback); // 이 함수는 Service Control Request 를 처리하기 위한 CtrlHandlerCallback 함수를 서비스에 등록한다. 그리고 서비스 정보를 관리하는 핸들을 리턴한다.
 
 	// Control Callback 등록이 실패하면 종료
@@ -194,9 +202,9 @@ VOID CService::RunCallback(DWORD argumentCount, LPTSTR* arguments) { // TODO: 추
 	Status = NO_ERROR; // 등록 성공했으므로 NO_ERROR
 
 	// 등록이 성공했으므로 SERVICE_RUNNING 상태로 변경
-	mServiceStatus.dwCurrentState = SERVICE_RUNNING;
-	mServiceStatus.dwCheckPoint = 0; // TODO: 나중에 디버그로 이것도 보게되면 이 값이 증가하는지 확인해보자.
-	mServiceStatus.dwWaitHint = 0;
+	mServiceStatus.dwCurrentState	= SERVICE_RUNNING;
+	mServiceStatus.dwCheckPoint		= 0; // TODO: 나중에 값 변하는 과정 확인하는 법 알면 확인해보자.
+	mServiceStatus.dwWaitHint		= 0;
 
 	if (!SetServiceStatus(mServiceStatusHandle, &mServiceStatus)) // Service Control Manager, SCM 가 관리하고 있는 Service 의 상태(Status) 정보를 업데이트 하는 함수. 성공하면 non-zero, 실패하면 0 리턴.
 		return;
@@ -211,10 +219,11 @@ VOID CService::CtrlHandlerCallback(DWORD opCode) { // SCM 의 request 를 처리하는
 		mServiceStatus.dwCurrentState = SERVICE_RUNNING;
 		break;
 	case SERVICE_CONTROL_STOP:	// 서비스 정지인 경우
-		mServiceStatus.dwWin32ExitCode = 0;
-		mServiceStatus.dwCurrentState = SERVICE_STOPPED;
-		mServiceStatus.dwCheckPoint = 0;
-		mServiceStatus.dwWaitHint = 0;
+		mServiceStatus.dwWin32ExitCode	= 0;
+		mServiceStatus.dwCurrentState	= SERVICE_STOPPED;
+		mServiceStatus.dwCheckPoint		= 0;
+		mServiceStatus.dwWaitHint		= 0;
+		// 원래 가상 함수 OnStopped 가 있어야 하는 위치, 여기선 디버깅을 위해 위치 이동
 		break;
 	case SERVICE_CONTROL_INTERROGATE:  // 서비스 컨트롤 매니저에게 현재 상태 정보를 보내야 할 경우
 		break;
