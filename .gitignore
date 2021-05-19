@@ -25,3 +25,7 @@ MyGameServer/Debug/MyGameServer.tlog/CL.write.1.tlog
 MyGameServer/Debug/MyGameServer.tlog/MyGameServer.lastbuildstate
 MyGameServer/Debug/MyGameServer.tlog/unsuccessfulbuild
 MyGameServer/MyGameServer.vcxproj
+MyGameServer/.vs/MyGameServer/v16/Browse.VC.db-wal
+MyGameServer/.vs/MyGameServer/v16/ipch/AutoPCH/1d530ec229e285e0/SERVICE.ipch
+MyGameServer/Debug/Crypt.obj
+MyGameServer/Debug/Stream.obj

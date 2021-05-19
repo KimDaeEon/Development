@@ -1,6 +1,6 @@
 #include"Service.h"
 
-CService* gOwner = NULL; // TODO: 이거 뭐할 때에 쓰는 것이지?? 추후에 이것을 상속받아서 이 포인터로 무엇을 하는 것 같다.
+CService* gOwner = NULL;
 
 VOID WINAPI RunCallback(DWORD argumentCount, LPTSTR* arguments) {
 	gOwner->RunCallback(argumentCount, arguments);
@@ -35,7 +35,8 @@ BOOL CService::Install(LPCTSTR serviceName) {
 
 	// 실행 파일 입력
 	ServiceFIleName[0] = '"'; // 첫 문자에 " 삽입.
-	GetModuleFileName(NULL, ServiceFIleName + 1, MAX_PATH - 1); // TODO: 이 API 제대로 보고 써보기
+	GetModuleFileName(NULL, ServiceFIleName + 1, MAX_PATH - 1); // 맨앞 변수가 hModule, Module 의 Handle, 경로와 파일명을 구하려고 하는 Module 을 의미한다. 
+	// 이 값이 NULL 이면 현재 저 함수를 호출한 프로세스의 exe 파일의 경로를 ServiceFileName 에 MAX_PATH -1 길이 만큼 저장한다. 즉, 현재 프로그램의 경로를 저장한다고 보면 된다.
 	_tcscat(ServiceFIleName, _T("\"")); // 문자열 끝에 " 삽입
 
 	
@@ -48,7 +49,7 @@ BOOL CService::Install(LPCTSTR serviceName) {
 		return FALSE;
 
 	// 서비스를 SERVICE_WIN32_OWN_PROCESS 형태로 생성합니다.
-	ServiceHandle = CreateService(ServiceControlManager, // TODO: 이 API 제대로 보고 써보기
+	ServiceHandle = CreateService(ServiceControlManager,
 		serviceName, // lpServiceName, 서비스 이름
 		serviceName, // lpDisplayName, 보여지는 이름 (서비스 이름과 같게 설정)
 		SERVICE_ALL_ACCESS, // dwDesiredAccess, 모든 엑세스가 가능하게 설정
@@ -71,7 +72,6 @@ BOOL CService::Install(LPCTSTR serviceName) {
 	}
 
 	// 사용한 핸들을 닫아준다.
-	// TODO: 여기서 ServiceHandle 이랑 ServiceControlManager 2개의 핸들이 있는데, 정확히 무슨 차이인지 사용해보고 알자.
 	CloseServiceHandle(ServiceHandle);
 	CloseServiceHandle(ServiceControlManager);
 
@@ -92,7 +92,7 @@ BOOL CService::Uninstall(LPCTSTR serviceName) {
 
 	// 인스톨 할 때와 마찬가지로 SCManager 를 Open
 	// SCManager 연결 맺고(Open), 서비스 관련 작업하고, 닫는 것(Close)이 서비스 작업 기본 사이클이다.
-	ServiceControlManager = OpenSCManager(NULL, NULL, SC_MANAGER_CREATE_SERVICE);  // TODO: DELETE 하는 권한을 OpenService 에서 부여한다. SC_MANAGER_CREATE_SERVICE 는 DELETE 와는 큰 상관은 없는 것 같다. 추후 확인
+	ServiceControlManager = OpenSCManager(NULL, NULL, SC_MANAGER_CREATE_SERVICE); 
 	if (!ServiceControlManager)
 		return FALSE;
 
@@ -100,6 +100,14 @@ BOOL CService::Uninstall(LPCTSTR serviceName) {
 	ServiceHandle = OpenService(ServiceControlManager, serviceName, DELETE);
 
 	if (!ServiceHandle) {
+		CloseServiceHandle(ServiceHandle);
+		CloseServiceHandle(ServiceControlManager);
+
+		return FALSE;
+	}
+
+	// 실제 서비스를 삭제합니다.
+	if (!DeleteService(ServiceHandle)) { // 못 지우면 FALSE 리턴
 		CloseServiceHandle(ServiceHandle);
 		CloseServiceHandle(ServiceControlManager);
 
@@ -125,11 +133,11 @@ BOOL CService::Begin(LPTSTR serviceName) {
 
 	// StartServiceCtrlDispatcher 에서 등록할 서비스 환경 정보.
 	SERVICE_TABLE_ENTRY DispatchTable[] = {
-		{serviceName, ::RunCallback},  // 전역 범위에 있는 WINAPI RunCallback 을 호출하기 위해 :: 연산자를 붙인 것이다.
+		{serviceName, ::RunCallback},  // 전역 범위에 있는 RunCallback 을 호출하기 위해 :: 연산자를 붙인 것이다.
 		{NULL, NULL}
 	};
 
-	_tcscpy(mServiceName, serviceName);  // 앞으로 계속 서비스 이름을 사용하므로 mServiceName 에 복사합니다.
+	_tcscpy(mServiceName, serviceName); // 앞으로 계속 서비스 이름을 사용하므로 mServiceName 에 복사합니다.
 
 	OnStarted();
 
@@ -160,25 +168,26 @@ BOOL CService::End(VOID) {
 /// </summary>
 /// <param name="argumentCount"></param>
 /// <param name="arguments"></param>
-VOID CService::RunCallback(DWORD argumentCount, LPTSTR* arguments) {
+VOID CService::RunCallback(DWORD argumentCount, LPTSTR* arguments) { // TODO: 추후 여기에 뭘 넣어서 어떻게 사용하는지 정확히 파악하자. dwCheckPoint 도 증가하는지 확인하자.
 	DWORD Status;
 
-	// 현재 사용하는 서비 승태이므로 멤버인 mServiceStatus 에 값을 직접 등록하여 사용.
-	// TODO: 이 아래부터 다 디버그 찍어보면서 뭐 바꾸는지 확인해보자.
-	mServiceStatus.dwServiceType = SERVICE_WIN32;
-	mServiceStatus.dwCurrentState = SERVICE_START_PENDING;
-	mServiceStatus.dwControlsAccepted = SERVICE_ACCEPT_STOP | SERVICE_ACCEPT_PAUSE_CONTINUE;
+	// 현재 사용하고 있는 서비스 상태이므로 멤버인 mServiceStatus 에 값을 직접 등록하여 사용.
+	// 아래 Status 내용들 헷갈리면 https://docs.microsoft.com/en-us/windows/win32/api/winsvc/ns-winsvc-service_status <- 링크 참조.
+	mServiceStatus.dwServiceType = SERVICE_WIN32; // SERVICE_WIN32_OWN_PROCESS 와 같다. 프로세스 내에서 실행된다는 뜻. 다른 장치 드라이버에 있는 서비스도 있나보다.
+	mServiceStatus.dwCurrentState = SERVICE_START_PENDING; // 서비스가 시작된다는 뜻이 아니라, 시작할 것인데 미뤄지고 있다는 의미다. 서비스는 시작 시나 정지 시에 특정 작업이 필요한데 그것을 하는 중이란 뜻이다.
+	// 초기화가 끝나고 SCM 의 Service Control 을 받을 수 있는 상태가 'SERVICE_RUNNING'이다. SERVICE_RUNNING 상태가 아니면 서비스 실행이 실패되었다고 SCM 은 표시한다.
+	// https://docs.microsoft.com/en-us/windows/win32/services/service-status-transitions <- 자세한 내용 헷갈리면 다시 참고.
+	mServiceStatus.dwControlsAccepted = SERVICE_ACCEPT_STOP | SERVICE_ACCEPT_PAUSE_CONTINUE; //  정지나 일시정지, 재시작이 가능하다.
 	
-	mServiceStatus.dwWin32ExitCode = 0;
-	mServiceStatus.dwServiceSpecificExitCode = 0;
-	mServiceStatus.dwCheckPoint = 0;
-	mServiceStatus.dwWaitHint = 0;
+	mServiceStatus.dwWin32ExitCode = 0; // 시작 시나 실패 시에 리턴할 에러코드, 0은 NO_ERROR 와 같다. 서비스 별로 특별한 에러코드를 설정하지 않는 한, 보통 이렇게 세팅한다고 쓰여 있다.
+	mServiceStatus.dwServiceSpecificExitCode = 0; // dwWin32ExitCode 값이 ERROR_SERVICE_SPECIFIC_ERROR 가 아닌 이상에야 이 값을 설정하는 것은 무의미.
+	mServiceStatus.dwCheckPoint = 0; // 서비스가 어떤 작업을 진행할 때에 오래 걸리면 start, stop, pause, continue 에서 pending 상태가 되는데 이 때에 값을 추적하려고 설정한다. 추적하지 않으려면 0으로 설정.
+	mServiceStatus.dwWaitHint = 0; // start, stop, pause, continue 작업이 끝날 시간을 예측해서 밀리 세컨드로 나타내는 것. 이 시간이 설정되면 이 시간을 넘게 되면 dwCheckPoint 등도 무시하고 서비스가 특정 작업 중 실패했다고 간주한다.
 
-	// 서비스 상태를 SERVICE_START_PENDING 으로 내호고 Control Callback 등록
-	mServiceStatusHandle = RegisterServiceCtrlHandler(mServiceName, ::CtrlHandlerCallback);
+	// 서비스 상태를 SERVICE_START_PENDING 으로 해놓고 Control Callback 등록
+	mServiceStatusHandle = RegisterServiceCtrlHandler(mServiceName, ::CtrlHandlerCallback); // 이 함수는 Service Control Request 를 처리하기 위한 CtrlHandlerCallback 함수를 서비스에 등록한다. 그리고 서비스 정보를 관리하는 핸들을 리턴한다.
 
 	// Control Callback 등록이 실패하면 종료
-	// TODO: 아래 SERVICE_STATUS_HANDLE 캐스트 연산자 어떻게 변하는지 값 넣어보며 실험해보자.
 	if (mServiceStatusHandle == (SERVICE_STATUS_HANDLE)0) // 0, NULL 에 대해 SERVICE_STATUS_HANDLE 로 캐스트 연산을 하는 것이다.
 		return;
 
@@ -186,15 +195,14 @@ VOID CService::RunCallback(DWORD argumentCount, LPTSTR* arguments) {
 
 	// 등록이 성공했으므로 SERVICE_RUNNING 상태로 변경
 	mServiceStatus.dwCurrentState = SERVICE_RUNNING;
-	mServiceStatus.dwCheckPoint = 0; // TOOD: 이거 위에서 0으로 했는데 왜 또 바꾸지? 중간에 바뀌나?
+	mServiceStatus.dwCheckPoint = 0; // TODO: 나중에 디버그로 이것도 보게되면 이 값이 증가하는지 확인해보자.
 	mServiceStatus.dwWaitHint = 0;
 
-	// TODO: SetServiceStatus 도 어떤 기능을 하는지 개략적으로 알자.
-	if (!SetServiceStatus(mServiceStatusHandle, &mServiceStatus))
+	if (!SetServiceStatus(mServiceStatusHandle, &mServiceStatus)) // Service Control Manager, SCM 가 관리하고 있는 Service 의 상태(Status) 정보를 업데이트 하는 함수. 성공하면 non-zero, 실패하면 0 리턴.
 		return;
 }
 
-VOID CService::CtrlHandlerCallback(DWORD opCode) {
+VOID CService::CtrlHandlerCallback(DWORD opCode) { // SCM 의 request 를 처리하는 함수이다.
 	switch (opCode) {
 	case SERVICE_CONTROL_PAUSE: // 서비스 일시 정지인 경우
 		mServiceStatus.dwCurrentState = SERVICE_PAUSED;
