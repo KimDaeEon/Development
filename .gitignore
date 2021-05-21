@@ -29,3 +29,7 @@ MyGameServer/.vs/MyGameServer/v16/Browse.VC.db-wal
 MyGameServer/.vs/MyGameServer/v16/ipch/AutoPCH/1d530ec229e285e0/SERVICE.ipch
 MyGameServer/Debug/Crypt.obj
 MyGameServer/Debug/Stream.obj
+MyGameServer/.vs/MyGameServer/v16/ipch/AutoPCH/699d5bdfb2a4a7be/MINIDUMP.ipch
+MyGameServer/.vs/MyGameServer/v16/ipch/AutoPCH/7091f22e1ba696e3/CRYPT.ipch
+MyGameServer/.vs/MyGameServer/v16/ipch/AutoPCH/8684b84bde4d38e3/MINIDUMP.ipch
+MyGameServer/.vs/MyGameServer/v16/ipch/AutoPCH/d716f5bfd426e11b/MEMORYPOOL.ipch

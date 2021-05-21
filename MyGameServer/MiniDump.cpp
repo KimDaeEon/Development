@@ -12,7 +12,8 @@ typedef BOOL(WINAPI* MINIDUMPWRITEDUMP)( // Callback ÇÔ¼ö ¿øÇü, ¸Å¹ø ÀÌ ÇüÅÂ·Î Ç
 
 LPTOP_LEVEL_EXCEPTION_FILTER PreviousExceptionFilter = NULL;
 
-LONG WINAPI UnhandledExceptionFilter(struct _EXCEPTION_POINTERS* exceptionInfo) {  // WINAPI = __stdcall È£Ãâ ±Ô¾àÀÌ´Ù. È£ÃâµÈ ÇÔ¼ö°¡ ½ºÅÃÀ» Á¤¸®ÇÑ´Ù. ±âº»Àº __cdecl (C declaration, C ¿¡¼­ ±âÁ¸¿¡ ¾²´ø È£Ãâ ±Ô¾à, È£ÃâÇÑ ÇÔ¼ö°¡ ½ºÅÃ Á¤¸®)
+// UnhandledExceptionFilter ·Î ÇÏ¸é ÇÔ¼ö ÀÌ¸§ÀÌ Ãæµ¹ÀÌ ³­´Ù. ÁÖÀÇ.
+LONG WINAPI UnHandledExceptionFilter(struct _EXCEPTION_POINTERS* exceptionInfo) {  // WINAPI = __stdcall È£Ãâ ±Ô¾àÀÌ´Ù. È£ÃâµÈ ÇÔ¼ö°¡ ½ºÅÃÀ» Á¤¸®ÇÑ´Ù. ±âº»Àº __cdecl (C declaration, C ¿¡¼­ ±âÁ¸¿¡ ¾²´ø È£Ãâ ±Ô¾à, È£ÃâÇÑ ÇÔ¼ö°¡ ½ºÅÃ Á¤¸®)
 	HMODULE DllHandle = NULL;
 
 	// Windows 2000 ÀÌÀü¿¡´Â µû·Î DBGHELp¸¦ ¹èÆ÷ÇØ¼­ ¼³Á¤ÇØ ÁÖ¾î¾ß ÇÑ´Ù.
@@ -81,9 +82,18 @@ LONG WINAPI UnhandledExceptionFilter(struct _EXCEPTION_POINTERS* exceptionInfo) 
 }
 
 BOOL CMiniDump::Begin(VOID) {
-	SetErrorMode(SEM_FAILCRITICALERRORS);
+	
+	// TOOD: ¿¡·¯ ¸ğµå 1, 2, 4, 8 ³Ö¾î°¡¸é¼­ ÇØºÃ´Âµ¥ Â÷ÀÌ¸¦ Àß ¸ğ¸£°Ú´Ù.. ÃßÈÄ¿¡ ´Ù½Ã È®ÀÎ
+	SetErrorMode(SEM_FAILCRITICALERRORS); // ½Ã½ºÅÛÀÌ Æ¯Á¤ ½É°¢ÇÑ ¿¡·¯¸¦ ÇÚµéÇÒ Áö, ÇÁ·Î¼¼½º°¡ ¿¡·¯¸¦ ÇÚµéÇÒ Áö ¸ğµå¸¦ ¼³Á¤
+	// SEM_FAILCRITICALERRORS ´Â ½Ã½ºÅÛÀÌ ½É°¢ÇÑ ¿¡·¯(Abort, Retry, Fail)°¡ ÀÖÀ» ¶§¿¡ ¸Ş¼¼Áö ¹Ú½º ¾È ¶ç¿ì°í, ¿¡·¯¸¦ È£ÃâÇÑ ÇÁ·Î¼¼½º¿¡°Ô º¸³½´Ù.
+	// Ã£¾Æº¸´Ï ½É°¢ÇÑ ¿¡·¯¿¡ ´ëÇÑ ±âÁØÀÌ ¾Ö¸ÅÇÑ µí ÇÏ´Ù. ¶ÇÇÑ SEM Àº Set Error Mode ¸¦ ÀÇ¹ÌÇÏ´Â °Í °°´Ù.
+	// https://stackoverflow.com/questions/17853625/what-does-sem-failcriticalerrors-prevent 
+	// https://docs.microsoft.com/en-us/windows/win32/api/errhandlingapi/nf-errhandlingapi-seterrormode SetErrorMode ÇÔ¼ö
 
-	PreviousExceptionFilter = SetUnhandledExceptionFilter(UnhandledExceptionFilter);
+	PreviousExceptionFilter = SetUnhandledExceptionFilter(UnHandledExceptionFilter); 
+	// ½º·¹µåÀÇ top-level exception handler(ÃÖ»óÀ§ ¼öÁØ ¿¹¿Ü Ã³¸®±â, °¡Àå ¸ÕÀú Àû¿ëµÇ´Â ¿¹¿Ü Ã³¸®±â¶ó º¸¸é µÈ´Ù.) ¸¦ ³»°¡ Á¤ÀÇÇÑ UnhandledExceptionFilter ·Î ¾²¿© ÀÖ´Ù.
+	// ±âÁ¸¿¡ Exception ¿¡ ´ëÇØ¼­ Ã³¸®ÇÏ´ø ÇÔ¼ö°¡ ÀÖ´Âµ¥, ±×°ÍÀ» ³»°¡ Á¤ÀÇÇÑ ÇÔ¼ö·Î ¹Ù²Ùµµ·Ï ¼¼ÆÃÇØÁÖ´Â °ÍÀÌ¶ó°í º¸¸é µÈ´Ù.
+	// MSDN ¿¡ µğ¹ö±ë ½Ã¿¡´Â ÀÌ°Å È£Ãâ ¾ÈµÈ´Ù°í ½á ÀÖ¾î¼­ ÇØºÃ´Âµ¥, È£ÃâÀÌ ¾ÈµÈ´Ù. »ı°¢À» ÇØº¸¸é ´ç¿¬ÇÑµ¥, ¾îÂ÷ÇÇ µğ¹ö±ë ½Ã¿¡´Â ¾î¶² ¹®Á¦°¡ ÀÖ´ÂÁö ¾Ë±â ¶§¹®¿¡ ±»ÀÌ ÀÌ°ÍÀ» ÀÛµ¿½ÃÅ°Áö ¾Ê´Â °Í °°´Ù.
 
 	return true;
 }
