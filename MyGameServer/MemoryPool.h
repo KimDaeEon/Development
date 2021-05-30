@@ -1,5 +1,6 @@
 #pragma once
 #include <Windows.h>
+#include <assert.h>
 template <class T, int ALLOC_BLOCK_SIZE = 50>
 class CMemoryPool {
 public:

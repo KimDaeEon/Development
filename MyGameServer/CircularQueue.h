@@ -23,7 +23,7 @@ public:
 		return TRUE;
 	}
 
-	BOOL End(VOID) { // TODO: 이거 왜 쓰시는 거지? 나중에 코드를 추가할 용도인가?
+	BOOL End(VOID) { // TODO: 그냥 표시용 용도신 것 같다. 전체적으로 책에 실행이 안되거나 잘못된 부분이 조금씩 있으니 넘어가고 나중에 재확인.
 		return TRUE;
 	}
 
