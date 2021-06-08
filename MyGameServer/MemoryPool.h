@@ -1,8 +1,9 @@
 #pragma once
-#include <Windows.h>
-#include <assert.h>
+#include "Global.h"
+
 template <class T, int ALLOC_BLOCK_SIZE = 50>
-class CMemoryPool {
+class CMemoryPool 
+{
 public:
 	static VOID* operator new(size_t allocLength) { // TODO: 책에서는 std::size_t 였는데 이렇게 써도 차이가 없다고 보았다. 혹시 모르니 일단 체크.
 		

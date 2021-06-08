@@ -13,7 +13,8 @@ typedef BOOL(WINAPI* MINIDUMPWRITEDUMP)( // Callback ÇÔ¼ö ¿øÇü, ¸Å¹ø ÀÌ ÇüÅÂ·Î Ç
 LPTOP_LEVEL_EXCEPTION_FILTER PreviousExceptionFilter = NULL;
 
 // UnhandledExceptionFilter ·Î ÇÏ¸é ÇÔ¼ö ÀÌ¸§ÀÌ Ãæµ¹ÀÌ ³­´Ù. ÁÖÀÇ.
-LONG WINAPI UnHandledExceptionFilter(struct _EXCEPTION_POINTERS* exceptionInfo) {  // WINAPI = __stdcall È£Ãâ ±Ô¾àÀÌ´Ù. È£ÃâµÈ ÇÔ¼ö°¡ ½ºÅÃÀ» Á¤¸®ÇÑ´Ù. ±âº»Àº __cdecl (C declaration, C ¿¡¼­ ±âÁ¸¿¡ ¾²´ø È£Ãâ ±Ô¾à, È£ÃâÇÑ ÇÔ¼ö°¡ ½ºÅÃ Á¤¸®)
+LONG WINAPI UnHandledExceptionFilter(struct _EXCEPTION_POINTERS* exceptionInfo) 
+{  // WINAPI = __stdcall È£Ãâ ±Ô¾àÀÌ´Ù. È£ÃâµÈ ÇÔ¼ö°¡ ½ºÅÃÀ» Á¤¸®ÇÑ´Ù. ±âº»Àº __cdecl (C declaration, C ¿¡¼­ ±âÁ¸¿¡ ¾²´ø È£Ãâ ±Ô¾à, È£ÃâÇÑ ÇÔ¼ö°¡ ½ºÅÃ Á¤¸®)
 	HMODULE DllHandle = NULL;
 
 	// Windows 2000 ÀÌÀü¿¡´Â µû·Î DBGHELp¸¦ ¹èÆ÷ÇØ¼­ ¼³Á¤ÇØ ÁÖ¾î¾ß ÇÑ´Ù.
@@ -81,8 +82,8 @@ LONG WINAPI UnHandledExceptionFilter(struct _EXCEPTION_POINTERS* exceptionInfo) 
 	return EXCEPTION_CONTINUE_SEARCH;  // À§ÀÇ ¼³¸í°ú °°ÀÌ »óÀ§ __except ¹®ÀÇ ÄÚµå¸¦ ½ÇÇàÇÏ¶ó´Â ¶æÀÌ´Ù.
 }
 
-BOOL CMiniDump::Begin(VOID) {
-	
+BOOL CMiniDump::Begin(VOID) 
+{
 	// TOOD: ¿¡·¯ ¸ðµå 1, 2, 4, 8 ³Ö¾î°¡¸é¼­ ÇØºÃ´Âµ¥ Â÷ÀÌ¸¦ Àß ¸ð¸£°Ú´Ù.. ÃßÈÄ¿¡ ´Ù½Ã È®ÀÎ
 	SetErrorMode(SEM_FAILCRITICALERRORS); // ½Ã½ºÅÛÀÌ Æ¯Á¤ ½É°¢ÇÑ ¿¡·¯¸¦ ÇÚµéÇÒ Áö, ÇÁ·Î¼¼½º°¡ ¿¡·¯¸¦ ÇÚµéÇÒ Áö ¸ðµå¸¦ ¼³Á¤
 	// SEM_FAILCRITICALERRORS ´Â ½Ã½ºÅÛÀÌ ½É°¢ÇÑ ¿¡·¯(Abort, Retry, Fail)°¡ ÀÖÀ» ¶§¿¡ ¸Þ¼¼Áö ¹Ú½º ¾È ¶ç¿ì°í, ¿¡·¯¸¦ È£ÃâÇÑ ÇÁ·Î¼¼½º¿¡°Ô º¸³½´Ù.
@@ -98,7 +99,8 @@ BOOL CMiniDump::Begin(VOID) {
 	return true;
 }
 
-BOOL CMiniDump::End(VOID) {
+BOOL CMiniDump::End(VOID) 
+{
 	SetUnhandledExceptionFilter(PreviousExceptionFilter);
 
 	return true;

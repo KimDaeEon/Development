@@ -4,12 +4,14 @@
 /// CRegistry 생성자, mRootKey 와 mIsOpened 를 초기화.
 /// </summary>
 /// <param name=""></param>
-CRegistry::CRegistry(VOID) {
+CRegistry::CRegistry(VOID) 
+{
 	mRootKey	= NULL;	// 사용할 레지스트리 키를 저장하는 변수
 	mIsOpened	= FALSE;	// 해달 레지스트리를 열었는지 체크하는 변수
 }
 
-CRegistry::~CRegistry(VOID) {
+CRegistry::~CRegistry(VOID) 
+{
 	
 }
 
@@ -19,8 +21,8 @@ CRegistry::~CRegistry(VOID) {
 /// <param name="rootKey"></param>
 /// <param name="subKey"></param>
 /// <returns></returns>
-BOOL CRegistry::Open(HKEY rootKey, LPCTSTR subKey) {
-	
+BOOL CRegistry::Open(HKEY rootKey, LPCTSTR subKey) 
+{
 	// subkey 가 존재하는지 체크
 	if (!subKey) 
 		return FALSE;
@@ -44,8 +46,8 @@ BOOL CRegistry::Open(HKEY rootKey, LPCTSTR subKey) {
 /// </summary>
 /// <param name=""></param>
 /// <returns></returns>
-BOOL CRegistry::Close(VOID) {
-	
+BOOL CRegistry::Close(VOID) 
+{
 	// 이미 닫혀 있는지 체크
 	if (RegCloseKey(mRootKey) != ERROR_SUCCESS)
 		return FALSE;
@@ -62,8 +64,8 @@ BOOL CRegistry::Close(VOID) {
 /// <param name="rootKey"></param>
 /// <param name="subKey"></param>
 /// <returns></returns>
-BOOL CRegistry::CreateKey(HKEY rootKey, LPCTSTR subKey) {
-
+BOOL CRegistry::CreateKey(HKEY rootKey, LPCTSTR subKey) 
+{
 	// rootKey 를 기준으로 생성할 subKey 를 입력받아 키를 생성
 	if (!subKey)
 		return FALSE;
@@ -88,8 +90,8 @@ BOOL CRegistry::CreateKey(HKEY rootKey, LPCTSTR subKey) {
 /// <param name="rootKey"></param>
 /// <param name="subKey"></param>
 /// <returns></returns>
-BOOL CRegistry::DeleteKey(HKEY rootKey, LPCTSTR subKey) {
-
+BOOL CRegistry::DeleteKey(HKEY rootKey, LPCTSTR subKey) 
+{
 	if (!subKey)
 		return FALSE;
 
@@ -106,8 +108,8 @@ BOOL CRegistry::DeleteKey(HKEY rootKey, LPCTSTR subKey) {
 /// <param name="valueName"></param>
 /// <param name="value"></param>
 /// <returns></returns>
-BOOL CRegistry::SetValue(LPCTSTR valueName, LPCTSTR value) {
-
+BOOL CRegistry::SetValue(LPCTSTR valueName, LPCTSTR value) 
+{
 	if (!valueName || !value) // valueName 또는 value 가 없으면 FALSE
 		return FALSE;
 	
@@ -128,8 +130,8 @@ BOOL CRegistry::SetValue(LPCTSTR valueName, LPCTSTR value) {
 /// <param name="valueName"></param>
 /// <param name="value"></param>
 /// <returns></returns>
-BOOL CRegistry::SetValue(LPCTSTR valueName, DWORD value) {
-
+BOOL CRegistry::SetValue(LPCTSTR valueName, DWORD value) 
+{
 	if (!valueName)
 		return FALSE;
 
@@ -150,8 +152,8 @@ BOOL CRegistry::SetValue(LPCTSTR valueName, DWORD value) {
 /// <param name="value"></param>
 /// <param name="byteLength"></param>
 /// <returns></returns>
-BOOL CRegistry::SetValueFromMultiSize(LPCTSTR valueName, LPCTSTR value, DWORD byteLength) {
-
+BOOL CRegistry::SetValueFromMultiSize(LPCTSTR valueName, LPCTSTR value, DWORD byteLength) 
+{
 	if (!valueName || !value)
 		return FALSE;
 
@@ -172,8 +174,8 @@ BOOL CRegistry::SetValueFromMultiSize(LPCTSTR valueName, LPCTSTR value, DWORD by
 /// <param name="value"></param>
 /// <param name="bufferLength"></param>
 /// <returns></returns>
-BOOL CRegistry::GetValue(LPCTSTR valueName, LPCTSTR value, LPDWORD bufferLength) {
-
+BOOL CRegistry::GetValue(LPCTSTR valueName, LPCTSTR value, LPDWORD bufferLength)
+{
 	DWORD valueType = 0;
 
 	if (!valueName || !value || !bufferLength)
@@ -195,8 +197,8 @@ BOOL CRegistry::GetValue(LPCTSTR valueName, LPCTSTR value, LPDWORD bufferLength)
 /// <param name="valueName"></param>
 /// <param name="value"></param>
 /// <returns></returns>
-BOOL CRegistry::GetValue(LPCTSTR valueName, LPDWORD value) {
-
+BOOL CRegistry::GetValue(LPCTSTR valueName, LPDWORD value) 
+{
 	DWORD valueType = 0;
 
 	// 버퍼의 크기를 가져온다.
@@ -220,8 +222,8 @@ BOOL CRegistry::GetValue(LPCTSTR valueName, LPDWORD value) {
 /// </summary>
 /// <param name="valueName"></param>
 /// <returns></returns>
-BOOL CRegistry::DeleteValue(LPCTSTR valueName) {
-
+BOOL CRegistry::DeleteValue(LPCTSTR valueName) 
+{
 	if (!valueName)
 		return FALSE;
 

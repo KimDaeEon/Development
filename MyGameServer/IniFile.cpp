@@ -2,11 +2,13 @@
 // IniFile 에서 데이터를 가져올 때에 문자열로 가져오는 것을 기본으로 한다. 그래서 중간 중간 형변환 과정이 있다. 이것이 Registry 와의 차이점이다.
 
 
-CIniFile::CIniFile(VOID) {
+CIniFile::CIniFile(VOID) 
+{
 	ZeroMemory(mFileName, sizeof(mFileName));
 }
 
-CIniFile::~CIniFile(VOID) {
+CIniFile::~CIniFile(VOID) 
+{
 
 }
 
@@ -15,8 +17,8 @@ CIniFile::~CIniFile(VOID) {
 /// </summary>
 /// <param name="fileName"></param>
 /// <returns></returns>
-BOOL CIniFile::Open(LPCTSTR fileName) {
-
+BOOL CIniFile::Open(LPCTSTR fileName) 
+{
 	// 파일 이름이 없는 경우 실패
 	if (!fileName)
 		return FALSE;
@@ -27,7 +29,8 @@ BOOL CIniFile::Open(LPCTSTR fileName) {
 	return TRUE;
 }
 
-BOOL CIniFile::Close(VOID) {
+BOOL CIniFile::Close(VOID) 
+{
 	// TODO: 사실 아무것도 안하는데 왜 Close 라고 이름을 붙이셨을까.. 나중에 무슨 내용을 채우려 하신 것인가? 일단 ZeroMemory 추가
 	ZeroMemory(mFileName, sizeof(mFileName));
 	return TRUE;
@@ -40,8 +43,8 @@ BOOL CIniFile::Close(VOID) {
 /// <param name="valueName"></param>
 /// <param name="value"></param>
 /// <returns></returns>
-BOOL CIniFile::GetValue(LPCTSTR keyName, LPCTSTR valueName, LPDWORD value) {
-
+BOOL CIniFile::GetValue(LPCTSTR keyName, LPCTSTR valueName, LPDWORD value) 
+{
 	// 하나라도 입력 안된 패러미터가 있다면 FALSE
 	if (!keyName || !valueName || !value)
 		return FALSE;
@@ -58,8 +61,8 @@ BOOL CIniFile::GetValue(LPCTSTR keyName, LPCTSTR valueName, LPDWORD value) {
 /// <param name="valueName"></param>
 /// <param name="value"></param>
 /// <returns></returns>
-BOOL CIniFile::GetValue(LPCTSTR keyName, LPCTSTR valueName, FLOAT* value) {
-
+BOOL CIniFile::GetValue(LPCTSTR keyName, LPCTSTR valueName, FLOAT* value)
+{
 	if (!keyName || !valueName || !value)
 		return FALSE;
 	
@@ -81,8 +84,8 @@ BOOL CIniFile::GetValue(LPCTSTR keyName, LPCTSTR valueName, FLOAT* value) {
 /// <param name="value"></param>
 /// <param name="bufferLength"></param>
 /// <returns></returns>
-BOOL CIniFile::GetValue(LPCTSTR keyName, LPCTSTR valueName, LPTSTR value, LPDWORD bufferLength) {
-	
+BOOL CIniFile::GetValue(LPCTSTR keyName, LPCTSTR valueName, LPTSTR value, LPDWORD bufferLength) 
+{
 	if (!keyName || !valueName || !value || !bufferLength)
 		return FALSE;
 
@@ -98,8 +101,8 @@ BOOL CIniFile::GetValue(LPCTSTR keyName, LPCTSTR valueName, LPTSTR value, LPDWOR
 /// <param name="valueName"></param>
 /// <param name="value"></param>
 /// <returns></returns>
-BOOL CIniFile::SetValue(LPCTSTR keyName, LPCTSTR valueName, DWORD value) {
-	
+BOOL CIniFile::SetValue(LPCTSTR keyName, LPCTSTR valueName, DWORD value) 
+{
 	if (!keyName || !valueName)
 		return FALSE;
 
@@ -119,8 +122,8 @@ BOOL CIniFile::SetValue(LPCTSTR keyName, LPCTSTR valueName, DWORD value) {
 /// <param name="valueName"></param>
 /// <param name="value"></param>
 /// <returns></returns>
-BOOL CIniFile::SetValue(LPCTSTR keyName, LPCTSTR valueName, LPCTSTR value) {
-
+BOOL CIniFile::SetValue(LPCTSTR keyName, LPCTSTR valueName, LPCTSTR value) 
+{
 	if (!keyName || !valueName || !value)
 		return FALSE;
 

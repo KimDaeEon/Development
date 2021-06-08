@@ -2,22 +2,24 @@
 
 CService* gOwner = NULL;
 
-VOID WINAPI RunCallback(DWORD argumentCount, LPTSTR* arguments) {
+VOID WINAPI RunCallback(DWORD argumentCount, LPTSTR* arguments) 
+{
 	gOwner->RunCallback(argumentCount, arguments);
 }
 
-VOID WINAPI CtrlHandlerCallback(DWORD opCode) {
+VOID WINAPI CtrlHandlerCallback(DWORD opCode) 
+{
 	gOwner->CtrlHandlerCallback(opCode);
 }
 
-CService::CService(VOID) {
+CService::CService(VOID) 
+{
 	ZeroMemory(mServiceName, sizeof(mServiceName));
-
 	gOwner = this;
 }
 
-CService::~CService(VOID) {
-
+CService::~CService(VOID) 
+{
 }
 
 /// <summary>
@@ -25,7 +27,8 @@ CService::~CService(VOID) {
 /// </summary>
 /// <param name="serviceName"></param>
 /// <returns></returns>
-BOOL CService::Install(LPCTSTR serviceName) {
+BOOL CService::Install(LPCTSTR serviceName) 
+{
 	TCHAR ServiceFIleName[MAX_PATH] = { 0, };
 	SC_HANDLE ServiceControlManager = NULL;
 	SC_HANDLE ServiceHandle = NULL;
@@ -83,7 +86,8 @@ BOOL CService::Install(LPCTSTR serviceName) {
 /// </summary>
 /// <param name="serviceName"></param>
 /// <returns></returns>
-BOOL CService::Uninstall(LPCTSTR serviceName) {
+BOOL CService::Uninstall(LPCTSTR serviceName) 
+{
 	SC_HANDLE ServiceControlManager = NULL;
 	SC_HANDLE ServiceHandle = NULL;
 
@@ -126,8 +130,8 @@ BOOL CService::Uninstall(LPCTSTR serviceName) {
 /// </summary>
 /// <param name="serviceName"></param>
 /// <returns></returns>
-BOOL CService::Begin(LPTSTR serviceName) {
-
+BOOL CService::Begin(LPTSTR serviceName) 
+{
 	if (!serviceName)
 		return FALSE;
 
@@ -164,7 +168,8 @@ BOOL CService::Begin(LPTSTR serviceName) {
 /// </summary>
 /// <param name=""></param>
 /// <returns></returns>
-BOOL CService::End(VOID) {
+BOOL CService::End(VOID) 
+{
 	OnStopped(); // End 함수는 OnStopped 와 함께 작동
 
 	return TRUE;
@@ -176,7 +181,8 @@ BOOL CService::End(VOID) {
 /// </summary>
 /// <param name="argumentCount"></param>
 /// <param name="arguments"></param>
-VOID CService::RunCallback(DWORD argumentCount, LPTSTR* arguments) { // TODO: 이거 찾아보니 디버그로 서비스 작동 과정을 확인 못하는 거 같은데.. 일단 다른 것도 해야해서 넘어가고 추후 시간나면 확인.
+VOID CService::RunCallback(DWORD argumentCount, LPTSTR* arguments) 
+{ // TODO: 이거 찾아보니 디버그로 서비스 작동 과정을 확인 못하는 거 같은데.. 일단 다른 것도 해야해서 넘어가고 추후 시간나면 확인.
 	DWORD Status;
 
 	// 현재 사용하고 있는 서비스 상태이므로 멤버인 mServiceStatus 에 값을 직접 등록하여 사용.
@@ -210,7 +216,8 @@ VOID CService::RunCallback(DWORD argumentCount, LPTSTR* arguments) { // TODO: 이
 		return;
 }
 
-VOID CService::CtrlHandlerCallback(DWORD opCode) { // SCM 의 request 를 처리하는 함수이다.
+VOID CService::CtrlHandlerCallback(DWORD opCode) 
+{ // SCM 의 request 를 처리하는 함수이다.
 	switch (opCode) {
 	case SERVICE_CONTROL_PAUSE: // 서비스 일시 정지인 경우
 		mServiceStatus.dwCurrentState = SERVICE_PAUSED;

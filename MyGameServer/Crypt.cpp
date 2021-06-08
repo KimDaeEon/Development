@@ -11,7 +11,8 @@ const INT KEY = 72957;
 /// <param name="destination"></param>
 /// <param name="length"></param>
 /// <returns></returns>
-BOOL CCrypt::Encrypt(BYTE* source, BYTE* destination, DWORD length) {
+BOOL CCrypt::Encrypt(BYTE* source, BYTE* destination, DWORD length) 
+{
 	DWORD i;
 	INT key = KEY;
 
@@ -34,7 +35,8 @@ BOOL CCrypt::Encrypt(BYTE* source, BYTE* destination, DWORD length) {
 /// <param name="destination"></param>
 /// <param name="length"></param>
 /// <returns></returns>
-BOOL CCrypt::Decrypt(BYTE* source, BYTE* destination, DWORD length) {
+BOOL CCrypt::Decrypt(BYTE* source, BYTE* destination, DWORD length) 
+{
 	DWORD i;
 	BYTE previousBlock;
 	INT key = KEY;

@@ -1,14 +1,11 @@
 #pragma once
-#include<Windows.h>
-#include<fstream>
-#include<tchar.h>
-#include<pchannel.h>
-#define MAX_BUFFER_LENGTH 4096  // TODO: 이거 책에 설명이 없어서 일단 마이크로소프트 예제에서 이런 식으로 설정하니 이렇게 쓰자. 추후 서버 돌려보면서 이 값 확인
+#include "Global.h"
 
 /// <summary>
 /// 로그 클래스이다. 파일, 콘솔 화면, 디버그 창 3곳에 출력된다.
 /// </summary>
-class CLog {
+class CLog 
+{
 public:
 	static BOOL WriteLog(LPCTSTR data, ...) { // TODO: 책에서는 LPTSTR 로 적혀 있어서 그렇게 적었었는데, 사용해보니 LPCTSTR 이 맞고 오타를 치신 것 같다. 이 변수를 바꿀 일도 없고.. 혹시 모르니 추후에 확인.
 		SYSTEMTIME systemTime;

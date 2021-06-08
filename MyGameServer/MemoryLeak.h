@@ -10,7 +10,8 @@
 #include <cstdlib>  // 콘솔 프로그램일 경우 따로 선언
 #endif
 
-class CMemoryLeak {
+class CMemoryLeak 
+{
 public:
 	CMemoryLeak() {
 		_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF); // 이전에 설정되어 있던 FLAG 값을 리턴, 지금 여기에 집어넣은 FLAG 를 세팅하여 디버그 힙 관리자의 할당 동작 제어

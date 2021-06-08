@@ -1,6 +1,8 @@
 #pragma once
-#include<Windows.h>
-class CCriticalSection {
+#include "Global.h"
+
+class CCriticalSection 
+{
 	// 크리티컬 섹션은 사용자 객체를 사용, 커널 객체가 아니므로 가볍고 빠르다. 그러나 한 프로세스 내의 쓰레드 사이에서만 동기화가 가능하다.
 	// 커널 모드 동기화를 사용하면 동기화 관리를 커널이 해주기 때문에 프로세스와 프로세스 간 동기화가 되는데, 이것은 불가능하다.
 	// 링크 참조 https://genesis8.tistory.com/154  https://3dmpengines.tistory.com/611

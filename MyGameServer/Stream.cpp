@@ -1,11 +1,13 @@
 #include "Stream.h"
 
-CStream::CStream(VOID) {
+CStream::CStream(VOID) 
+{
 	mBufferPointer = NULL;
 	mLength = 0;
 }
 
-CStream::~CStream(VOID) {
+CStream::~CStream(VOID) 
+{
 
 }
 
@@ -19,7 +21,8 @@ CStream::~CStream(VOID) {
 /// </summary>
 /// <param name="buffer"></param>
 /// <returns></returns>
-BOOL CStream::SetBuffer(BYTE* buffer) {
+BOOL CStream::SetBuffer(BYTE* buffer) 
+{
 	if (!buffer) return FALSE;
 
 	mBufferPointer = buffer;
@@ -33,7 +36,8 @@ BOOL CStream::SetBuffer(BYTE* buffer) {
 /// </summary>
 /// <param name="data"></param>
 /// <returns></returns>
-BOOL CStream::ReadInt32(INT* data) {
+BOOL CStream::ReadInt32(INT* data) 
+{
 	// CopyMemory 를 이용해서 지정된 버퍼에 값을 복사.
 	CopyMemory(data, mBufferPointer + mLength, sizeof(INT));
 
@@ -48,7 +52,8 @@ BOOL CStream::ReadInt32(INT* data) {
 /// </summary>
 /// <param name="data"></param>
 /// <returns></returns>
-BOOL CStream::ReadInt64(INT64* data) {
+BOOL CStream::ReadInt64(INT64* data) 
+{
 	CopyMemory(data, mBufferPointer + mLength, sizeof(INT64));
 	mLength += sizeof(INT64);
 	return TRUE;
@@ -59,7 +64,8 @@ BOOL CStream::ReadInt64(INT64* data) {
 /// </summary>
 /// <param name="data"></param>
 /// <returns></returns>
-BOOL CStream::ReadDWORD(DWORD* data) {
+BOOL CStream::ReadDWORD(DWORD* data) 
+{
 	CopyMemory(data, mBufferPointer + mLength, sizeof(DWORD));
 	mLength += sizeof(DWORD);
 	return TRUE;
@@ -70,7 +76,8 @@ BOOL CStream::ReadDWORD(DWORD* data) {
 /// </summary>
 /// <param name="data"></param>
 /// <returns></returns>
-BOOL CStream::ReadDWORD_PTR(DWORD_PTR* data) {
+BOOL CStream::ReadDWORD_PTR(DWORD_PTR* data) 
+{
 	CopyMemory(data, mBufferPointer + mLength, sizeof(DWORD_PTR));
 	mLength += sizeof(DWORD_PTR);
 	return TRUE;
@@ -81,7 +88,8 @@ BOOL CStream::ReadDWORD_PTR(DWORD_PTR* data) {
 /// </summary>
 /// <param name="data"></param>
 /// <returns></returns>
-BOOL CStream::ReadByte(BYTE* data) {
+BOOL CStream::ReadByte(BYTE* data) 
+{
 	CopyMemory(data, mBufferPointer + mLength, sizeof(BYTE));
 	mLength += sizeof(BYTE);
 	return TRUE;
@@ -93,7 +101,8 @@ BOOL CStream::ReadByte(BYTE* data) {
 /// <param name="data"></param>
 /// <param name="length"></param>
 /// <returns></returns>
-BOOL CStream::ReadBytes(BYTE* data, DWORD length) {
+BOOL CStream::ReadBytes(BYTE* data, DWORD length) 
+{
 	CopyMemory(data, mBufferPointer + mLength, length);
 	mLength += length;
 	return TRUE;
@@ -104,7 +113,8 @@ BOOL CStream::ReadBytes(BYTE* data, DWORD length) {
 /// </summary>
 /// <param name="data"></param>
 /// <returns></returns>
-BOOL CStream::ReadFloat(FLOAT* data) {
+BOOL CStream::ReadFloat(FLOAT* data) 
+{
 	CopyMemory(data, mBufferPointer + mLength, sizeof(FLOAT));
 	mLength += sizeof(FLOAT);
 	return TRUE;
@@ -115,7 +125,8 @@ BOOL CStream::ReadFloat(FLOAT* data) {
 /// </summary>
 /// <param name="data"></param>
 /// <returns></returns>
-BOOL CStream::ReadSHORT(SHORT* data) {
+BOOL CStream::ReadSHORT(SHORT* data) 
+{
 	CopyMemory(data, mBufferPointer + mLength, sizeof(SHORT));
 	mLength += sizeof(SHORT);
 	return TRUE;
@@ -126,7 +137,8 @@ BOOL CStream::ReadSHORT(SHORT* data) {
 /// </summary>
 /// <param name="data"></param>
 /// <returns></returns>
-BOOL CStream::ReadUSHORT(USHORT* data) {
+BOOL CStream::ReadUSHORT(USHORT* data) 
+{
 	CopyMemory(data, mBufferPointer + mLength, sizeof(USHORT));
 	mLength += sizeof(USHORT);
 	return TRUE;
@@ -137,7 +149,8 @@ BOOL CStream::ReadUSHORT(USHORT* data) {
 /// </summary>
 /// <param name="data"></param>
 /// <returns></returns>
-BOOL CStream::ReadBOOL(BOOL* data) {
+BOOL CStream::ReadBOOL(BOOL* data) 
+{
 	CopyMemory(data, mBufferPointer + mLength, sizeof(BOOL));
 	mLength += sizeof(BOOL);
 	return TRUE;
@@ -153,7 +166,8 @@ BOOL CStream::ReadBOOL(BOOL* data) {
 /// </summary>
 /// <param name="data"></param>
 /// <returns></returns>
-BOOL CStream::WriteInt32(INT data) {
+BOOL CStream::WriteInt32(INT data) 
+{
 	CopyMemory(mBufferPointer + mLength, &data, sizeof(INT));
 	mLength += sizeof(INT);
 	return true;
@@ -164,7 +178,8 @@ BOOL CStream::WriteInt32(INT data) {
 /// </summary>
 /// <param name="data"></param>
 /// <returns></returns>
-BOOL CStream::WriteDWORD(DWORD data) {
+BOOL CStream::WriteDWORD(DWORD data) 
+{
 	CopyMemory(mBufferPointer + mLength, &data, sizeof(DWORD));
 	mLength += sizeof(DWORD);
 	return true;
@@ -175,7 +190,8 @@ BOOL CStream::WriteDWORD(DWORD data) {
 /// </summary>
 /// <param name="data"></param>
 /// <returns></returns>
-BOOL CStream::WriteDWORD_PTR(DWORD_PTR data) {
+BOOL CStream::WriteDWORD_PTR(DWORD_PTR data) 
+{
 	CopyMemory(mBufferPointer + mLength, &data, sizeof(DWORD_PTR));
 	mLength += sizeof(DWORD_PTR);
 	return true;
@@ -186,7 +202,8 @@ BOOL CStream::WriteDWORD_PTR(DWORD_PTR data) {
 /// </summary>
 /// <param name="data"></param>
 /// <returns></returns>
-BOOL CStream::WriteByte(BYTE data) {
+BOOL CStream::WriteByte(BYTE data) 
+{
 	CopyMemory(mBufferPointer + mLength, &data, sizeof(BYTE));
 	mLength += sizeof(BYTE);
 	return true;
@@ -198,7 +215,8 @@ BOOL CStream::WriteByte(BYTE data) {
 /// <param name="data"></param>
 /// <param name="length"></param>
 /// <returns></returns>
-BOOL CStream::WriteBytes(BYTE* data, DWORD length) {
+BOOL CStream::WriteBytes(BYTE* data, DWORD length) 
+{
 	CopyMemory(mBufferPointer + mLength, data, length);
 	mLength += length;
 	return true;
@@ -209,7 +227,8 @@ BOOL CStream::WriteBytes(BYTE* data, DWORD length) {
 /// </summary>
 /// <param name="data"></param>
 /// <returns></returns>
-BOOL CStream::WriteInt64(INT64 data) {
+BOOL CStream::WriteInt64(INT64 data) 
+{
 	CopyMemory(mBufferPointer + mLength, &data, sizeof(INT64));
 	mLength += sizeof(INT64);
 	return true;
@@ -220,7 +239,8 @@ BOOL CStream::WriteInt64(INT64 data) {
 /// </summary>
 /// <param name="data"></param>
 /// <returns></returns>
-BOOL CStream::WriteSHORT(SHORT data) {
+BOOL CStream::WriteSHORT(SHORT data) 
+{
 	CopyMemory(mBufferPointer + mLength, &data, sizeof(SHORT));
 	mLength += sizeof(SHORT);
 	return true;
@@ -231,7 +251,8 @@ BOOL CStream::WriteSHORT(SHORT data) {
 /// </summary>
 /// <param name="data"></param>
 /// <returns></returns>
-BOOL CStream::WriteUSHORT(USHORT data) {
+BOOL CStream::WriteUSHORT(USHORT data) 
+{
 	CopyMemory(mBufferPointer + mLength, &data, sizeof(USHORT));
 	mLength += sizeof(USHORT);
 	return true;
@@ -242,7 +263,8 @@ BOOL CStream::WriteUSHORT(USHORT data) {
 /// </summary>
 /// <param name="data"></param>
 /// <returns></returns>
-BOOL CStream::WriteBOOL(BOOL data) {
+BOOL CStream::WriteBOOL(BOOL data) 
+{
 	CopyMemory(mBufferPointer + mLength, &data, sizeof(BOOL));
 	mLength += sizeof(BOOL);
 	return true;
@@ -253,7 +275,8 @@ BOOL CStream::WriteBOOL(BOOL data) {
 /// </summary>
 /// <param name=""></param>
 /// <returns></returns>
-DWORD CStream::GetLength(VOID) {
+DWORD CStream::GetLength(VOID) 
+{
 	return mLength;
 }
 #pragma endregion

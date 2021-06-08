@@ -1,8 +1,8 @@
 #pragma once
-#include <Windows.h>
-#include <tchar.h>
+#include "Global.h"
 
-class CIniFile {
+class CIniFile 
+{
 public:
 	CIniFile(VOID);
 	virtual ~CIniFile(VOID);

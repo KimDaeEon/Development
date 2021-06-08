@@ -1,9 +1,8 @@
 #pragma once
+#include "Global.h"
 
-#include<Windows.h>
-#include<tchar.h>
-
-class CRegistry {
+class CRegistry 
+{
 public:
 	CRegistry(VOID);
 	virtual ~CRegistry(VOID);

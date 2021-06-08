@@ -1,9 +1,8 @@
 #pragma once
-#include<Windows.h>
-#include<tchar.h>
-#include <stdio.h>
+#include "Global.h"
 
-class CService {
+class CService 
+{
 public:
 	CService(VOID);
 	virtual ~CService(VOID); // OnStopped 와 짝을 이루기 위해서 virtual 로 선언

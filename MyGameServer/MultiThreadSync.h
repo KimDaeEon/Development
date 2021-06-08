@@ -1,7 +1,9 @@
 #pragma once
 #include "CriticalSection.h"
+
 template<class T> // 사실 굳이 여기서 템플릿을 쓰지 않아도 된다. 하지만 템플릿으로 한 이유는 어떤 클래스에 대해서 동기화를 적용 중인지 여기에 적힌 클래스로 파악할 수 있기 때문이다.
-class CMultiThreadSync {
+class CMultiThreadSync 
+{
 	friend class CThreadSync; // mSync 에 CThreadSync 클래스가 접근할 수 있도록 하기 위해서 프랜드로 선언. 그런데 테스트해보니 이거 안해도 지금은 내부 클래스가 바깥 클래스 멤버에 대해 접근이 가능하다.
 public:
 	class CThreadSync {

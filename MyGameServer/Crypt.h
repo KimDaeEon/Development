@@ -1,7 +1,8 @@
 #pragma once
-#include<Windows.h>
+#include "Global.h"
 
-class CCrypt {
+class CCrypt 
+{
 public:
 	static BOOL Encrypt(BYTE* source, BYTE* destination, DWORD length);
 	static BOOL Decrypt(BYTE* source, BYTE* destination, DWORD length);
