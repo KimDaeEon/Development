@@ -1,11 +1,12 @@
 #pragma once
-#include<Windows.h>
+#include<WinSock2.h>
+#include<Windows.h> // <- 여기에 winsock.h 이 포함되어 있다. 이로 인해 합수가 겹치는 것 막으려면 WinSock2.h 를 먼저 include 하라고 쓰여 있다.
 #include<tchar.h>
 #include<fstream>
 #include<pchannel.h>
 #include<assert.h>
 #include<minidumpapiset.h>
-#include<WinSock2.h>
+#include<mswsock.h>
 
 enum IO_TYPE
 {

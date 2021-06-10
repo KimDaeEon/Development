@@ -151,9 +151,9 @@ BOOL CNetworkSession::Listen(USHORT port, INT backLog)
 
 	SOCKADDR_IN ListenSocketInfo;
 
-	ListenSocketInfo.sin_family = AF_INET;
-	ListenSocketInfo.sin_port = htons(port);
-	ListenSocketInfo.sin_addr.S_un.S_addr = htonl(INADDR_ANY);
+	ListenSocketInfo.sin_family				= AF_INET;
+	ListenSocketInfo.sin_port				= htons(port);
+	ListenSocketInfo.sin_addr.S_un.S_addr	= htonl(INADDR_ANY);
 
 	if (bind(mSocket, (struct sockaddr*)&ListenSocketInfo, sizeof(SOCKADDR_IN)) == SOCKET_ERROR)
 	{
@@ -170,8 +170,8 @@ BOOL CNetworkSession::Listen(USHORT port, INT backLog)
 	}
 
 	LINGER Linger;
-	Linger.l_onoff = 1;
-	Linger.l_linger = 0;
+	Linger.l_onoff		= 1;
+	Linger.l_linger		= 0;
 
 	if (setsockopt(mSocket, SOL_SOCKET, SO_LINGER, (char*)&Linger, sizeof(LINGER)) == SOCKET_ERROR)
 	{
@@ -237,8 +237,8 @@ BOOL CNetworkSession::InitializeReadForIocp(VOID)
 	DWORD	ReadBytes	= 0;
 	DWORD	ReadFlag	= 0;
 	
-	WsaBuf.buf = (CHAR*)mReadBuffer;
-	WsaBuf.len = MAX_BUFFER_LENGTH;
+	WsaBuf.buf			= (CHAR*)mReadBuffer;
+	WsaBuf.len			= MAX_BUFFER_LENGTH;
 
 	INT	ReturnValue = WSARecv(mSocket,
 		&WsaBuf,
@@ -312,4 +312,417 @@ BOOL CNetworkSession::ReadForEventSelect(BYTE* data, DWORD& dataLength)
 	dataLength = ReadBytes;
 
 	return TRUE;
+}
+
+BOOL CNetworkSession::Write(BYTE* data, DWORD dataLength)
+{
+	CThreadSync Sync;
+
+	if (!mSocket)
+		return FALSE;
+
+	if (!data || dataLength <= 0)
+		return FALSE;
+
+	WSABUF	WsaBuf;
+	DWORD	WriteBytes	= 0;
+	DWORD	WriteFlag	= 0;
+
+	WsaBuf.buf			= (CHAR*)data;
+	WsaBuf.len			= dataLength;
+
+	INT		ReturnValue = WSASend(mSocket,
+		&WsaBuf,
+		1,
+		&WriteBytes,
+		WriteFlag,
+		&mWriteOverlapped.Overlapped,
+		NULL);
+
+	if (ReturnValue == SOCKET_ERROR && WSAGetLastError() != WSA_IO_PENDING && WSAGetLastError() != WSAEWOULDBLOCK)
+	{
+		End();
+
+		return FALSE;
+	}
+
+	return TRUE;
+}
+
+BOOL CNetworkSession::Connect(LPSTR address, USHORT port)
+{
+	CThreadSync Sync;
+
+	if (!address || port <= 0)
+		return FALSE;
+
+	if (!mSocket)
+		return FALSE;
+
+	SOCKADDR_IN RemoteAddressInfo;
+
+	RemoteAddressInfo.sin_family	= AF_INET;
+	RemoteAddressInfo.sin_port = htons(port);
+	RemoteAddressInfo.sin_addr.S_un.S_addr = inet_addr(address);
+
+	if (WSAConnect(mSocket, (LPSOCKADDR)&RemoteAddressInfo, sizeof(SOCKADDR_IN), NULL, NULL, NULL, NULL) == SOCKET_ERROR)
+	{
+		if (WSAGetLastError() != WSAEWOULDBLOCK)
+		{
+			End();
+
+			return FALSE;
+		}
+	}
+
+	return TRUE;
+}
+
+BOOL CNetworkSession::UdpBind(USHORT port)
+{
+	CThreadSync Sync;
+
+	if (mSocket)
+		return FALSE;
+
+	SOCKADDR_IN RemoteAddressInfo;
+
+	RemoteAddressInfo.sin_family			= AF_INET;
+	RemoteAddressInfo.sin_port				= htons(port);
+	RemoteAddressInfo.sin_addr.S_un.S_addr	= htonl(INADDR_ANY);
+
+	mSocket = WSASocket(AF_INET, SOCK_DGRAM, IPPROTO_UDP, NULL, 0, WSA_FLAG_OVERLAPPED);
+
+	if (mSocket == INVALID_SOCKET)
+		return FALSE;
+
+	if (bind(mSocket, (struct sockaddr*)&RemoteAddressInfo, sizeof(SOCKADDR_IN)) == SOCKET_ERROR)
+	{
+		End();
+
+		return FALSE;
+	}
+
+	mReliableUdpThreadDestroyEvent = CreateEvent(0, FALSE, FALSE, 0);
+	if (mReliableUdpThreadDestroyEvent == NULL)
+	{
+		End();
+
+		return FALSE;
+	}
+
+	mReliableUdpThreadWakeUpEvent = CreateEvent(0, FALSE, FALSE, 0);
+	if (mReliableUdpThreadWakeUpEvent == NULL)
+	{
+		End();
+
+		return FALSE;
+	}
+
+	mReliableUdpWriteCompleteEvent = CreateEvent(0, FALSE, FALSE, 0);
+	if (mReliableUdpWriteCompleteEvent == NULL)
+	{
+		End();
+
+		return FALSE;
+	}
+
+	DWORD ReliableUdpThreadID = 0;
+	mReliableUdpThreadHandle = CreateThread(NULL, 0, ::ReliableUdpThreadCallback, this, 0, &ReliableUdpThreadID);
+
+	WaitForSingleObject(mReliableUdpThreadStartupEvent, INFINITE);
+
+	return TRUE;
+}
+
+BOOL CNetworkSession::TcpBind(VOID)
+{
+	CThreadSync Sync;
+
+	if (mSocket)
+		return FALSE;
+
+	mSocket = WSASocket(AF_INET, SOCK_STREAM, IPPROTO_TCP, NULL, 0, WSA_FLAG_OVERLAPPED);
+
+	if (mSocket == INVALID_SOCKET)
+		return FALSE;
+
+	return TRUE;
+}
+
+BOOL CNetworkSession::GetLocalIP(WCHAR* pIP)
+{
+	CThreadSync Sync;
+
+	if (!mSocket)
+		return FALSE;
+
+	CHAR	Name[256] = { 0, };
+	gethostname(Name, sizeof(Name));
+
+	PHOSTENT host = gethostbyname(Name);
+	if (host)
+	{
+		if (MultiByteToWideChar(CP_ACP, 0, inet_ntoa(*(struct in_addr*)*host->h_addr_list), -1, pIP, 32) > 0)
+			return TRUE;
+	}
+
+	return FALSE;
+}
+
+USHORT CNetworkSession::GetLocalPort(VOID)
+{
+	CThreadSync Sync;
+
+	if (!mSocket)
+		return 0;
+
+	SOCKADDR_IN Addr;
+	ZeroMemory(&Addr, sizeof(Addr));
+	
+	INT AddrLength = sizeof(Addr);
+	if (getsockname(mSocket, (sockaddr*)&Addr, &AddrLength) != SOCKET_ERROR)
+		return ntohs(Addr.sin_port);
+
+	return 0;
+}
+
+BOOL CNetworkSession::InitializeReadFromForIocp(VOID)
+{
+	CThreadSync Sync;
+
+	if (!mSocket)
+		return FALSE;
+
+	WSABUF	WsaBuf;
+	DWORD	ReadBytes				= 0;
+	DWORD	ReadFlag				= 0;
+	INT		RemoteAddressInfoSize	= sizeof(mUdpRemoteInfo);
+
+	WsaBuf.buf	= (CHAR*)mReadBuffer;
+	WsaBuf.len	= MAX_BUFFER_LENGTH;
+
+	INT		ReturnValue = WSARecvFrom(mSocket,
+		&WsaBuf,
+		1,
+		&ReadBytes,
+		&ReadFlag,
+		(SOCKADDR*)&mUdpRemoteInfo,
+		&RemoteAddressInfoSize,
+		&mReadOverlapped.Overlapped,
+		NULL);
+
+	if (ReturnValue == SOCKET_ERROR && WSAGetLastError() != WSA_IO_PENDING && WSAGetLastError() != WSAEWOULDBLOCK)
+	{
+		End();
+	
+		return FALSE;
+	}
+
+	return TRUE;
+}
+
+BOOL CNetworkSession::ReadFromForIocp(LPSTR remoteAddress, USHORT& remotePort, BYTE* data, DWORD& dataLength)
+{
+	CThreadSync Sync;
+
+	if (!mSocket)
+		return FALSE;
+
+	if (!data || dataLength <= 0)
+		return FALSE;
+
+	memcpy(data, mReadBuffer, dataLength);
+
+	strcpy(remoteAddress, inet_ntoa(mUdpRemoteInfo.sin_addr));
+	remotePort = ntohs(mUdpRemoteInfo.sin_port);
+
+	USHORT Ack = 0;
+	memcpy(&Ack, mReadBuffer, sizeof(USHORT));
+
+	if (Ack == 9999)
+	{
+		SetEvent(mReliableUdpWriteCompleteEvent);
+
+		return FALSE;
+	}
+	else
+	{
+		Ack = 9999;
+		WriteTo2(remoteAddress, remotePort, (BYTE*)&Ack, sizeof(USHORT));
+	}
+
+	return TRUE;
+}
+
+BOOL CNetworkSession::ReadFromForEventSelect(LPSTR remoteAddress, USHORT& remotePort, BYTE* data, DWORD& dataLength)
+{
+	CThreadSync	Sync;
+
+	if (!mSocket)
+		return FALSE;
+	
+	if (!data)
+		return FALSE;
+
+	if (!mSocket) // 이게 똑같은 mSocket 체크를 2번 씩 하시는데.. 의도된 것인가? 다른 것도 이러던데.. 실수 아닌지 확인해보자.
+		return FALSE;
+
+	WSABUF	WsaBuf;
+	DWORD	ReadBytes				= 0;
+	DWORD	ReadFlag				= 0;
+	INT		RemoteAddressInfoSize	= sizeof(mUdpRemoteInfo);
+
+	WsaBuf.buf = (CHAR*)mReadBuffer;
+	WsaBuf.len = MAX_BUFFER_LENGTH;
+
+	INT ReturnValue = WSARecvFrom(mSocket,
+		&WsaBuf,
+		1,
+		&ReadBytes,
+		&ReadFlag,
+		(SOCKADDR*)&mUdpRemoteInfo,
+		&RemoteAddressInfoSize,
+		&mReadOverlapped.Overlapped,
+		NULL);
+
+	if (ReturnValue == SOCKET_ERROR && WSAGetLastError() != WSA_IO_PENDING && WSAGetLastError() != WSAEWOULDBLOCK)
+	{
+		End();
+
+		return FALSE;
+	}
+
+	memcpy(data, mReadBuffer, ReadBytes);
+	dataLength = ReadBytes;
+
+	strcpy(remoteAddress, inet_ntoa(mUdpRemoteInfo.sin_addr));
+	remotePort = ntohs(mUdpRemoteInfo.sin_port);
+
+	USHORT Ack = 0;
+	memcpy(&Ack, mReadBuffer, sizeof(USHORT));
+
+	if (Ack == 9999)
+	{
+		SetEvent(mReliableUdpWriteCompleteEvent);
+
+		return FALSE;
+	}
+	else
+	{
+		Ack = 9999;
+		WriteTo2(remoteAddress, remotePort, (BYTE*)&Ack, sizeof(USHORT));
+	}
+
+	return TRUE;
+}
+
+BOOL CNetworkSession::WriteTo(LPCSTR remoteAddress, USHORT remotePort, BYTE* data, DWORD dataLength)
+{
+	CThreadSync Sync;
+
+	if (!mSocket)
+		return FALSE;
+
+	if (!remoteAddress || remotePort <= 0 || !data || dataLength <= 0)
+		return FALSE;
+
+	if (!mReliableWriteQueue.Push(this, data, dataLength, remoteAddress, remotePort))
+		return FALSE;
+
+	if (!mIsReliableUdpSending)
+	{
+		mIsReliableUdpSending = TRUE;
+		SetEvent(mReliableUdpThreadWakeUpEvent);
+	}
+
+	return TRUE;
+}
+
+BOOL CNetworkSession::WriteTo2(LPSTR remoteAddress, USHORT remotePort, BYTE* data, DWORD dataLength)
+{
+	CThreadSync Sync;
+
+	if (!mSocket)
+		return FALSE;
+
+	if (!remoteAddress || remotePort <= 0 || !data || dataLength <= 0)
+		return FALSE;
+
+	WSABUF		WsaBuf;
+	DWORD		WriteBytes				= 0;
+	DWORD		WriteFlag				= 0;
+
+	SOCKADDR_IN RemoteAddressInfo;
+	INT			RemoteAddressInfoSize	= sizeof(RemoteAddressInfo);
+	
+	WsaBuf.buf							= (CHAR*)data;
+	WsaBuf.len							= dataLength;
+
+	RemoteAddressInfo.sin_family			= AF_INET;
+	RemoteAddressInfo.sin_addr.S_un.S_addr	= inet_addr(remoteAddress);
+	RemoteAddressInfo.sin_port				= htons(remotePort);
+
+	INT			ReturnValue = WSASendTo(mSocket,
+		&WsaBuf,
+		1,
+		&WriteBytes,
+		WriteFlag,
+		(SOCKADDR*)&RemoteAddressInfo,
+		RemoteAddressInfoSize,
+		&mWriteOverlapped.Overlapped,
+		NULL);
+
+	if (ReturnValue == SOCKET_ERROR && WSAGetLastError() != WSA_IO_PENDING && WSAGetLastError() != WSAEWOULDBLOCK)
+	{
+		End();
+
+		return FALSE;
+	}
+
+	return TRUE;
+}
+
+BOOL CNetworkSession::GetRemoteAddressAfterAccept(LPTSTR remoteAddress, USHORT& remotePort)
+{
+	CThreadSync Sync;
+
+	if (!remoteAddress)
+		return FALSE;
+
+	sockaddr_in*	Local			= NULL;
+	INT				LocalLength		= 0;
+
+	sockaddr_in*	Remote			= NULL;
+	INT				RemoteLength	= 0;
+
+	GetAcceptExSockaddrs(mReadBuffer,
+		0,
+		sizeof(sockaddr_in) + 16,
+		sizeof(sockaddr_in) + 16,
+		(sockaddr**)&Local,
+		&LocalLength,
+		(sockaddr**)&Remote,
+		&RemoteLength);
+
+	CHAR TempRemoteAddress[32] = { 0, };
+	strcpy(TempRemoteAddress, inet_ntoa(Remote->sin_addr));
+
+	MultiByteToWideChar(CP_ACP,
+		0,
+		TempRemoteAddress,
+		-1,
+		remoteAddress,
+		32);
+
+	remotePort = ntohs(Remote->sin_port);
+
+	return TRUE;
+}
+
+SOCKET CNetworkSession::GetSocket(VOID)
+{
+	CThreadSync Sync;
+
+	return mSocket;
 }
