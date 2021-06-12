@@ -33,3 +33,76 @@ MyGameServer/.vs/MyGameServer/v16/ipch/AutoPCH/699d5bdfb2a4a7be/MINIDUMP.ipch
 MyGameServer/.vs/MyGameServer/v16/ipch/AutoPCH/7091f22e1ba696e3/CRYPT.ipch
 MyGameServer/.vs/MyGameServer/v16/ipch/AutoPCH/8684b84bde4d38e3/MINIDUMP.ipch
 MyGameServer/.vs/MyGameServer/v16/ipch/AutoPCH/d716f5bfd426e11b/MEMORYPOOL.ipch
+MyGameServer/.vs/MyGameServer/v16/ipch/AutoPCH/2441ff48ecc2568d/RANDOM.ipch
+MyGameServer/.vs/MyGameServer/v16/ipch/AutoPCH/352e9db594694129/NETWORKSESSION.ipch
+MyGameServer/.vs/MyGameServer/v16/ipch/AutoPCH/37bbc9279b4aa187/CIRCULARQUEUE.ipch
+MyGameServer/.vs/MyGameServer/v16/ipch/AutoPCH/5e5d8efb6b034544/MULTITHREADSYNC.ipch
+MyGameServer/.vs/MyGameServer/v16/ipch/AutoPCH/644c3b22b419a3dc/RANDOM.ipch
+MyGameServer/.vs/MyGameServer/v16/ipch/AutoPCH/6681e0e3afaf06cd/GLOBAL.ipch
+MyGameServer/.vs/MyGameServer/v16/ipch/AutoPCH/95862e9fa0c92290/NETWORKSESSION.ipch
+MyGameServer/.vs/MyGameServer/v16/ipch/AutoPCH/eb8125a9534a8e32/CRITICALSECTION.ipch
+TCP_IP Socket Practice/EchoClient/EchoClient.vcxproj
+TCP_IP Socket Practice/EchoClient/EchoClient.vcxproj.filters
+TCP_IP Socket Practice/EchoClient/EchoClient.vcxproj.user
+TCP_IP Socket Practice/EchoClient/Debug/EchoClient.exe.recipe
+TCP_IP Socket Practice/EchoClient/Debug/EchoClient.log
+TCP_IP Socket Practice/EchoClient/Debug/EchoClient.obj
+TCP_IP Socket Practice/EchoClient/Debug/vc142.idb
+TCP_IP Socket Practice/EchoClient/Debug/vc142.pdb
+TCP_IP Socket Practice/EchoClient/Debug/EchoClient.tlog/CL.command.1.tlog
+TCP_IP Socket Practice/EchoClient/Debug/EchoClient.tlog/CL.read.1.tlog
+TCP_IP Socket Practice/EchoClient/Debug/EchoClient.tlog/CL.write.1.tlog
+TCP_IP Socket Practice/EchoClient/Debug/EchoClient.tlog/EchoClient.lastbuildstate
+TCP_IP Socket Practice/EchoClient/Debug/EchoClient.tlog/link.command.1.tlog
+TCP_IP Socket Practice/EchoClient/Debug/EchoClient.tlog/link.read.1.tlog
+TCP_IP Socket Practice/EchoClient/Debug/EchoClient.tlog/link.write.1.tlog
+TCP_IP Socket Practice/EchoServer/EchoServer.vcxproj
+TCP_IP Socket Practice/EchoServer/EchoServer.vcxproj.filters
+TCP_IP Socket Practice/EchoServer/EchoServer.vcxproj.user
+TCP_IP Socket Practice/EchoServer/Debug/EchoServer.exe.recipe
+TCP_IP Socket Practice/EchoServer/Debug/EchoServer.log
+TCP_IP Socket Practice/EchoServer/Debug/EchoServer.obj
+TCP_IP Socket Practice/EchoServer/Debug/vc142.idb
+TCP_IP Socket Practice/EchoServer/Debug/vc142.pdb
+TCP_IP Socket Practice/EchoServer/Debug/EchoServer.tlog/CL.command.1.tlog
+TCP_IP Socket Practice/EchoServer/Debug/EchoServer.tlog/CL.read.1.tlog
+TCP_IP Socket Practice/EchoServer/Debug/EchoServer.tlog/CL.write.1.tlog
+TCP_IP Socket Practice/EchoServer/Debug/EchoServer.tlog/EchoServer.lastbuildstate
+TCP_IP Socket Practice/EchoServer/Debug/EchoServer.tlog/link.command.1.tlog
+TCP_IP Socket Practice/EchoServer/Debug/EchoServer.tlog/link.read.1.tlog
+TCP_IP Socket Practice/EchoServer/Debug/EchoServer.tlog/link.write.1.tlog
+TCP_IP Socket Practice/TCP_IP Socket Practice/TCP_IP Socket Practice.sln
+TCP_IP Socket Practice/TCP_IP Socket Practice/TCP_IP Socket Practice.vcxproj
+TCP_IP Socket Practice/TCP_IP Socket Practice/TCP_IP Socket Practice.vcxproj.filters
+TCP_IP Socket Practice/TCP_IP Socket Practice/TCP_IP Socket Practice.vcxproj.user
+TCP_IP Socket Practice/TCP_IP Socket Practice/.vs/TCP_IP Socket Practice/v16/.suo
+TCP_IP Socket Practice/TCP_IP Socket Practice/.vs/TCP_IP Socket Practice/v16/Browse.VC.db
+TCP_IP Socket Practice/TCP_IP Socket Practice/.vs/TCP_IP Socket Practice/v16/Browse.VC.db-shm
+TCP_IP Socket Practice/TCP_IP Socket Practice/.vs/TCP_IP Socket Practice/v16/Browse.VC.db-wal
+TCP_IP Socket Practice/TCP_IP Socket Practice/.vs/TCP_IP Socket Practice/v16/Browse.VC.opendb
+TCP_IP Socket Practice/TCP_IP Socket Practice/.vs/TCP_IP Socket Practice/v16/ipch/AutoPCH/51a64a3939dd7c24/ECHOSERVER.ipch
+TCP_IP Socket Practice/TCP_IP Socket Practice/.vs/TCP_IP Socket Practice/v16/ipch/AutoPCH/9854b7eeb8559144/ECHOCLIENT.ipch
+TCP_IP Socket Practice/TCP_IP Socket Practice/.vs/TCP_IP Socket Practice/v16/ipch/AutoPCH/a4e817e59deeae33/SOCKETPRACTICE.ipch
+TCP_IP Socket Practice/TCP_IP Socket Practice/Debug/EchoClient.exe
+TCP_IP Socket Practice/TCP_IP Socket Practice/Debug/EchoClient.ilk
+TCP_IP Socket Practice/TCP_IP Socket Practice/Debug/EchoClient.pdb
+TCP_IP Socket Practice/TCP_IP Socket Practice/Debug/EchoServer.exe
+TCP_IP Socket Practice/TCP_IP Socket Practice/Debug/EchoServer.ilk
+TCP_IP Socket Practice/TCP_IP Socket Practice/Debug/EchoServer.pdb
+TCP_IP Socket Practice/TCP_IP Socket Practice/Debug/SocketPractice.obj
+TCP_IP Socket Practice/TCP_IP Socket Practice/Debug/socketpractice.obj.enc
+TCP_IP Socket Practice/TCP_IP Socket Practice/Debug/TCP_IP Socket Practice.exe
+TCP_IP Socket Practice/TCP_IP Socket Practice/Debug/TCP_IP Socket Practice.exe.recipe
+TCP_IP Socket Practice/TCP_IP Socket Practice/Debug/TCP_IP Socket Practice.ilk
+TCP_IP Socket Practice/TCP_IP Socket Practice/Debug/TCP_IP Socket Practice.log
+TCP_IP Socket Practice/TCP_IP Socket Practice/Debug/TCP_IP Socket Practice.pdb
+TCP_IP Socket Practice/TCP_IP Socket Practice/Debug/TCP_IP Socket Practice.vcxproj.FileListAbsolute.txt
+TCP_IP Socket Practice/TCP_IP Socket Practice/Debug/vc142.idb
+TCP_IP Socket Practice/TCP_IP Socket Practice/Debug/vc142.pdb
+TCP_IP Socket Practice/TCP_IP Socket Practice/Debug/TCP_IP S.7bd422cb.tlog/CL.command.1.tlog
+TCP_IP Socket Practice/TCP_IP Socket Practice/Debug/TCP_IP S.7bd422cb.tlog/CL.read.1.tlog
+TCP_IP Socket Practice/TCP_IP Socket Practice/Debug/TCP_IP S.7bd422cb.tlog/CL.write.1.tlog
+TCP_IP Socket Practice/TCP_IP Socket Practice/Debug/TCP_IP S.7bd422cb.tlog/link.command.1.tlog
+TCP_IP Socket Practice/TCP_IP Socket Practice/Debug/TCP_IP S.7bd422cb.tlog/link.read.1.tlog
+TCP_IP Socket Practice/TCP_IP Socket Practice/Debug/TCP_IP S.7bd422cb.tlog/link.write.1.tlog
+TCP_IP Socket Practice/TCP_IP Socket Practice/Debug/TCP_IP S.7bd422cb.tlog/TCP_IP Socket Practice.lastbuildstate
