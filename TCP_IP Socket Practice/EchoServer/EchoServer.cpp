@@ -10,8 +10,32 @@
 #define BACK_LOG_SIZE 5
 #define MAX_MSG_LEN 256
 
+
+IN_ADDR GetDefaultMyIP()
+{
+	char localHostName[MAX_PATH];
+	IN_ADDR addr = { 0, };
+
+	if (gethostname(localHostName, MAX_PATH) == SOCKET_ERROR)
+	{
+		return addr;
+	}
+
+	HOSTENT* hPtr = gethostbyname(localHostName);  // host 의 이름을 받아오는 함수.
+	while (hPtr && hPtr->h_name)  // host 의 이름이 없으면 while 문이 멈춥니다.
+	{
+		if (hPtr->h_addrtype == PF_INET)
+		{
+			memcpy(&addr, hPtr->h_addr_list[0], hPtr->h_length);
+			break;
+		}
+		hPtr++;
+	}
+
+	return addr;
+}
+
 SOCKET SetTCPServer(int portNumber, int backLogSize);
-IN_ADDR GetDefaultMyIP();
 void EventLoop(SOCKET sock);
 
 
@@ -44,29 +68,6 @@ int main()
 
 
 
-IN_ADDR GetDefaultMyIP()
-{
-	char localHostName[MAX_PATH];
-	IN_ADDR addr = { 0, };
-
-	if (gethostname(localHostName, MAX_PATH) == SOCKET_ERROR)
-	{
-		return addr;
-	}
-
-	HOSTENT* hPtr = gethostbyname(localHostName);  // host 의 이름을 받아오는 함수.
-	while (hPtr && hPtr->h_name)  // host 의 이름이 없으면 while 문이 멈춥니다.
-	{
-		if (hPtr->h_addrtype == PF_INET)
-		{
-			memcpy(&addr, hPtr->h_addr_list[0], hPtr->h_length);
-			break;
-		}
-		hPtr++;
-	}
-
-	return addr;
-}
 
 
 SOCKET SetTCPServer(int portNumber, int backLogSize)
