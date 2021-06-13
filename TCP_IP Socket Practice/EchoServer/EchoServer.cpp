@@ -35,7 +35,7 @@ IN_ADDR GetDefaultMyIP()
 	return addr;
 }
 
-SOCKET SetTCPServer(int portNumber, int backLogSize);
+SOCKET SetTCPServer(short portNumber, int backLogSize);
 void EventLoop(SOCKET sock);
 
 
@@ -67,22 +67,23 @@ int main()
 }
 
 
-
-
-
-SOCKET SetTCPServer(int portNumber, int backLogSize)
+SOCKET SetTCPServer(short portNumber, int backLogSize)
 {
-	int result = 0; // 소켓 통신 준비 과정 중 처리 결과 값을 받아두기 위한 변수.
 	SOCKET sock;
 
 	// 인터넷 IPv4 형식의 주소체계를 쓸 것이고, Stream 형식으로 데이터를 전송할 것이며, TCP 를 쓰겠다는 뜻.
 	sock = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
+	if (sock == -1)
+	{
+		return -1;
+	}
 
 	SOCKADDR_IN serverAddr = { 0 }; // 통신 관련 정보를 설정하는 구조체이다.
 	serverAddr.sin_family = AF_INET;  // 주소가 어떤 형식인지 설정한다. AF_INET 은 IPv4 형식을 의미. Address Family Internetwork
 	serverAddr.sin_addr = GetDefaultMyIP();  // 4 바이트의 Union 구조체이다. 이를 통해서 byte 단위로 값을 가져오거나 설정할 수 있다.
 	serverAddr.sin_port = htons(portNumber);  // 요 port 가 2바이트이다. 그래서 포트로 설정가능한 숫자 범위가 0~65535 인 것이다.
 
+	int result = 0; // 소켓 통신 준비 과정 중 처리 결과 값을 받아두기 위한 변수.
 	result = bind(sock, (SOCKADDR*)&serverAddr, sizeof(serverAddr)); // bind 에러 체크
 	if (result == -1)  // 에러인 경우 -1이다. -1은 0xFFFFFFFF 인데 이것이 SOCKET_ERROR 와 같다. 
 		return -1;
@@ -92,7 +93,7 @@ SOCKET SetTCPServer(int portNumber, int backLogSize)
 		return -1;
 
 	printf("Server is listening on %s:%d\n", inet_ntoa(serverAddr.sin_addr), portNumber);
-	return 0;
+	return sock;
 }
 
 
@@ -151,6 +152,7 @@ void AcceptProc(int index)
 		printf("채팅 방이 꽉 차서 %s:%d 님은 입장하지 못했습니다.\n",
 			inet_ntoa(clientAddr.sin_addr),
 			ntohs(clientAddr.sin_port));
+		closesocket(sock);
 		return;
 	}
 
@@ -171,7 +173,7 @@ void ReadProc(int index)
 	// toBeSentMsg 에 받은 문자열에 해당 클라이언트 정보를 추가해서 입력.
 	sprintf(toBeSentMsg, "%s:%d:%s\n", inet_ntoa(clientAddr.sin_addr), ntohs(clientAddr.sin_port), msgBuffer);
 
-	for (int i = 1; i < count; i++)
+	for (int i = 0; i < count; i++)
 	{
 		send(sockBase[i], toBeSentMsg, MAX_MSG_LEN, 0);  // 모든 클라이언트에게 서버가 받은 메세지 전송.
 	}
@@ -195,7 +197,7 @@ void CloseProc(int index)
 	char msg[MAX_MSG_LEN];
 	sprintf(msg, "%s:%d 님께서 접속을 종료하셨습니다.\n", inet_ntoa(clientAddr.sin_addr), ntohs(clientAddr.sin_port));
 
-	for (int i = 1; i < count; i++) {
+	for (int i = 0; i < count; i++) {
 		send(sockBase[i], msg, MAX_MSG_LEN, 0);
 	}
 
