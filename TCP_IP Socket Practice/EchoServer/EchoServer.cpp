@@ -10,9 +10,18 @@
 #define BACK_LOG_SIZE 5
 #define MAX_MSG_LEN 256
 
-SOCKET SetTCPServer(short portNumber, int backLogSize);
+SOCKET SetTCPServer(int portNumber, int backLogSize);
 IN_ADDR GetDefaultMyIP();
-void AcceptLoop(SOCKET sock);
+void EventLoop(SOCKET sock);
+
+
+SOCKET sockBase[FD_SETSIZE];  // FD = File Descriptor, 유닉스 계열에서 모든 것을 파일 형식으로 관리해서 사실상 윈도우의 핸들과 유사한 개념이라고 할 수 있다.
+HANDLE hEventBase[FD_SETSIZE];
+int count;
+
+void AcceptProc(int index);
+void ReadProc(int index);
+void CloseProc(int index);
 
 
 
@@ -21,11 +30,18 @@ int main()
 	WSADATA wsaData;
 	WSAStartup(MAKEWORD(2, 2), &wsaData); // 윈속 초기화
 	SOCKET sock = SetTCPServer(PORT_NUM, BACK_LOG_SIZE);
-	AcceptLoop(sock);
-	closesocket(sock);
+	if (sock == -1)
+	{
+		perror("리슨 소켓 오류");
+	}
+	else
+	{
+		EventLoop(sock);
+	}
 	WSACleanup(); // 윈속 해제
 	return 0;
 }
+
 
 
 IN_ADDR GetDefaultMyIP()
@@ -53,72 +69,133 @@ IN_ADDR GetDefaultMyIP()
 }
 
 
-SOCKET SetTCPServer(short portNumber, int backLogSize)  // 백 로그란 동시에 연결을 기다리는(연결된 클라이언트는 제외) 최대 클라이언트 수를 의미한다.
+SOCKET SetTCPServer(int portNumber, int backLogSize)
 {
 	int result = 0; // 소켓 통신 준비 과정 중 처리 결과 값을 받아두기 위한 변수.
 	SOCKET sock;
 
 	// 인터넷 IPv4 형식의 주소체계를 쓸 것이고, Stream 형식으로 데이터를 전송할 것이며, TCP 를 쓰겠다는 뜻.
 	sock = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
-	  
+
 	SOCKADDR_IN serverAddr = { 0 }; // 통신 관련 정보를 설정하는 구조체이다.
 	serverAddr.sin_family = AF_INET;  // 주소가 어떤 형식인지 설정한다. AF_INET 은 IPv4 형식을 의미. Address Family Internetwork
 	serverAddr.sin_addr = GetDefaultMyIP();  // 4 바이트의 Union 구조체이다. 이를 통해서 byte 단위로 값을 가져오거나 설정할 수 있다.
 	serverAddr.sin_port = htons(portNumber);  // 요 port 가 2바이트이다. 그래서 포트로 설정가능한 숫자 범위가 0~65535 인 것이다.
-	
+
 	result = bind(sock, (SOCKADDR*)&serverAddr, sizeof(serverAddr)); // bind 에러 체크
 	if (result == -1)  // 에러인 경우 -1이다. -1은 0xFFFFFFFF 인데 이것이 SOCKET_ERROR 와 같다. 
 		return -1;
 
-	result = listen(sock, backLogSize); // listen 에러 체크, 클라이언트와는 다르게 서버는 listen 이라는 절차가 있다.
+	result = listen(sock, backLogSize); // listen 에러 체크
 	if (result == -1)
 		return -1;
-	
-	// 서버가 listen 을 시작하면 서버 주소 출력
-	printf("Server IP is listening on %s:%d\n", inet_ntoa(serverAddr.sin_addr),portNumber);
-	return sock;
+
+	printf("Server is listening on %s:%d\n", inet_ntoa(serverAddr.sin_addr), portNumber);
+	return 0;
 }
 
-void Converse(void* _connectionSocket)
-{
-	SOCKET connectionSocket = (SOCKET)_connectionSocket;
-	SOCKADDR_IN clientAddr = { 0 };
-	int len = sizeof(clientAddr);
-	
-	getpeername(connectionSocket, (SOCKADDR*)&clientAddr, &len);  // 연결된 호스트의 정보를 소켓을 통해 받아와서 clientAddr 에 저장한다.
-	char msg[MAX_MSG_LEN] = "";
-	while (recv(connectionSocket, msg, sizeof(msg), 0) > 0)  // 수신한 메세지의 바이트 수를 recv 는 리턴한다. block 함수이다.
-	{
-		printf("%s:%d로 부터 받은 메세지:%s\n", 
-			inet_ntoa(clientAddr.sin_addr),
-			ntohs(clientAddr.sin_port),
-			msg);
-		send(connectionSocket, msg, sizeof(msg), 0);  // 수신한 메세지를 그대로 보내준 것이다. block 함수이다.
-	}
 
-	printf("%s:%d와 통신 종료\n",
-		inet_ntoa(clientAddr.sin_addr),
-		ntohs(clientAddr.sin_port));
+
+HANDLE AddNetworkEvent(SOCKET sock, long netEvent)
+{
+	HANDLE hEvent = WSACreateEvent();
+
+	sockBase[count] = sock;  // 새로 만든 소켓 저장 
+	hEventBase[count] = hEvent;  // 새로 만든 이벤트 객체 저장
+	count++;
+
+	WSAEventSelect(sock, hEvent, netEvent);  // 소켓 객체와 이벤트 객체를 짝짓는다. netEvent 는 해당 소켓에 대해 실행할 수 있는 이벤트를 설정한다.
+	return hEvent;
+}
+
+void Converse(SOCKET connectionSocket)
+{
+	char msg[MAX_MSG_LEN] = "";
+	while (recv(connectionSocket, msg, sizeof(msg), 0) > 0)  // 수신한 메세지의 바이트 수를 recv 는 리턴한다.
+	{
+		printf("recv:%s\n", msg);
+		send(connectionSocket, msg, sizeof(msg), 0);  // 수신한 메세지를 그대로 보내준 것이다.
+	}
 	closesocket(connectionSocket);
 }
 
-void AcceptLoop(SOCKET listenSocket)  // 이 input 소켓은 Listen 하려고 썼던 소켓이다.
+void EventLoop(SOCKET listenSocket)  // 이 input 소켓은 Listen 하려고 썼던 소켓이다.
 {
-	SOCKET connectionSocket;  // 실제 클라이언트와 연결이 맺어지는 소켓.
-	SOCKADDR_IN clientAddr = { 0 };  // 클라이언트 정보를 담기 위한 구조체.
-	int len = sizeof(clientAddr);
+	AddNetworkEvent(listenSocket, FD_ACCEPT);  // ACCEPT 이벤트를 관리하는 소켓이란 뜻이다. accept, AcceptEx, WSAAccept 함수를 안쓰면 에러 코드를 리턴한다.
 	while (true)
 	{
-		connectionSocket = accept(listenSocket, (SOCKADDR*)&clientAddr, &len); // 연결 수락, block 함수이다.
+		int index = WSAWaitForMultipleEvents(count, hEventBase, false, INFINITE, false);
+		WSANETWORKEVENTS netEvents;
 
-		if (connectionSocket == -1)
+		// 아래를 통해 소켓에서 발생한 네트워크 이벤트의 종류를 알아내고, 이후 적절한 소켓 함수를 호출하여 처리한다.
+		WSAEnumNetworkEvents(sockBase[index], hEventBase[index], &netEvents);
+		switch (netEvents.lNetworkEvents)
 		{
-			perror("accept 실패");
-			break;
+		case FD_ACCEPT: AcceptProc(index); break;
+		case FD_READ: ReadProc(index); break;
+		case FD_CLOSE: CloseProc(index); break;
 		}
-
-		printf("%s:%d의 연결 요청 수락\n", inet_ntoa(clientAddr.sin_addr), ntohs(clientAddr.sin_port));
-		//Converse((void*)connectionSocket);
-		_beginthread(Converse, 0, (void*)connectionSocket);
 	}
+	closesocket(listenSocket);
+}
+
+void AcceptProc(int index)
+{
+	SOCKADDR_IN clientAddr = { 0 };
+	int len = sizeof(clientAddr);
+	SOCKET sock = accept(sockBase[0], (SOCKADDR*)&clientAddr, &len);
+
+	if (count == FD_SETSIZE)
+	{
+		printf("채팅 방이 꽉 차서 %s:%d 님은 입장하지 못했습니다.\n",
+			inet_ntoa(clientAddr.sin_addr),
+			ntohs(clientAddr.sin_port));
+		return;
+	}
+
+	AddNetworkEvent(sock, FD_READ | FD_CLOSE);  // Read 이벤트를 관리하는 소켓이라는 뜻이다. WSARecv, WSARecvEx, WSARecvFrom 같은 것을 쓸 수 있도록 한다. FD_CLOSE 는 사용 가능한 함수가 바뀌는 것은 없다.
+	printf("%s:%d 님 입장하셨습니다.\n", inet_ntoa(clientAddr.sin_addr), ntohs(clientAddr.sin_port));
+}
+
+void ReadProc(int index)
+{
+	char msgBuffer[MAX_MSG_LEN];  // recv 로 받은 메세지를 저장하는 변수.
+	recv(sockBase[index], msgBuffer, MAX_MSG_LEN, 0);
+
+	SOCKADDR_IN clientAddr = { 0 };
+	int len = sizeof(clientAddr);
+	getpeername(sockBase[index], (SOCKADDR*)&clientAddr, &len);
+
+	char toBeSentMsg[MAX_MSG_LEN];
+	// toBeSentMsg 에 받은 문자열에 해당 클라이언트 정보를 추가해서 입력.
+	sprintf(toBeSentMsg, "%s:%d:%s\n", inet_ntoa(clientAddr.sin_addr), ntohs(clientAddr.sin_port), msgBuffer);
+
+	for (int i = 1; i < count; i++)
+	{
+		send(sockBase[i], toBeSentMsg, MAX_MSG_LEN, 0);  // 모든 클라이언트에게 서버가 받은 메세지 전송.
+	}
+}
+
+void CloseProc(int index)
+{
+	SOCKADDR_IN	clientAddr = { 0 };
+	int len = sizeof(clientAddr);
+
+	getpeername(sockBase[index], (SOCKADDR*)&clientAddr, &len);
+	printf("%s:%d 님께서 접속을 종료하셨습니다.\n", inet_ntoa(clientAddr.sin_addr), ntohs(clientAddr.sin_port));
+
+	closesocket(sockBase[index]);
+	WSACloseEvent(hEventBase[index]);
+
+	count--;
+	sockBase[index] = sockBase[count];
+	hEventBase[index] = hEventBase[count];
+
+	char msg[MAX_MSG_LEN];
+	sprintf(msg, "%s:%d 님께서 접속을 종료하셨습니다.\n", inet_ntoa(clientAddr.sin_addr), ntohs(clientAddr.sin_port));
+
+	for (int i = 1; i < count; i++) {
+		send(sockBase[i], msg, MAX_MSG_LEN, 0);
+	}
+
 }

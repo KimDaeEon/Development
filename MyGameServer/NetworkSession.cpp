@@ -1,4 +1,12 @@
 #include "NetworkSession.h"
+// WaitForSingleObject = time-out 시간이 지날때까지 기다리거나, 어떤 오브젝트가 signaled 될 때까지 기다린다. (blocking), timeout 짧게 하면 스레드 끝나기 전에 리턴한다.
+// WAIT_OBJECT_0 해당 이벤트 오브젝트가 signaled 상태가 되었음을 알린다.
+// WAIT_TIMEOUT 해당 이벤트 오브젝트 상태가 nonsignaled 인 상태로 time-out 되어버렸음을 알린다.
+// WAIT_FAILED 해당 function 자체가 실패, 에러를 알기 위해서 GetLastError 호출이 필요하다.
+
+// SetEvent = Event Object 의 상태를 Signaled 상태로 변환
+// CreateEvent = EVent Object Handle 을 생성 
+// CreateThread = Thread 생성, 최근에는 _begintreadex 가 더 권장된다고 한다.추후 시간되면 더 조사해본 후 적용.https://killsia.tistory.com/entry/CreateThread-beginthread-beginthreadex%EC%9D%98-%EC%B0%A8%EC%9D%B4
 
 DWORD WINAPI ReliableUdpThreadCallback(LPVOID parameter) 
 {
@@ -69,11 +77,11 @@ RETRY:
 				if (!WriteTo2(RemoteAddress, RemotePort, Data, DataLength))
 					return;
 
-				DWORD result = WaitForSingleObject(mReliableUdpWriteCompleteEvent, 10);
+				DWORD result = WaitForSingleObject(mReliableUdpWriteCompleteEvent, 10);  // 10 밀리 세컨드(1000분의 1초)만큼만 기다리겠단 뜻. 즉 0.01초
 
-				if (result == WAIT_OBJECT_0)
+				if (result == WAIT_OBJECT_0)  // 해당 이벤트가 singaled 상태, 즉 스레드에 의해서 사용될 수 있는 상태이면 넘어간다.
 					goto NEXT_DATA;
-				else
+				else  // 해당 시간안에 처리가 안되면 재시도
 					goto RETRY;
 			}
 		default:
@@ -193,7 +201,7 @@ BOOL CNetworkSession::Accept(SOCKET listenSocket)
 	if (mSocket)
 		return FALSE;
 
-	mSocket = WSASocket(AF_INET, SOCK_STREAM, IPPROTO_TCP, NULL, 0, WSA_FLAG_OVERLAPPED); // WSA = Windows Sockets Asynchronous
+	mSocket = WSASocket(AF_INET, SOCK_STREAM, IPPROTO_TCP, NULL, 0, WSA_FLAG_OVERLAPPED); // WSA = Windows Sockets API
 
 	if (mSocket == INVALID_SOCKET)
 	{
