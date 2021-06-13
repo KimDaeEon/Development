@@ -40,15 +40,15 @@ int main()
 
 	while (true)
 	{
-		gets_s(msg, MAX_MSG_LEN);
+		gets_s(msg, MAX_MSG_LEN);  // 여기서 서버에 메세지를 보낸다. 메세지를 받는 것은 RecvThreadPoint 를 통해 다른 스레드에서 처리한다.
 		send(sock, msg, sizeof(msg), 0);
 		if (strcmp(msg, "exit") == 0)
 		{
 			break;
 		}
 	}
+	
 	closesocket(sock);
-
 	WSACleanup(); // 윈속 해제
 	return 0;
 }
@@ -61,9 +61,9 @@ void RecvThreadPoint(void* param)
 	SOCKADDR_IN clientAddr = { 0 };
 	int len = sizeof(clientAddr);
 
-	while (recv(sock, msg, MAX_MSG_LEN, 0) > 0)
+	while (recv(sock, msg, MAX_MSG_LEN, 0) > 0)  // 해당 스레드는 서버에서 메세지를 보내줄 때마다 받아서 화면에 보여준다.
 	{
 		printf("%s\n", msg);
 	}
-	closesocket;
+	closesocket(sock);
 }

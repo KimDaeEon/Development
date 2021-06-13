@@ -173,7 +173,7 @@ void ReadProc(int index)
 	// toBeSentMsg 에 받은 문자열에 해당 클라이언트 정보를 추가해서 입력.
 	sprintf(toBeSentMsg, "%s:%d:%s\n", inet_ntoa(clientAddr.sin_addr), ntohs(clientAddr.sin_port), msgBuffer);
 
-	for (int i = 0; i < count; i++)
+	for (int i = 1; i < count; i++)  // 0 번은 무조건 listen 소켓이다.
 	{
 		send(sockBase[i], toBeSentMsg, MAX_MSG_LEN, 0);  // 모든 클라이언트에게 서버가 받은 메세지 전송.
 	}
@@ -191,13 +191,13 @@ void CloseProc(int index)
 	WSACloseEvent(hEventBase[index]);
 
 	count--;
-	sockBase[index] = sockBase[count];
+	sockBase[index] = sockBase[count];  // 일단 사라지는 녀석을 이곳에 두어서 전체에 메세지가 전달되도록 세팅. 예제 코드는 이렇게 되어 있는데, 사실 queue 같은 것으로 했어야 하지 않나 싶다..
 	hEventBase[index] = hEventBase[count];
 
 	char msg[MAX_MSG_LEN];
 	sprintf(msg, "%s:%d 님께서 접속을 종료하셨습니다.\n", inet_ntoa(clientAddr.sin_addr), ntohs(clientAddr.sin_port));
 
-	for (int i = 0; i < count; i++) {
+	for (int i = 1; i < count; i++) { // 0 번은 무조건 listen 소켓이다.
 		send(sockBase[i], msg, MAX_MSG_LEN, 0);
 	}
 
