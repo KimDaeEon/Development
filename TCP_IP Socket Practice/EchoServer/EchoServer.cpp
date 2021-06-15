@@ -80,7 +80,7 @@ SOCKET SetTCPServer(short portNumber, int backLogSize)
 
 	SOCKADDR_IN serverAddr = { 0 }; // 통신 관련 정보를 설정하는 구조체이다.
 	serverAddr.sin_family = AF_INET;  // 주소가 어떤 형식인지 설정한다. AF_INET 은 IPv4 형식을 의미. Address Family Internetwork
-	serverAddr.sin_addr = GetDefaultMyIP();  // 4 바이트의 Union 구조체이다. 이를 통해서 byte 단위로 값을 가져오거나 설정할 수 있다.
+	serverAddr.sin_addr.s_addr = inet_addr("127.0.0.1");  // 4 바이트의 Union 구조체이다. 이를 통해서 byte 단위로 값을 가져오거나 설정할 수 있다.
 	serverAddr.sin_port = htons(portNumber);  // 요 port 가 2바이트이다. 그래서 포트로 설정가능한 숫자 범위가 0~65535 인 것이다.
 
 	int result = 0; // 소켓 통신 준비 과정 중 처리 결과 값을 받아두기 위한 변수.
@@ -145,7 +145,7 @@ void AcceptProc(int index)
 {
 	SOCKADDR_IN clientAddr = { 0 };
 	int len = sizeof(clientAddr);
-	SOCKET sock = accept(sockBase[0], (SOCKADDR*)&clientAddr, &len);
+	SOCKET sock = accept(sockBase[0], (struct sockaddr*)&clientAddr, &len);
 
 	if (count == FD_SETSIZE)
 	{

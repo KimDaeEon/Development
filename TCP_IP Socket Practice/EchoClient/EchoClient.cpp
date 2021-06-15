@@ -7,7 +7,7 @@
 #define PORT_NUM 10200
 #define BACK_LOG_SIZE 5
 #define MAX_MSG_LEN 256
-#define SERVER_IP "222.112.225.176"
+#define SERVER_IP "127.0.0.1"
 
 void RecvThreadPoint(void* param);
 
