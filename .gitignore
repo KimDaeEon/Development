@@ -111,3 +111,41 @@ TCP_IP Socket Practice/EchoClient/Debug/EchoClient.vcxproj.FileListAbsolute.txt
 TCP_IP Socket Practice/EchoServer/Debug/EchoServer.Build.CppClean.log
 TCP_IP Socket Practice/EchoServer/Debug/EchoServer.vcxproj.FileListAbsolute.txt
 TCP_IP Socket Practice/TCP_IP Socket Practice/Debug/TCP_IP Socket Practice.Build.CppClean.log
+TCP_IP Socket Practice/IOCP Client/IOCP Client.vcxproj
+TCP_IP Socket Practice/IOCP Client/IOCP Client.vcxproj.filters
+TCP_IP Socket Practice/IOCP Client/IOCP Client.vcxproj.user
+TCP_IP Socket Practice/IOCP Client/Debug/IOCP Client.exe.recipe
+TCP_IP Socket Practice/IOCP Client/Debug/IOCP Client.log
+TCP_IP Socket Practice/IOCP Client/Debug/IOCP Client.obj
+TCP_IP Socket Practice/IOCP Client/Debug/vc142.idb
+TCP_IP Socket Practice/IOCP Client/Debug/vc142.pdb
+TCP_IP Socket Practice/IOCP Client/Debug/IOCP Client.tlog/CL.command.1.tlog
+TCP_IP Socket Practice/IOCP Client/Debug/IOCP Client.tlog/CL.read.1.tlog
+TCP_IP Socket Practice/IOCP Client/Debug/IOCP Client.tlog/CL.write.1.tlog
+TCP_IP Socket Practice/IOCP Client/Debug/IOCP Client.tlog/IOCP Client.lastbuildstate
+TCP_IP Socket Practice/IOCP Client/Debug/IOCP Client.tlog/link.command.1.tlog
+TCP_IP Socket Practice/IOCP Client/Debug/IOCP Client.tlog/link.read.1.tlog
+TCP_IP Socket Practice/IOCP Client/Debug/IOCP Client.tlog/link.write.1.tlog
+TCP_IP Socket Practice/IOCP Server/IOCP Server.vcxproj
+TCP_IP Socket Practice/IOCP Server/IOCP Server.vcxproj.filters
+TCP_IP Socket Practice/IOCP Server/IOCP Server.vcxproj.user
+TCP_IP Socket Practice/IOCP Server/Debug/IOCP Server.exe.recipe
+TCP_IP Socket Practice/IOCP Server/Debug/IOCP Server.log
+TCP_IP Socket Practice/IOCP Server/Debug/IOCP Server.obj
+TCP_IP Socket Practice/IOCP Server/Debug/vc142.idb
+TCP_IP Socket Practice/IOCP Server/Debug/vc142.pdb
+TCP_IP Socket Practice/IOCP Server/Debug/IOCP Server.tlog/CL.command.1.tlog
+TCP_IP Socket Practice/IOCP Server/Debug/IOCP Server.tlog/CL.read.1.tlog
+TCP_IP Socket Practice/IOCP Server/Debug/IOCP Server.tlog/CL.write.1.tlog
+TCP_IP Socket Practice/IOCP Server/Debug/IOCP Server.tlog/IOCP Server.lastbuildstate
+TCP_IP Socket Practice/IOCP Server/Debug/IOCP Server.tlog/link.command.1.tlog
+TCP_IP Socket Practice/IOCP Server/Debug/IOCP Server.tlog/link.read.1.tlog
+TCP_IP Socket Practice/IOCP Server/Debug/IOCP Server.tlog/link.write.1.tlog
+TCP_IP Socket Practice/TCP_IP Socket Practice/.vs/TCP_IP Socket Practice/v16/ipch/AutoPCH/39e0f6d1213e5d14/IOCP CLIENT.ipch
+TCP_IP Socket Practice/TCP_IP Socket Practice/.vs/TCP_IP Socket Practice/v16/ipch/AutoPCH/6561f9bce4484a2c/IOCP SERVER.ipch
+TCP_IP Socket Practice/TCP_IP Socket Practice/Debug/IOCP Client.exe
+TCP_IP Socket Practice/TCP_IP Socket Practice/Debug/IOCP Client.ilk
+TCP_IP Socket Practice/TCP_IP Socket Practice/Debug/IOCP Client.pdb
+TCP_IP Socket Practice/TCP_IP Socket Practice/Debug/IOCP Server.exe
+TCP_IP Socket Practice/TCP_IP Socket Practice/Debug/IOCP Server.ilk
+TCP_IP Socket Practice/TCP_IP Socket Practice/Debug/IOCP Server.pdb
