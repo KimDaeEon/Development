@@ -8,6 +8,8 @@
 #define BACK_LOG_SIZE 5
 #define MAX_MSG_LEN 1024
 
+#pragma warning(disable:4996)
+
 struct OverlappedSocket {
 	WSAOVERLAPPED	overlapped;
 	WSABUF			dataBuffer;
@@ -42,7 +44,7 @@ int _tmain(int argc, _TCHAR* argv[])
 	memset(&serverAddr, 0, sizeof(SOCKADDR_IN));
 	serverAddr.sin_family = PF_INET;
 	serverAddr.sin_port = htons(PORT_NUM);
-	serverAddr.sin_addr.S_un.S_addr = htonl(INADDR_ANY);
+	serverAddr.sin_addr.S_un.S_addr = inet_addr("127.0.0.1");
 
 	// 소켓 bind
 	if (bind(listenSocket, (struct sockaddr*)&serverAddr, sizeof(SOCKADDR_IN)) == SOCKET_ERROR)
@@ -61,19 +63,21 @@ int _tmain(int argc, _TCHAR* argv[])
 		WSACleanup();
 		return 1;
 	}
+
+	printf("Server is running on %s:%d\n", inet_ntoa(serverAddr.sin_addr), ntohs(serverAddr.sin_port));
 	
 	// 결과 처리하는 IO Completion Port 생성하고, 핸들에 연결
-	HANDLE hIOCP = CreateIoCompletionPort(INVALID_HANDLE_VALUE, NULL, 0, 0);
+	HANDLE hIOCP = CreateIoCompletionPort(INVALID_HANDLE_VALUE, NULL, 0, 0);  // IOCP 핸들을 처음 생성할 때에는 이렇게 하고, 파일 및 소켓을 등록할 때에는 사용 방식이 달라진다.
 	//HANDLE WINAPI CreateIoCompletionPort(
-	//	_In_     HANDLE    FileHandle, 여기선 여기에 INVALID_HANDLE_VALUE 가 들어가서 IOCP 를 생성한다. 
-	//	_In_opt_ HANDLE    ExistingCompletionPort, 위의 값이 INVALID_HANDLE_VALUE 일 경우 NULL 이 된다.
-	//	_In_     ULONG_PTR CompletionKey, FileHandle 이 INVALID_HANDLE_VALUE 이면 이 패러미터가 무시되어서 0을 입력.
-	//	_In_     DWORD     NumberOfConcurrentThreads 0 이면 시스템의 프로세스 수 만큼 동시에 스레드를 실행하도록 해준다. ExistingCompletionPort 가 NULL 일 때에만 이것이 설정 가능하다. (NULL 이면 이 값 설정은 무시된다.)
+	//	_In_     HANDLE    FileHandle, 여기선 여기에 INVALID_HANDLE_VALUE 가 들어가서 IOCP 를 생성한다. 이후에 아래 코드에서는 여기에 핸들을 넣어서 등록한다.
+	//	_In_opt_ HANDLE    ExistingCompletionPort, 위의 값이 INVALID_HANDLE_VALUE 일 경우 NULL 이 된다. 등록할 때에는 미리 생성되어 있는 IOCP 핸들 값을 넣어준다.
+	//	_In_     ULONG_PTR CompletionKey, FileHandle 이 INVALID_HANDLE_VALUE 이면 이 패러미터가 무시되어서 0을 입력. 등록할 때에는 핸들 값의 키를 입력한다. 대부분의 경우 연결 개체를 입력한다. 이를 통해 어떤 작업이 끝났는지를 구분한다.
+	//	_In_     DWORD     NumberOfConcurrentThreads 0 이면 시스템의 프로세스 수 만큼 자동으로 설정. ExistingCompletionPort 가 NULL 일 때에만 이것이 설정 가능하다. (NULL 이 아니면 이 값 설정은 무시된다.)
 	//);
 
 	SYSTEM_INFO systemInfo;
-	GetSystemInfo(&systemInfo);
-	int threadCount = systemInfo.dwNumberOfProcessors * 2;  // CPU * 2 개 스레드 생성
+	GetSystemInfo(&systemInfo);  // 현재 시스템의 정보를 읽어온다. 페이지 크기나 프로세스 개수 등등 현재 시스템이 작동되고 있는 정보를 가져온다. 여기서는 CPU 정보만을 사용한다.
+	int threadCount = systemInfo.dwNumberOfProcessors * 2;  // CPU * 2 개 스레드 생성, 통계적으로 이 수치가 가장 낫다고 한다. 좀 더 느리게 응답을 받아도 동시에 여러개의 작업을 하고 싶다면 스레드를 늘릴 수도 있다고 하였다.
 	unsigned long threadId;
 	HANDLE* hThread = (HANDLE*)malloc(threadCount * sizeof(HANDLE));  // thread handle 선언
 	for (int i = 0; i < threadCount; i++)
@@ -107,6 +111,7 @@ int _tmain(int argc, _TCHAR* argv[])
 		socketInfo->dataBuffer.buf = socketInfo->messageBuffer;
 		flags = 0;
 
+		// 앞에서 만들었던 IOCP 핸들에 클라이언트 소켓 핸들 및 키를 등록합니다.
 		hIOCP = CreateIoCompletionPort((HANDLE)clientSocket, hIOCP, (DWORD)socketInfo, 0);
 
 		if (WSARecv(socketInfo->socket, &socketInfo->dataBuffer, 1, &receiveBytes, &flags, &(socketInfo->overlapped), NULL))
@@ -135,9 +140,17 @@ DWORD WINAPI makeThread(LPVOID hIOCP)
 	DWORD completionKey;
 	DWORD flags;
 	struct OverlappedSocket* eventSocket;
-
+	
 	while (1)
 	{
+		//BOOL GetQueuedCompletionStatus(
+		//	HANDLE CompletionPort,  // CP 오브젝트 핸들  
+		//	LPDWORD lpNumberOfBytes,  // 입출력 과정에서 송수신 된 바이트 수를 저장할 변수의 주소값
+		//	PULONG_PTR lpCompletionKey,   // CreateIoCompletioPort함수의 세번쨰 인자로 전달된 값의 저장을 위한 변수의 주소값
+		//	LPOVERLAPPED * lpOverlapped,  // WSASend, WSARecv 함수호출시 전달하는 OVERLAPPED 구조체 변수의 주소값이 저장되는 변수의 포인터
+		//	DWORD dwMillisecones   // 타임아웃 설정, FALSE를 반환하면서 함수를 빠져나감. INFINITE 를 입력 시에 완료된 IO가 CP오브젝트에 등록될때까지 블로킹상태.
+		//);
+
 		if (GetQueuedCompletionStatus(threadHandler, &receiveBytes, &completionKey, (LPOVERLAPPED*)&eventSocket, INFINITE) == 0)
 		{
 			printf("Error, Failed on GetQueuedCompletionStatus()\n");

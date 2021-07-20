@@ -71,7 +71,7 @@ SOCKET SetTCPServer(short portNumber, int backLogSize)
 {
 	SOCKET sock;
 
-	// 인터넷 IPv4 형식의 주소체계를 쓸 것이고, Stream 형식으로 데이터를 전송할 것이며, TCP 를 쓰겠다는 뜻.
+	// 인터넷 IPv4 형식의 주소체계를 쓸 것이고, Stream 형식으로 데이터를 전송한다는 것, TCP 를 쓰겠다는 뜻.
 	sock = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
 	if (sock == -1)
 	{
