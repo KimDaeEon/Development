@@ -195,13 +195,21 @@ BOOL CNetworkSession::Accept(SOCKET listenSocket)
 {
 	CThreadSync Sync;
 
-	if (!listenSocket)
+	if (!listenSocket)	// Listen 되고 있지 않으면 실행되지 않는다.
 		return FALSE;
 
 	if (mSocket)
 		return FALSE;
 
 	mSocket = WSASocket(AF_INET, SOCK_STREAM, IPPROTO_TCP, NULL, 0, WSA_FLAG_OVERLAPPED); // WSA = Windows Sockets API
+	/*SOCKET WSAAPI WSASocketW(
+		int                 af,					// Address Family, AF_INET 은 IPv4 주소를 사용한다는 의미.
+		int                 type,				// SOCK_STREAM 이 TCP 에서 사용되는 전송 방식이다.
+		int                 protocol,			// 그래서 여기 IPPROTO_TCP 가 온다.
+		LPWSAPROTOCOL_INFOW lpProtocolInfo,		// TODO: 차후에 확인, NULL 이 아니면 여기 입력된 WSAPROTOCOL_INFO 로 묶인다고 한다.
+		GROUP               g,					// TODO: 차후 확인, socket group id, 0 이면 group operation 은 행해지지 않는다고 한다.
+		DWORD               dwFlags				// 소캣 특성을 지정하는 flag, 여기서는 Overlapped I/O 를 지원하는 소켓을 생성.
+	);*/
 
 	if (mSocket == INVALID_SOCKET)
 	{
@@ -213,11 +221,27 @@ BOOL CNetworkSession::Accept(SOCKET listenSocket)
 	//TODO: 아래 내용 여기 코드들 다 분석할 때에 다시 확인. 
 	// BOOL NoDelay = TRUE; 
 	//setsockopt(mSocket, IPPROTO_TCP, TCP_NODELAY, (const char FAR *)&NoDelay, sizeof(NoDelay));
+	// 소켓 옵션은 setsockopt 로 세팅하고, getsockopt 로 꺼내와서 확인한다.
 
+	/*BOOL AcceptEx(
+		SOCKET       sListenSocket,				// listen 되고 있는 소켓
+		SOCKET       sAcceptSocket,				// aceept 받을 소켓
+		PVOID        lpOutputBuffer,			// accept 후 read 할 때에 사용할 버퍼 주소 
+		DWORD        dwReceiveDataLength,		// read 할 때 사용할 버퍼의 크기 (0일 경우 read 하지 않는다)
+		DWORD        dwLocalAddressLength,		// 로컬 주소 정보 길이. 사용하는 전송 프로토콜 주소 최대 길이 보다 16바이트 더 커야한다.
+		DWORD        dwRemoteAddressLength,		// 리모트 주소 정보 길이. 사용하는 전송 프로토콜 주소 최대 길이 보다 16바이트 더 커야한다.
+		LPDWORD      lpdwBytesReceived,			// 받은 바이트 크기, (Read 된 크기)
+		LPOVERLAPPED lpOverlapped				// accept 에서 사용할 overlapped 구조체
+	);*/
+	// while 문을 사용한 WSAAccept 는 하나의 Accept 가 완료되기 전에 다른 연결에 대한 Accept 를 할 수 없다.
+	// AcceptEx 는 AcceptEx 당 하나의 소켓을 미리 만들고, Accept 요청이 있을 때에 만들어둔 소켓을 활용하는 방식이다.
+	// 이로 인해 WSAAceept 와는 다르게 갑자기 접속이 몰리는 경우에도 대비를 할 수 있다.
+	// 또한 WSAAccept 는 연결을 허락하고, 초기 받기를 한 번 시도하여 상태를 마무리하는데, AcceptEx 는 이를 한 번에 진행 할 수 있다.
+	// 여기서는 크기를 0으로 해서 초기 받기를 진행하지 않도록 하였다.
 	if (!AcceptEx(listenSocket,
 		mSocket,
-		mReadBuffer,
-		0,
+		mReadBuffer,				// 버퍼는 정의했지만, 아래에서 크기를 0으로 해서 버퍼링하지 않는다.
+		0,							// 크기를 0으로 해서 데이터를 받지 않게 하였다.
 		sizeof(sockaddr_in) + 16,
 		sizeof(sockaddr_in) + 16,
 		NULL,
@@ -241,21 +265,33 @@ BOOL CNetworkSession::InitializeReadForIocp(VOID)
 	if (!mSocket)
 		return FALSE;
 
-	WSABUF	WsaBuf;
-	DWORD	ReadBytes	= 0;
-	DWORD	ReadFlag	= 0;
+	WSABUF	WsaBuf;								// buf 와 len 으로 구성되어 있다.
+	DWORD	ReadBytes	= 0;					// WSARecv 에서 받아온 데이터 수가 저장된다.
+	DWORD	ReadFlag	= 0;					// WSARecv 작동 방식을 바꾸는 flag
 	
-	WsaBuf.buf			= (CHAR*)mReadBuffer;
-	WsaBuf.len			= MAX_BUFFER_LENGTH;
+	WsaBuf.buf			= (CHAR*)mReadBuffer;	// 멤버 리드 버퍼 할당
+	WsaBuf.len			= MAX_BUFFER_LENGTH;	// 최대 버퍼 길이 할당	
+
+	// TODO: dwBufferCount 가 WSABUF 구조체 갯수를 가리키는데, 이게 다중 버퍼를 활용한 Scatter/Gather 라는 기술을 위한 것이라고 한다. 추후 조사.
+	/*int WSAAPI WSARecv(
+		SOCKET                             s,						// 데이터를 받아올 소켓 핸들.			
+		LPWSABUF                           lpBuffers,				// WSABUF 구조체를 가리키는 포인터.
+		DWORD                              dwBufferCount,			// lpBuffers 가 가리키는 WSABUF 구조체 갯수
+		LPDWORD                            lpNumberOfBytesRecvd,	// 소켓에서 읽어온 데이터 크기
+		LPDWORD                            lpFlags,					// WSARecv 작동 방식을 바꾸는 flag 정보를 가리키는 포인터
+		LPWSAOVERLAPPED                    lpOverlapped,			// Overlapped 구조체를 가리키는 포인터
+		LPWSAOVERLAPPED_COMPLETION_ROUTINE lpCompletionRoutine		// completion routine 과 관련된 정보를 가리키는 포인터, Callback 방식의 소켓 이벤트를 구성할 때에 사용하나독 한다.
+	);*/
 
 	INT	ReturnValue = WSARecv(mSocket,
 		&WsaBuf,
-		1,
+		1,			// WSABUF 를 이용할 경우 1 이상의 숫자를 설정한다.
 		&ReadBytes,
 		&ReadFlag,
 		&mReadOverlapped.Overlapped,
 		NULL);
 
+	// SOCKET_ERROR 이지만 WSA_IO_PENDING(소켓 I/O가 아직 진행중) 이거나 WSAEWOULDBLOCK(아직 작업 진행 중) 이면 정상 진행
 	if (ReturnValue == SOCKET_ERROR && WSAGetLastError() != WSA_IO_PENDING && WSAGetLastError() != WSAEWOULDBLOCK)
 	{
 		End();
@@ -359,7 +395,7 @@ BOOL CNetworkSession::Write(BYTE* data, DWORD dataLength)
 
 BOOL CNetworkSession::Connect(LPSTR address, USHORT port)
 {
-	CThreadSync Sync;
+	CThreadSync Sync;				// 동기화 용도
 
 	if (!address || port <= 0)
 		return FALSE;
@@ -367,14 +403,26 @@ BOOL CNetworkSession::Connect(LPSTR address, USHORT port)
 	if (!mSocket)
 		return FALSE;
 
-	SOCKADDR_IN RemoteAddressInfo;
+	SOCKADDR_IN RemoteAddressInfo;	// 접속할 IP 주소 정보
 
-	RemoteAddressInfo.sin_family	= AF_INET;
-	RemoteAddressInfo.sin_port = htons(port);
-	RemoteAddressInfo.sin_addr.S_un.S_addr = inet_addr(address);
+	RemoteAddressInfo.sin_family			= AF_INET;
+	RemoteAddressInfo.sin_port				= htons(port);	// host to network short, Big-endian 으로 변경 ex) 0x1234 의 경우 12, 34 이런 순서로 주소값을 기준으로 바이트 정렬된다.
+	RemoteAddressInfo.sin_addr.S_un.S_addr	= inet_addr(address); // 문자열 주소를 IP 형식에 맞는 ulong 으로 변경한다. ex) "127.0.0.1" 이란 문자열이 0x7f 00 00 01 이런 식으로
 
 	if (WSAConnect(mSocket, (LPSOCKADDR)&RemoteAddressInfo, sizeof(SOCKADDR_IN), NULL, NULL, NULL, NULL) == SOCKET_ERROR)
-	{
+	{	
+		// WSAConnect 는 일반 Connect 보다 복잡한 옵션을 넣을 수 있다.
+		/*int WSAAPI WSAConnect(
+			SOCKET         s,				// 접속하기 위해 생성된 소캣 핸들
+			const sockaddr * name,			// 접속하기 위한 주소 정보
+			int            namelen,			// 접속하기 위한 정보 길이, 이게 IPv6 인 경우 정보 크기 차이가 있어서 그렇다.
+			LPWSABUF       lpCallerData,	// TODO: 차후에 MSDN remark 자세히 읽어보기
+			LPWSABUF       lpCalleeData,	// TODO: 차후에 MSDN remark 자세히 읽어보기
+			LPQOS          lpSQOS,			// QOS = Quality Of Service, 서비스 품질을 의미한다. TODO: 차후에 MSDN remark 자세히 읽어보기 
+			LPQOS          lpGQOS			// 미래에 사용 예정, 무조건 NULL 이어야 한다.
+		);*/
+
+		// 연결 실패지만 대기상태(WOULDBLOCK)이면 성공으로 판단.
 		if (WSAGetLastError() != WSAEWOULDBLOCK)
 		{
 			End();

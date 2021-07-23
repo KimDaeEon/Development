@@ -186,30 +186,28 @@ VOID CService::RunCallback(DWORD argumentCount, LPTSTR* arguments)
 	DWORD Status;
 
 	// 현재 사용하고 있는 서비스 상태이므로 멤버인 mServiceStatus 에 값을 직접 등록하여 사용.
-	// 아래 Status 내용들 헷갈리면 https://docs.microsoft.com/en-us/windows/win32/api/winsvc/ns-winsvc-service_status <- 링크 참조.
-	mServiceStatus.dwServiceType				= SERVICE_WIN32; // SERVICE_WIN32_OWN_PROCESS 와 같다. 프로세스 내에서 실행된다는 뜻. 다른 장치 드라이버에 있는 서비스도 있나보다.
-	mServiceStatus.dwCurrentState				= SERVICE_START_PENDING; // 서비스가 시작된다는 뜻이 아니라, 시작할 것인데 미뤄지고 있다는 의미다. 서비스는 시작 시나 정지 시에 특정 작업이 필요한데 그것을 하는 중이란 뜻이다.
-	// 초기화가 끝나고 SCM 의 Service Control 을 받을 수 있는 상태가 'SERVICE_RUNNING'이다. SERVICE_RUNNING 상태가 아니면 서비스 실행이 실패되었다고 SCM 은 표시한다.
-	// https://docs.microsoft.com/en-us/windows/win32/services/service-status-transitions <- 자세한 내용 헷갈리면 다시 참고.
+	mServiceStatus.dwServiceType				= SERVICE_WIN32;			// SERVICE_WIN32_OWN_PROCESS 와 같다. 프로세스 내에서 실행된다는 뜻. 다른 장치 드라이버에 있는 서비스도 있나보다.
+	mServiceStatus.dwCurrentState				= SERVICE_START_PENDING;	// 서비스가 시작된다는 뜻이 아니라, 시작할 것인데 미뤄지고 있다는 의미다. 서비스는 시작 시나 정지 시에 특정 작업이 필요한데 그것을 하는 중이란 뜻이다.
+																			// 초기화가 끝나고 SCM 의 Service Control 을 받을 수 있는 상태가 'SERVICE_RUNNING'이다. SERVICE_RUNNING 상태가 아니면 서비스 실행이 실패되었다고 SCM 은 표시한다.
 	mServiceStatus.dwControlsAccepted			= SERVICE_ACCEPT_STOP | SERVICE_ACCEPT_PAUSE_CONTINUE; //  정지나 일시정지, 재시작이 가능하다.
 	
-	mServiceStatus.dwWin32ExitCode				= 0; // 시작 시나 실패 시에 리턴할 에러코드, 0은 NO_ERROR 와 같다. 서비스 별로 특별한 에러코드를 설정하지 않는 한, 보통 이렇게 세팅한다고 쓰여 있다.
-	mServiceStatus.dwServiceSpecificExitCode	= 0; // dwWin32ExitCode 값이 ERROR_SERVICE_SPECIFIC_ERROR 가 아닌 이상에야 이 값을 설정하는 것은 무의미.
-	mServiceStatus.dwCheckPoint					= 0; // 서비스가 어떤 작업을 진행할 때에 오래 걸리면 start, stop, pause, continue 에서 pending 상태가 되는데 이 때에 값을 추적하려고 설정한다. 추적하지 않으려면 0으로 설정.
-	mServiceStatus.dwWaitHint					= 0; // start, stop, pause, continue 작업이 끝날 시간을 예측해서 밀리 세컨드로 나타내는 것. 이 시간이 설정되면 이 시간을 넘게 되면 dwCheckPoint 등도 무시하고 서비스가 특정 작업 중 실패했다고 간주한다.
+	mServiceStatus.dwWin32ExitCode				= 0;						// 시작 시나 실패 시에 리턴할 에러코드, 0은 NO_ERROR 와 같다. 서비스 별로 특별한 에러코드를 설정하지 않는 한, 보통 이렇게 세팅한다고 쓰여 있다.
+	mServiceStatus.dwServiceSpecificExitCode	= 0;						// dwWin32ExitCode 값이 ERROR_SERVICE_SPECIFIC_ERROR 가 아닌 이상에야 이 값을 설정하는 것은 무의미.
+	mServiceStatus.dwCheckPoint					= 0;						// 서비스가 어떤 작업을 진행할 때에 오래 걸리면 start, stop, pause, continue 에서 pending 상태가 되는데 이 때에 값을 추적하려고 설정한다. 추적하지 않으려면 0으로 설정.
+	mServiceStatus.dwWaitHint					= 0;						// start, stop, pause, continue 작업이 끝날 시간을 예측해서 밀리 세컨드로 나타내는 것. 이 시간이 설정되면 이 시간을 넘게 되면 dwCheckPoint 등도 무시하고 서비스가 특정 작업 중 실패했다고 간주한다.
 
 	// 서비스 상태를 SERVICE_START_PENDING 으로 해놓고 Control Callback 등록, SERVICE_START_PENDING 을 하는 이유는 구체적으로 이러한 작업을 해주어야 하기 때문이다.
 	mServiceStatusHandle = RegisterServiceCtrlHandler(mServiceName, ::CtrlHandlerCallback); // 이 함수는 Service Control Request 를 처리하기 위한 CtrlHandlerCallback 함수를 서비스에 등록한다. 그리고 서비스 정보를 관리하는 핸들을 리턴한다.
 
 	// Control Callback 등록이 실패하면 종료
-	if (mServiceStatusHandle == (SERVICE_STATUS_HANDLE)0) // 0, NULL 에 대해 SERVICE_STATUS_HANDLE 로 캐스트 연산을 하는 것이다.
+	if (mServiceStatusHandle == (SERVICE_STATUS_HANDLE)0)	// 0, NULL 에 대해 SERVICE_STATUS_HANDLE 로 캐스트 연산을 하는 것이다.
 		return;
 
 	Status = NO_ERROR; // 등록 성공했으므로 NO_ERROR
 
 	// 등록이 성공했으므로 SERVICE_RUNNING 상태로 변경
 	mServiceStatus.dwCurrentState	= SERVICE_RUNNING;
-	mServiceStatus.dwCheckPoint		= 0; // TODO: 나중에 값 변하는 과정 확인하는 법 알면 확인해보자.
+	mServiceStatus.dwCheckPoint		= 0;					// TODO: 나중에 값 변하는 과정 확인하는 법 알면 확인해보자.
 	mServiceStatus.dwWaitHint		= 0;
 
 	if (!SetServiceStatus(mServiceStatusHandle, &mServiceStatus)) // Service Control Manager, SCM 가 관리하고 있는 Service 의 상태(Status) 정보를 업데이트 하는 함수. 성공하면 non-zero, 실패하면 0 리턴.
@@ -219,13 +217,13 @@ VOID CService::RunCallback(DWORD argumentCount, LPTSTR* arguments)
 VOID CService::CtrlHandlerCallback(DWORD opCode) 
 { // SCM 의 request 를 처리하는 함수이다.
 	switch (opCode) {
-	case SERVICE_CONTROL_PAUSE: // 서비스 일시 정지인 경우
+	case SERVICE_CONTROL_PAUSE:		// 서비스 일시 정지인 경우
 		mServiceStatus.dwCurrentState = SERVICE_PAUSED;
 		break;
-	case SERVICE_CONTROL_CONTINUE: // 서비스 재개인 경우
+	case SERVICE_CONTROL_CONTINUE:	// 서비스 재개인 경우
 		mServiceStatus.dwCurrentState = SERVICE_RUNNING;
 		break;
-	case SERVICE_CONTROL_STOP:	// 서비스 정지인 경우
+	case SERVICE_CONTROL_STOP:		// 서비스 정지인 경우
 		mServiceStatus.dwWin32ExitCode	= 0;
 		mServiceStatus.dwCurrentState	= SERVICE_STOPPED;
 		mServiceStatus.dwCheckPoint		= 0;
