@@ -26,7 +26,7 @@ private:
 	HANDLE			mReliableUdpThreadWakeUpEvent;
 	HANDLE			mReliableUdpWriteCompleteEvent;
 
-	CCircularQueue	mReliableWriteQueue;
+	CCircularQueue	mReliableWriteQueue;	// Reliable UDP 과정에서 어떠한 데이터를 보내고 있을 때에 다음으로 보내야 할 데이터를 저장하고 있는 역할을 하게 된다.
 
 	BOOL			mIsReliableUdpSending;
 

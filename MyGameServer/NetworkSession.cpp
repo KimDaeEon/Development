@@ -50,41 +50,49 @@ CNetworkSession::~CNetworkSession(VOID)
 
 VOID CNetworkSession::ReliableUdpThreadCallback(VOID)
 {
-	DWORD	EventID						= 0;
-	HANDLE	ThreadEvents[2]				= { mReliableUdpThreadDestroyEvent, mReliableUdpThreadWakeUpEvent };
+	DWORD	EventID						= 0;			// ReliableUDPThread 의 시작과 종료를 담당하는 이벤트 ID
+	HANDLE	ThreadEvents[2]				= { mReliableUdpThreadDestroyEvent, mReliableUdpThreadWakeUpEvent };	// 시작, 종료 이벤트
 
-	CHAR	RemoteAddress[32]			= { 0, };
-	USHORT	RemotePort					= 0;
-	BYTE	Data[MAX_BUFFER_LENGTH]		= { 0, };
-	DWORD	DataLength					= 0;
-	VOID*	Object						= NULL;
+	CHAR	RemoteAddress[32]			= { 0, };		// 데이터 보낼 IP 주소
+	USHORT	RemotePort					= 0;			// 데이터 보낼 주소의 포트
+	BYTE	Data[MAX_BUFFER_LENGTH]		= { 0, };		// 보낼 데이터 담는 배열
+	DWORD	DataLength					= 0;			// 보낼 데이터 길이
+	VOID*	Object						= NULL;			// 오브젝트, 여기서는 쓰지 않는다.
 	
 	while (TRUE)
 	{
-		SetEvent(mReliableUdpThreadStartupEvent);
+		SetEvent(mReliableUdpThreadStartupEvent);		// ReliableUDPThread 가 시작했다는 것을 알리는 이벤트. UdpBind에서 WairForSingleObject 를 끝낸다.
 
+		// 이벤트들이 발생할 때까지 무한 대기
 		EventID = WaitForMultipleObjects(2, ThreadEvents, FALSE, INFINITE);
 
 		switch (EventID)
 		{
+			// DestroyEvent 발생할 경우 종료.
 		case WAIT_OBJECT_0:
 			return;
 		case WAIT_OBJECT_0 + 1:
 NEXT_DATA:
+			// Write 일 경우 1개의 보낼 데이터를 큐에서 꺼낸다.
 			if (mReliableWriteQueue.Pop(&Object, Data, DataLength, RemoteAddress, RemotePort))
 			{
 RETRY:
 				if (!WriteTo2(RemoteAddress, RemotePort, Data, DataLength))
 					return;
 
-				DWORD result = WaitForSingleObject(mReliableUdpWriteCompleteEvent, 10);  // 10 밀리 세컨드(1000분의 1초)만큼만 기다리겠단 뜻. 즉 0.01초
+				// 데이터가 있을 경우 위에서 처럼 데이터를 보내고, 기다린다. 받은 곳에서 SetEvent 호출하면 여기를 바로 넘어간다.
+				// SetEvent 호출 안해도 10 밀리 세컨드(1000분의 1초)만큼만 기다리겠단 뜻. 즉 0.01초
+				DWORD result = WaitForSingleObject(mReliableUdpWriteCompleteEvent, 10);
 
 				if (result == WAIT_OBJECT_0)  // 해당 이벤트가 singaled 상태, 즉 스레드에 의해서 사용될 수 있는 상태이면 넘어간다.
 					goto NEXT_DATA;
 				else  // 해당 시간안에 처리가 안되면 재시도
 					goto RETRY;
 			}
-		default:
+			else
+				// WriteTo 함수에서 현재 보내는 데이터가 있는지 없는지 확인하기 위한 FLAG 변수
+				mIsReliableUdpSending = FALSE;	// 현재 큐에 더 이상 보낼 데이터가 없으므로 FALSE 로 설정
+
 			break;
 		}
 	}
@@ -558,8 +566,9 @@ BOOL CNetworkSession::UdpBind(USHORT port)
 	DWORD ReliableUdpThreadID = 0;	// ThreadID 받아오는 변수
 	mReliableUdpThreadHandle = CreateThread(NULL, 0, ::ReliableUdpThreadCallback, this, 0, &ReliableUdpThreadID);
 
-	// 이벤트 객체 생성될 때까지 대기 (Event 객체가 Signal 할 때까지 대기) 
+	// Startup 이벤트 객체 signal 될 때까지 무한 대기 (Event 객체가 Signal 할 때까지 대기) 
 	// Signal 은 특정 이벤트가 발생했다는 것을 알리는 것이다. 인터럽트라고 부르기도 한다.
+	// 즉 여기서는 스레드가 생성되고 콜백에서 StartupEvent 를 SetEvent 함수로 singal 시키면 return TRUE 하는 것이다.
 	WaitForSingleObject(mReliableUdpThreadStartupEvent, INFINITE);
 
 	return TRUE;
