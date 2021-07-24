@@ -26,13 +26,13 @@ CNetworkSession::CNetworkSession(VOID)
 	memset(&mUdpRemoteInfo, 0, sizeof(mUdpRemoteInfo));
 
 	mSocket							= NULL;
-	mReliableUdpThreadHandle		= NULL;
-	mReliableUdpThreadStartupEvent	= NULL;
-	mReliableUdpThreadDestroyEvent	= NULL;
-	mReliableUdpThreadWakeUpEvent	= NULL;
-	mReliableUdpWriteCompleteEvent	= NULL;
+	mReliableUdpThreadHandle		= NULL;		// 보낸 패킷을 받을 때까지 계속 전송해주는 ReliableUDP 를 사용하는 Thread 핸들.
+	mReliableUdpThreadStartupEvent	= NULL;		// ReliableUDP를 사용하는 Thread의 시작을 알리는 이벤트.
+	mReliableUdpThreadDestroyEvent	= NULL;		// ReliableUDP를 사용하는 Thread의 종료를 알리는 이벤트.
+	mReliableUdpThreadWakeUpEvent	= NULL;		// ReliableUDP를 사용하는 Thread 깨울 때에 사용하는 이벤트.
+	mReliableUdpWriteCompleteEvent	= NULL;		// 상대가 패킷을 받아서 더 이상 보낼 필요가 없을 때에 사용하는 이벤트.
 
-	mIsReliableUdpSending			= FALSE;
+	mIsReliableUdpSending			= FALSE;	// 현재 Reliable 하게 보내고 있는 data 가 있는지 확인.
 
 	mAcceptOverlapped.IoType		= IO_ACCEPT;
 	mReadOverlapped.IoType			= IO_READ;
@@ -121,15 +121,16 @@ BOOL CNetworkSession::End(VOID)
 	closesocket(mSocket);
 	mSocket = NULL;
 
-	if (mReliableUdpThreadHandle)
+	if (mReliableUdpThreadHandle)	// Reliable UDP 실행 중인 경우
 	{
-		SetEvent(mReliableUdpThreadDestroyEvent);
+		SetEvent(mReliableUdpThreadDestroyEvent);	// 종료 이벤트 호출
 
-		WaitForSingleObject(mReliableUdpThreadHandle, INFINITE);
+		WaitForSingleObject(mReliableUdpThreadHandle, INFINITE);	// 이벤트 종료 기다린다.
 
-		CloseHandle(mReliableUdpThreadHandle);
+		CloseHandle(mReliableUdpThreadHandle);		// 이벤트 종료 후 핸들 닫는다.
 	}
 
+	// 관련 이벤트들 모두 종료
 	if (mReliableUdpThreadDestroyEvent)
 		CloseHandle(mReliableUdpThreadDestroyEvent);
 
@@ -191,6 +192,11 @@ BOOL CNetworkSession::Listen(USHORT port, INT backLog)
 	return TRUE;
 }
 
+/// <summary>
+/// Accept 과정을 처리하는 함수.
+/// </summary>
+/// <param name="listenSocket"></param>
+/// <returns></returns>
 BOOL CNetworkSession::Accept(SOCKET listenSocket)
 {
 	CThreadSync Sync;
@@ -258,6 +264,11 @@ BOOL CNetworkSession::Accept(SOCKET listenSocket)
 	return TRUE;
 }
 
+/// <summary>
+/// IOCP를 사용할 때에 초기 받기 과정을 처리하는 함수.
+/// </summary>
+/// <param name=""></param>
+/// <returns></returns>
 BOOL CNetworkSession::InitializeReadForIocp(VOID)
 {
 	CThreadSync Sync;
@@ -302,6 +313,13 @@ BOOL CNetworkSession::InitializeReadForIocp(VOID)
 	return TRUE;
 }
 
+/// <summary>
+/// WSARecv 를 통해 받아온 데이터가 들어있는 mReadBuffer 에서 데이터를 복사해서 읽어온다. 
+/// 이후 읽어온 데이터를 바탕으로 어떤 작업을 해야 할지 판단한다.
+/// </summary>
+/// <param name="data"></param>
+/// <param name="dataLength"></param>
+/// <returns></returns>
 BOOL CNetworkSession::ReadForIocp(BYTE* data, DWORD& dataLength)
 {
 	CThreadSync Sync;
@@ -317,6 +335,12 @@ BOOL CNetworkSession::ReadForIocp(BYTE* data, DWORD& dataLength)
 	return TRUE;
 }
 
+/// <summary>
+/// IOCP 가 아닌, 이베트 방식에서 사용할 Read 함수.
+/// </summary>
+/// <param name="data"></param>
+/// <param name="dataLength"></param>
+/// <returns></returns>
 BOOL CNetworkSession::ReadForEventSelect(BYTE* data, DWORD& dataLength)
 {
 	CThreadSync Sync;
@@ -327,16 +351,18 @@ BOOL CNetworkSession::ReadForEventSelect(BYTE* data, DWORD& dataLength)
 	if (!data)
 		return FALSE;
 
+	// TODO: 왜 똑같은 부분을 2개 넣어 놓으셨을까?
 	if (!mSocket)
 		return FALSE;
 
 	WSABUF	WsaBuf;
-	DWORD	ReadBytes	= 0;
+	DWORD	ReadBytes	= 0;		// IOCP 에서는 안썼지만, 여기서는 데이터를 읽어올 때에 사용한다.
 	DWORD	ReadFlag	= 0;
 	
 	WsaBuf.buf			= (CHAR*)mReadBuffer;
 	WsaBuf.len			= MAX_BUFFER_LENGTH;
 	
+	// EventSelect 방식을 사용할 때에는 WSARecv 가 IOCP일 때와 다르다.
 	INT		ReturnValue = WSARecv(mSocket,
 		&WsaBuf,
 		1,
@@ -352,12 +378,22 @@ BOOL CNetworkSession::ReadForEventSelect(BYTE* data, DWORD& dataLength)
 		return FALSE;
 	}
 
+	// IOCP 와 데이터가 도착했다는 신호를 받으면 여기서 바로 받은 내용을 복사한다.
+	// IOCP 는 미리 WSARecv 를 호출해 놓아야 데이터를 받을 수 있고, WSARecv 로 데이터를 받는 것이 아니라 WSARecv 의 버퍼에서 데이터를 확인한다.
 	memcpy(data, mReadBuffer, ReadBytes);
 	dataLength = ReadBytes;
 
 	return TRUE;
 }
 
+/// <summary>
+/// data 에 있는 데이터를 WSASend 로 보낸다. 소켓 버퍼에 보낼 데이터의 포인터를 쓰기에 write 라고 표현하신 것 같다.
+/// Write 할 때의 데이터 포인터를 WSASend 가 끝날 때까지 살려놓아야 하는데, 이 포인터를 큐에 넣어놓고 완료되면 삭제하는 식으로 이것을 진행한다.
+/// PacketSession 클래스에서 위의 과정을 처리한다.
+/// </summary>
+/// <param name="data"></param>
+/// <param name="dataLength"></param>
+/// <returns></returns>
 BOOL CNetworkSession::Write(BYTE* data, DWORD dataLength)
 {
 	CThreadSync Sync;
@@ -372,9 +408,10 @@ BOOL CNetworkSession::Write(BYTE* data, DWORD dataLength)
 	DWORD	WriteBytes	= 0;
 	DWORD	WriteFlag	= 0;
 
-	WsaBuf.buf			= (CHAR*)data;
+	WsaBuf.buf			= (CHAR*)data;			// 데이터를 보낼 포인터 입력.
 	WsaBuf.len			= dataLength;
 
+	// WSARecv 와 비슷하다. Scatter/Gather 를 위해 멀티 버퍼를 사용하는 점까지 비슷하다. 그러므로 자세한 설명은 생략.
 	INT		ReturnValue = WSASend(mSocket,
 		&WsaBuf,
 		1,
@@ -393,6 +430,12 @@ BOOL CNetworkSession::Write(BYTE* data, DWORD dataLength)
 	return TRUE;
 }
 
+/// <summary>
+/// WSAConnect 를 통해 접속하는 함수. 서버 간의 통신에서도 이용할 수 있다.
+/// </summary>
+/// <param name="address"></param>
+/// <param name="port"></param>
+/// <returns></returns>
 BOOL CNetworkSession::Connect(LPSTR address, USHORT port)
 {
 	CThreadSync Sync;				// 동기화 용도
@@ -434,6 +477,11 @@ BOOL CNetworkSession::Connect(LPSTR address, USHORT port)
 	return TRUE;
 }
 
+/// <summary>
+/// UDP 를 사용하기 위한 bind 함수.
+/// </summary>
+/// <param name="port"></param>
+/// <returns></returns>
 BOOL CNetworkSession::UdpBind(USHORT port)
 {
 	CThreadSync Sync;
@@ -447,11 +495,13 @@ BOOL CNetworkSession::UdpBind(USHORT port)
 	RemoteAddressInfo.sin_port				= htons(port);
 	RemoteAddressInfo.sin_addr.S_un.S_addr	= htonl(INADDR_ANY);
 
+	// UDP 용 소켓 생성, IPPROTO_UDP 그리고 SOCK_DGRAM 부분이 TCP 와 다른 것을 알 수 있다.
 	mSocket = WSASocket(AF_INET, SOCK_DGRAM, IPPROTO_UDP, NULL, 0, WSA_FLAG_OVERLAPPED);
 
 	if (mSocket == INVALID_SOCKET)
 		return FALSE;
 
+	// 설정된 주소로 Bind 한다. 앞으로 Bind 된 주소로 패킷을 보낼 것이다.
 	if (bind(mSocket, (struct sockaddr*)&RemoteAddressInfo, sizeof(SOCKADDR_IN)) == SOCKET_ERROR)
 	{
 		End();
@@ -459,6 +509,7 @@ BOOL CNetworkSession::UdpBind(USHORT port)
 		return FALSE;
 	}
 
+	// 종료 Event 오브젝트 생성 및 할당
 	mReliableUdpThreadDestroyEvent = CreateEvent(0, FALSE, FALSE, 0);
 	if (mReliableUdpThreadDestroyEvent == NULL)
 	{
@@ -467,6 +518,17 @@ BOOL CNetworkSession::UdpBind(USHORT port)
 		return FALSE;
 	}
 
+	// 시작 Event 오브젝트 생성 및 할당
+	mReliableUdpThreadStartupEvent = CreateEvent(0, FALSE, FALSE, 0);
+	if (mReliableUdpThreadStartupEvent == NULL)
+	{
+		End();
+
+		return FALSE;
+	}
+
+	// TODO: 이게 큐 IOCP 대기열에 있다가 깨어나는 것을 말하는 건가? 확인
+	// WakeUp Event 오브젝트 생성 및 할당
 	mReliableUdpThreadWakeUpEvent = CreateEvent(0, FALSE, FALSE, 0);
 	if (mReliableUdpThreadWakeUpEvent == NULL)
 	{
@@ -475,6 +537,7 @@ BOOL CNetworkSession::UdpBind(USHORT port)
 		return FALSE;
 	}
 
+	// Write Event 오브젝트를 생성해서 할당
 	mReliableUdpWriteCompleteEvent = CreateEvent(0, FALSE, FALSE, 0);
 	if (mReliableUdpWriteCompleteEvent == NULL)
 	{
@@ -483,9 +546,20 @@ BOOL CNetworkSession::UdpBind(USHORT port)
 		return FALSE;
 	}
 
-	DWORD ReliableUdpThreadID = 0;
+	// Reliable UDP 에서 사용할 큐를 초기화
+	if (!mReliableWriteQueue.Begin())
+	{
+		End();
+
+		return FALSE;
+	}
+
+	// Reliable UDP 용 스레드 생성
+	DWORD ReliableUdpThreadID = 0;	// ThreadID 받아오는 변수
 	mReliableUdpThreadHandle = CreateThread(NULL, 0, ::ReliableUdpThreadCallback, this, 0, &ReliableUdpThreadID);
 
+	// 이벤트 객체 생성될 때까지 대기 (Event 객체가 Signal 할 때까지 대기) 
+	// Signal 은 특정 이벤트가 발생했다는 것을 알리는 것이다. 인터럽트라고 부르기도 한다.
 	WaitForSingleObject(mReliableUdpThreadStartupEvent, INFINITE);
 
 	return TRUE;
@@ -543,6 +617,11 @@ USHORT CNetworkSession::GetLocalPort(VOID)
 	return 0;
 }
 
+/// <summary>
+/// IOCP 를 사용하는 초기 받기 함수. 이후 ReadForIocp 를 통해 데이터를 옮긴다.
+/// </summary>
+/// <param name=""></param>
+/// <returns></returns>
 BOOL CNetworkSession::InitializeReadFromForIocp(VOID)
 {
 	CThreadSync Sync;
