@@ -32,6 +32,14 @@ BOOL CCircularQueue::End(VOID)
 	return TRUE;
 }
 
+/// <summary>
+/// 데이터 포인터를 받으면 그것을 복사해서 저장하고, 그 저장된 데이터의 포인터를 리턴한다.
+/// 이로 인해 임시 변수의 데이터를 받아도 그것을 큐에 저장해놓을 수 있다.
+/// </summary>
+/// <param name="object"></param>
+/// <param name="data"></param>
+/// <param name="dataLength"></param>
+/// <returns></returns>
 BYTE* CCircularQueue::Push(VOID* object, BYTE* data, DWORD dataLength)
 {
 	CThreadSync Sync;
@@ -49,6 +57,7 @@ BYTE* CCircularQueue::Push(VOID* object, BYTE* data, DWORD dataLength)
 	mQueue[TempTail].Object = object;
 	mQueue[TempTail].DataLength = dataLength;
 
+	// 여기서 복사를 해두기에 임시로 만든 데이터를 저장해둘 수 있는 것이다.
 	memcpy(mQueue[TempTail].Data, data, dataLength);
 
 	mQueueTail = TempTail;

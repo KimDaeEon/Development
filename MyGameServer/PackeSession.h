@@ -25,7 +25,8 @@ private:
 	CCircularQueue						WriteQueue;
 
 	//std::map<std::string, DWORD>		mLastReadPacketInfoMapForUdp;
-	std::vector<READ_PACKET_INFO>		mLastReadPacketInfoVectorForUdp;
+	std::vector<READ_PACKET_INFO>		mLastReadPacketInfoVectorForUdp;		// UDP 에서 사용할 받은 패킷정보를 저장하는 벡터 
+																				// TCP 와 다르게 UDP 에서는 한 개체가 여러 접속을 관리하기 때문이다.
 
 public:
 	BOOL	Begin(VOID);

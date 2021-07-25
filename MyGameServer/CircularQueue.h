@@ -1,6 +1,5 @@
 #pragma once
 #include "Global.h"
-// TODO: 여기 책에서 갑자기 대폭 변경되었다. 다시 코드 보면서 바뀐 부분에 대해 이해하자.
 
 typedef struct _QUEUE_DATA
 {
