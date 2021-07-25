@@ -7,6 +7,7 @@
 #include<assert.h>
 #include<minidumpapiset.h>
 #include<mswsock.h>
+#include<vector>
 
 enum IO_TYPE
 {

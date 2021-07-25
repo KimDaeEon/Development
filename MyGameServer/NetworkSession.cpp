@@ -50,6 +50,7 @@ CNetworkSession::~CNetworkSession(VOID)
 
 VOID CNetworkSession::ReliableUdpThreadCallback(VOID)
 {
+	// 이런 형태로 전역 콜백 함수들을 클래스 내에서 관리하는 것이 유지 보수 및 구조적인 프로그래밍에 좋다고 하셨다. 염두하자.
 	DWORD	EventID						= 0;			// ReliableUDPThread 의 시작과 종료를 담당하는 이벤트 ID
 	HANDLE	ThreadEvents[2]				= { mReliableUdpThreadDestroyEvent, mReliableUdpThreadWakeUpEvent };	// 시작, 종료 이벤트
 
@@ -77,16 +78,18 @@ NEXT_DATA:
 			if (mReliableWriteQueue.Pop(&Object, Data, DataLength, RemoteAddress, RemotePort))
 			{
 RETRY:
+				// WriteTo2 는 WSASendTo 로 실제 데이터를 보낸다. WriteTo 는 보낼 데이터를 큐에 넣는다.
 				if (!WriteTo2(RemoteAddress, RemotePort, Data, DataLength))
 					return;
 
 				// 데이터가 있을 경우 위에서 처럼 데이터를 보내고, 기다린다. 받은 곳에서 SetEvent 호출하면 여기를 바로 넘어간다.
-				// SetEvent 호출 안해도 10 밀리 세컨드(1000분의 1초)만큼만 기다리겠단 뜻. 즉 0.01초
+				// SetEvent 호출 안해도 10 밀리 세컨드(1000분의 1초)만큼만 기다리겠단 뜻. 즉 0.01초만 기다리고, 이를 넘으면 전송 실패로 간주하고 재전송한다.
 				DWORD result = WaitForSingleObject(mReliableUdpWriteCompleteEvent, 10);
 
 				if (result == WAIT_OBJECT_0)  // 해당 이벤트가 singaled 상태, 즉 스레드에 의해서 사용될 수 있는 상태이면 넘어간다.
 					goto NEXT_DATA;
 				else  // 해당 시간안에 처리가 안되면 재시도
+					// TODO: 원래는 일정 이상 Retry 를 하면 데이터 손실로 인정하는 부분을 구현해야 한다.
 					goto RETRY;
 			}
 			else
@@ -323,7 +326,7 @@ BOOL CNetworkSession::InitializeReadForIocp(VOID)
 
 /// <summary>
 /// WSARecv 를 통해 받아온 데이터가 들어있는 mReadBuffer 에서 데이터를 복사해서 읽어온다. 
-/// 이후 읽어온 데이터를 바탕으로 어떤 작업을 해야 할지 판단한다.
+/// 이후 읽어온 데이터를 바탕으로 어떤 작업을 해야 할지 판단한다. 이란 과정이 EventSelect 의 Read 와 다르다.
 /// </summary>
 /// <param name="data"></param>
 /// <param name="dataLength"></param>
@@ -344,7 +347,7 @@ BOOL CNetworkSession::ReadForIocp(BYTE* data, DWORD& dataLength)
 }
 
 /// <summary>
-/// IOCP 가 아닌, 이베트 방식에서 사용할 Read 함수.
+/// IOCP 가 아닌, 이벤트 방식에서 사용할 Read 함수.
 /// </summary>
 /// <param name="data"></param>
 /// <param name="dataLength"></param>
@@ -386,8 +389,7 @@ BOOL CNetworkSession::ReadForEventSelect(BYTE* data, DWORD& dataLength)
 		return FALSE;
 	}
 
-	// IOCP 와 데이터가 도착했다는 신호를 받으면 여기서 바로 받은 내용을 복사한다.
-	// IOCP 는 미리 WSARecv 를 호출해 놓아야 데이터를 받을 수 있고, WSARecv 로 데이터를 받는 것이 아니라 WSARecv 의 버퍼에서 데이터를 확인한다.
+	// IOCP 와 다르게 데이터가 도착했다는 신호를 받으면 여기서 바로 받은 내용을 복사한다.
 	memcpy(data, mReadBuffer, ReadBytes);
 	dataLength = ReadBytes;
 
@@ -627,7 +629,7 @@ USHORT CNetworkSession::GetLocalPort(VOID)
 }
 
 /// <summary>
-/// IOCP 를 사용하는 초기 받기 함수. 이후 ReadForIocp 를 통해 데이터를 옮긴다.
+/// IOCP 를 사용하는 UDP 초기 받기 함수. 
 /// </summary>
 /// <param name=""></param>
 /// <returns></returns>
@@ -646,13 +648,27 @@ BOOL CNetworkSession::InitializeReadFromForIocp(VOID)
 	WsaBuf.buf	= (CHAR*)mReadBuffer;
 	WsaBuf.len	= MAX_BUFFER_LENGTH;
 
+	/*int WSAAPI WSARecvFrom(
+		SOCKET                             s,
+		LPWSABUF                           lpBuffers,				// 받은 데이터를 저장할 버퍼
+		DWORD                              dwBufferCount,			// 원형 버퍼를 사용할 때 사용하는 버퍼 개수
+		LPDWORD                            lpNumberOfBytesRecvd,	// 동시 소켓에서 받은 데이터 크기
+		LPDWORD                            lpFlags,
+		sockaddr * lpFrom,											// 데이터를 받은 상대의 주소 정보, WSARecv 와 차이점.
+		LPINT                              lpFromlen,				// 상대 주소 정보의 길이, WSARecv 와 차이점.
+		LPWSAOVERLAPPED                    lpOverlapped,			
+		LPWSAOVERLAPPED_COMPLETION_ROUTINE lpCompletionRoutine		// Callback 방식의 소켓 이벤트 방식을 구성할 때 사용
+	);*/
+
 	INT		ReturnValue = WSARecvFrom(mSocket,
 		&WsaBuf,
 		1,
 		&ReadBytes,
 		&ReadFlag,
-		(SOCKADDR*)&mUdpRemoteInfo,
-		&RemoteAddressInfoSize,
+		(SOCKADDR*)&mUdpRemoteInfo,		// WSARecv 와 다른 파라미터다. 데이터를 보낸 상대의 주소 정보. 이것을 따로 저장하는 것이 TCP 와 다르다.
+		&RemoteAddressInfoSize,			// WSARecv 와 다른 파라미터다. 주소 정보 길이 
+										// TCP 같은 경우는 listen 하다가 Accept 하고 나서 연결되는 포트 따로 생기고 관리되는데, 
+										// UDP 는 그런 거 없어서 이 정보를 저장해놓고 여기로 바로 통신하는 것이다.
 		&mReadOverlapped.Overlapped,
 		NULL);
 
@@ -666,6 +682,14 @@ BOOL CNetworkSession::InitializeReadFromForIocp(VOID)
 	return TRUE;
 }
 
+/// <summary>
+/// IOCP 에서 실제로 받은 데이터를 확인하는 함수.
+/// </summary>
+/// <param name="remoteAddress"></param>
+/// <param name="remotePort"></param>
+/// <param name="data"></param>
+/// <param name="dataLength"></param>
+/// <returns></returns>
 BOOL CNetworkSession::ReadFromForIocp(LPSTR remoteAddress, USHORT& remotePort, BYTE* data, DWORD& dataLength)
 {
 	CThreadSync Sync;
@@ -676,29 +700,45 @@ BOOL CNetworkSession::ReadFromForIocp(LPSTR remoteAddress, USHORT& remotePort, B
 	if (!data || dataLength <= 0)
 		return FALSE;
 
+	// WSARecvFrom 에서 받아온 데이터를 data 에 복사.
 	memcpy(data, mReadBuffer, dataLength);
 
+	// 데이터를 보낸 IP 주소 확인
 	strcpy(remoteAddress, inet_ntoa(mUdpRemoteInfo.sin_addr));
+	// 데이터를 보낸 포트 확인
 	remotePort = ntohs(mUdpRemoteInfo.sin_port);
 
 	USHORT Ack = 0;
+	// mReadBuffer 에서 맨 앞 2바이트를 복사해서 확인
 	memcpy(&Ack, mReadBuffer, sizeof(USHORT));
 
-	if (Ack == 9999)
+	if (Ack == 9999) // 앞의 2바이트가 9999일 경우 데이터를 잘 받아서 보내는 '응답(Ack) 패킷'으로 인식
 	{
+		// 응답 패킷을 받았으므로 Complete 이벤트를 통해 다음 데이터를 전송
 		SetEvent(mReliableUdpWriteCompleteEvent);
 
 		return FALSE;
 	}
 	else
 	{
-		Ack = 9999;
+		// 새로운 데이터를 내가 받은 경우
+		Ack = 9999; 
+
+		// 데이터를 보낸 주소로 Ack 2바이트를 9999로 전송, 상대가 데이터 보냈으니 잘 받았다고 알리는 것이다.
 		WriteTo2(remoteAddress, remotePort, (BYTE*)&Ack, sizeof(USHORT));
 	}
 
 	return TRUE;
 }
 
+/// <summary>
+/// EventSelect 방식을 사용할 때의 ReadFrom 함수. WSARecvFrom 을 사용한다.
+/// </summary>
+/// <param name="remoteAddress"></param>
+/// <param name="remotePort"></param>
+/// <param name="data"></param>
+/// <param name="dataLength"></param>
+/// <returns></returns>
 BOOL CNetworkSession::ReadFromForEventSelect(LPSTR remoteAddress, USHORT& remotePort, BYTE* data, DWORD& dataLength)
 {
 	CThreadSync	Sync;
@@ -709,7 +749,7 @@ BOOL CNetworkSession::ReadFromForEventSelect(LPSTR remoteAddress, USHORT& remote
 	if (!data)
 		return FALSE;
 
-	if (!mSocket) // 이게 똑같은 mSocket 체크를 2번 씩 하시는데.. 의도된 것인가? 다른 것도 이러던데.. 실수 아닌지 확인해보자.
+	if (!mSocket) // TODO: 이게 똑같은 mSocket 체크를 2번 씩 하시는데.. 의도된 것인가? 다른 것도 이러던데.. 실수 아닌지 확인해보자.
 		return FALSE;
 
 	WSABUF	WsaBuf;
@@ -737,15 +777,20 @@ BOOL CNetworkSession::ReadFromForEventSelect(LPSTR remoteAddress, USHORT& remote
 		return FALSE;
 	}
 
-	memcpy(data, mReadBuffer, ReadBytes);
+	// IOCP 와 다르게 바로 결과가 나온다. 그래서 데이터를 받아 확인한다.
+	memcpy(data, mReadBuffer, ReadBytes);	// CopyMemory 랑 같다.
 	dataLength = ReadBytes;
 
+	// 주소 정보를 복사한다.
+	// TODO: 주소가 바뀔 일이 있나? 왜 매번 복사할까..
 	strcpy(remoteAddress, inet_ntoa(mUdpRemoteInfo.sin_addr));
 	remotePort = ntohs(mUdpRemoteInfo.sin_port);
 
+	// IOCP 와 같은 Reliable UDP 를 보장해주는 코드이다.
 	USHORT Ack = 0;
 	memcpy(&Ack, mReadBuffer, sizeof(USHORT));
 
+	// IOCP 의 ReadFrom과 동일하게 9999에 대한 처리를 한다.
 	if (Ack == 9999)
 	{
 		SetEvent(mReliableUdpWriteCompleteEvent);
@@ -761,6 +806,14 @@ BOOL CNetworkSession::ReadFromForEventSelect(LPSTR remoteAddress, USHORT& remote
 	return TRUE;
 }
 
+/// <summary>
+/// 사용자(Client)들이 호출하는 WriteTo 함수. 데이터를 큐에 넣어 놓는 역할을 한다.
+/// </summary>
+/// <param name="remoteAddress"></param>
+/// <param name="remotePort"></param>
+/// <param name="data"></param>
+/// <param name="dataLength"></param>
+/// <returns></returns>
 BOOL CNetworkSession::WriteTo(LPCSTR remoteAddress, USHORT remotePort, BYTE* data, DWORD dataLength)
 {
 	CThreadSync Sync;
@@ -771,11 +824,14 @@ BOOL CNetworkSession::WriteTo(LPCSTR remoteAddress, USHORT remotePort, BYTE* dat
 	if (!remoteAddress || remotePort <= 0 || !data || dataLength <= 0)
 		return FALSE;
 
+	// 큐에 데이터 입력
 	if (!mReliableWriteQueue.Push(this, data, dataLength, remoteAddress, remotePort))
 		return FALSE;
 
+	// 현재 보내는 데이터가 없는 경우
 	if (!mIsReliableUdpSending)
 	{
+		// 보내는 데이터가 있다고 플래그를 바꾸고, ReliableUDPThread 를 깨운다.
 		mIsReliableUdpSending = TRUE;
 		SetEvent(mReliableUdpThreadWakeUpEvent);
 	}
@@ -783,6 +839,14 @@ BOOL CNetworkSession::WriteTo(LPCSTR remoteAddress, USHORT remotePort, BYTE* dat
 	return TRUE;
 }
 
+/// <summary>
+/// 실제로 WSAsendTo 를 써서 UDP 로 데이터를 보내는 함수이다.
+/// </summary>
+/// <param name="remoteAddress"></param>
+/// <param name="remotePort"></param>
+/// <param name="data"></param>
+/// <param name="dataLength"></param>
+/// <returns></returns>
 BOOL CNetworkSession::WriteTo2(LPSTR remoteAddress, USHORT remotePort, BYTE* data, DWORD dataLength)
 {
 	CThreadSync Sync;
@@ -803,17 +867,19 @@ BOOL CNetworkSession::WriteTo2(LPSTR remoteAddress, USHORT remotePort, BYTE* dat
 	WsaBuf.buf							= (CHAR*)data;
 	WsaBuf.len							= dataLength;
 
+	// 데이터를 보낼 주소 입력
 	RemoteAddressInfo.sin_family			= AF_INET;
 	RemoteAddressInfo.sin_addr.S_un.S_addr	= inet_addr(remoteAddress);
 	RemoteAddressInfo.sin_port				= htons(remotePort);
 
+	// WSASendTo 함수를 이용해서 데이터 전송
 	INT			ReturnValue = WSASendTo(mSocket,
 		&WsaBuf,
 		1,
 		&WriteBytes,
 		WriteFlag,
-		(SOCKADDR*)&RemoteAddressInfo,
-		RemoteAddressInfoSize,
+		(SOCKADDR*)&RemoteAddressInfo,		// 보낼 주소 정보
+		RemoteAddressInfoSize,				// 보낼 주소 정보 길이, UDP 라서 이 패러미터를 쓴다.
 		&mWriteOverlapped.Overlapped,
 		NULL);
 
