@@ -27,7 +27,7 @@ VOID CEventSelect::SelectThreadCallback(VOID)
 		// 스레드가 정상적으로 시작되었다는 것을 Begin 함수에 알려준다.
 		SetEvent(mStartupEventHandle);
 
-		// 특정 이벤트가 발생할 때까지 계속 대기한다.
+		// 특정 이벤트가 발생할 때까지 '계속' 대기한다.
 		EventID = ::WaitForMultipleObjects(2, ThreadEvents, FALSE, INFINITE);
 		switch (EventID)
 		{
@@ -37,7 +37,7 @@ VOID CEventSelect::SelectThreadCallback(VOID)
 
 		// 소켓 이벤트가 발생했을 경우
 		case WAIT_OBJECT_0 + 1:
-			/*int WSAAPI WSAEnumNetworkEvents(
+			/*int WSAAPI WSAEnumNetworkEvents(			// 소켓에서 발생한 네트워크 이벤트의 종류를 알아내고 내부 네트워크 이벤트 레코드를 클리어하고, (선택 가능)이벤트 객체를 리셋한다.
 				SOCKET             s,
 				WSAEVENT           hEventObject,		// 이벤트를 관리하는 핸들
 				LPWSANETWORKEVENTS lpNetworkEvents		// 발생된 이벤트를 담는 변수 포인터 (에러 포함)
@@ -150,12 +150,12 @@ BOOL CEventSelect::Begin(SOCKET socket)
 		return FALSE;
 	}
 
-	/*int WSAAPI WSAEventSelect(		// 이 함수는 이벤트 객체가 어떤 네트워크 이벤트들을 관리할지를 정하는 함수이다. 0이 리턴될 경우 성공이다.
-		SOCKET   s,
-		WSAEVENT hEventObject,			// 어떤 이벤트들과 묶일지 결정되는 이벤트 핸들
-		long     lNetworkEvents			// 어떤 이벤트들을 관리할 지 정하는 플래그 비트를 담은 변수
+	/*int WSAAPI WSAEventSelect(		// 이 함수는 소켓과 이벤트 객체를 짝짓는 함수이다. 0이 리턴될 경우 성공이다.
+		SOCKET   s,						// 등록될 소켓 핸들
+		WSAEVENT hEventObject,			// 어떤 이벤트들과 묶일지 결정하는 이벤트 핸들
+		long     lNetworkEvents			// 어떤 네트워크 이벤트들을 관리할 지 정하는 플래그 비트를 담은 변수, FD_CONNECT 면 Connect 가 일어나면 이벤트가 Signal 이 된다.
 	);*/
-	// Connect, Read, Write, Close 소켓 이벤트를 관리하는 것으로 설정
+	// Connect, Read, Write, Close 소켓 이벤트를 관리하는 것으로 설정 (해당 이벤트들이 발생하면 Signal 이 되는 것이다.)
 	DWORD Result = WSAEventSelect(socket, mSelectEventHandle, FD_CONNECT | FD_READ | FD_WRITE | FD_CLOSE);
 	if (Result == SOCKET_ERROR)
 	{

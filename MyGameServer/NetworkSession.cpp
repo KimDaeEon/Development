@@ -122,6 +122,11 @@ BOOL CNetworkSession::Begin(VOID) {
 	return TRUE;
 }
 
+/// <summary>
+/// UDP 네트워크 세션 종료 함수이다. 소켓, 이벤트 객체(Destroy, Startup, Complete, WakeUp) 등을 모두 Close 한다.
+/// </summary>
+/// <param name=""></param>
+/// <returns></returns>
 BOOL CNetworkSession::End(VOID)
 {
 	CThreadSync Sync;
@@ -159,6 +164,12 @@ BOOL CNetworkSession::End(VOID)
 	return TRUE;
 }
 
+/// <summary>
+/// TcpBind 후에 실행하는 Listen 함수이다.
+/// </summary>
+/// <param name="port"></param>
+/// <param name="backLog"></param>
+/// <returns></returns>
 BOOL CNetworkSession::Listen(USHORT port, INT backLog)
 {
 	CThreadSync Sync;
@@ -576,6 +587,12 @@ BOOL CNetworkSession::UdpBind(USHORT port)
 	return TRUE;
 }
 
+/// <summary>
+/// TCP 형식으로 소켓 할당하고 바인딩하는 함수이다. 
+/// 이 함수를 호출한 후, Listen 을 실행합니다.
+/// </summary>
+/// <param name=""></param>
+/// <returns></returns>
 BOOL CNetworkSession::TcpBind(VOID)
 {
 	CThreadSync Sync;
@@ -930,6 +947,11 @@ BOOL CNetworkSession::GetRemoteAddressAfterAccept(LPTSTR remoteAddress, USHORT& 
 	return TRUE;
 }
 
+/// <summary>
+/// 멤버 소켓 핸들 리턴하는 함수이다.
+/// </summary>
+/// <param name=""></param>
+/// <returns></returns>
 SOCKET CNetworkSession::GetSocket(VOID)
 {
 	CThreadSync Sync;

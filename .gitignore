@@ -149,3 +149,27 @@ TCP_IP Socket Practice/TCP_IP Socket Practice/Debug/IOCP Client.pdb
 TCP_IP Socket Practice/TCP_IP Socket Practice/Debug/IOCP Server.exe
 TCP_IP Socket Practice/TCP_IP Socket Practice/Debug/IOCP Server.ilk
 TCP_IP Socket Practice/TCP_IP Socket Practice/Debug/IOCP Server.pdb
+MyGameServer/.vs/MyGameServer/v16/ipch/AutoPCH/331177050e5d8e47/EVENTSELECT.ipch
+MyGameServer/.vs/MyGameServer/v16/ipch/AutoPCH/3a83261362ab09c4/IOCP.ipch
+MyGameServer/.vs/MyGameServer/v16/ipch/AutoPCH/4f64762d91fc404b/CLIENTSESSION.ipch
+MyGameServer/.vs/MyGameServer/v16/ipch/AutoPCH/5d67b4821b6e19fa/EVENTSELECT.ipch
+MyGameServer/.vs/MyGameServer/v16/ipch/AutoPCH/62863b11036cfe16/PACKETSESSION.ipch
+MyGameServer/.vs/MyGameServer/v16/ipch/AutoPCH/bd75aeb76c1bed16/CLIENTSESSION.ipch
+MyGameServer/.vs/MyGameServer/v16/ipch/AutoPCH/d36c64853a740645/IOCP.ipch
+MyGameServer/.vs/MyGameServer/v16/ipch/AutoPCH/e713039d4f5f7ef3/PACKETSESSION.ipch
+MyGameServer/Debug/CircularQueue.obj
+MyGameServer/Debug/EventSelect.obj
+MyGameServer/Debug/IniFile.obj
+MyGameServer/Debug/Iocp.obj
+MyGameServer/Debug/MiniDump.obj
+MyGameServer/Debug/MyGameServer.lib
+MyGameServer/Debug/MyGameServer.vcxproj.FileListAbsolute.txt
+MyGameServer/Debug/NetworkSession.obj
+MyGameServer/Debug/PacketSession.obj
+MyGameServer/Debug/Service.obj
+MyGameServer/Debug/MyGameServer.tlog/Lib.command.1.tlog
+MyGameServer/Debug/MyGameServer.tlog/Lib.read.1.tlog
+MyGameServer/Debug/MyGameServer.tlog/Lib-link.write.1.tlog
+TCP_IP Socket Practice/TCP_IP Socket Practice/.vs/TCP_IP Socket Practice/v16/Solution.VC.db
+TCP_IP Socket Practice/TCP_IP Socket Practice/.vs/TCP_IP Socket Practice/v16/ipch/AutoPCH/9222c5d7cb864821/EVENTSELECT CLIENT.ipch
+TCP_IP Socket Practice/TCP_IP Socket Practice/.vs/TCP_IP Socket Practice/v16/ipch/AutoPCH/fe7261bca57b7499/EVENTSELECT SERVER.ipch
