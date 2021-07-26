@@ -26,17 +26,17 @@ CNetworkSession::CNetworkSession(VOID)
 	memset(&mUdpRemoteInfo, 0, sizeof(mUdpRemoteInfo));
 
 	mSocket							= NULL;
-	mReliableUdpThreadHandle		= NULL;		// 보낸 패킷을 받을 때까지 계속 전송해주는 ReliableUDP 를 사용하는 Thread 핸들.
-	mReliableUdpThreadStartupEvent	= NULL;		// ReliableUDP를 사용하는 Thread의 시작을 알리는 이벤트.
-	mReliableUdpThreadDestroyEvent	= NULL;		// ReliableUDP를 사용하는 Thread의 종료를 알리는 이벤트.
-	mReliableUdpThreadWakeUpEvent	= NULL;		// ReliableUDP를 사용하는 Thread 깨울 때에 사용하는 이벤트.
-	mReliableUdpWriteCompleteEvent	= NULL;		// 상대가 패킷을 받아서 더 이상 보낼 필요가 없을 때에 사용하는 이벤트.
+	mReliableUdpThreadHandle		= NULL;			// 보낸 패킷을 받을 때까지 계속 전송해주는 ReliableUDP 를 사용하는 Thread 핸들.
+	mReliableUdpThreadStartupEvent	= NULL;			// ReliableUDP를 사용하는 Thread의 시작을 알리는 이벤트.
+	mReliableUdpThreadDestroyEvent	= NULL;			// ReliableUDP를 사용하는 Thread의 종료를 알리는 이벤트.
+	mReliableUdpThreadWakeUpEvent	= NULL;			// ReliableUDP를 사용하는 Thread 깨울 때에 사용하는 이벤트.
+	mReliableUdpWriteCompleteEvent	= NULL;			// 상대가 패킷을 받아서 더 이상 보낼 필요가 없을 때에 사용하는 이벤트.
 
-	mIsReliableUdpSending			= FALSE;	// 현재 Reliable 하게 보내고 있는 data 가 있는지 확인.
+	mIsReliableUdpSending			= FALSE;		// 현재 Reliable 하게 보내고 있는 data 가 있는지 확인.
 
-	mAcceptOverlapped.IoType		= IO_ACCEPT;
-	mReadOverlapped.IoType			= IO_READ;
-	mWriteOverlapped.IoType			= IO_WRITE;
+	mAcceptOverlapped.IoType		= IO_ACCEPT;	// 여기서 이 값을 넣어 놓아서 나중에 IOCP 에서 어떤 IO 인지를 판단한다.
+	mReadOverlapped.IoType			= IO_READ;		// 여기서 이 값을 넣어 놓아서 나중에 IOCP 에서 어떤 IO 인지를 판단한다.
+	mWriteOverlapped.IoType			= IO_WRITE;		// 여기서 이 값을 넣어 놓아서 나중에 IOCP 에서 어떤 IO 인지를 판단한다.
 
 	mAcceptOverlapped.Object		= this;
 	mReadOverlapped.Object			= this;
@@ -683,7 +683,7 @@ BOOL CNetworkSession::InitializeReadFromForIocp(VOID)
 }
 
 /// <summary>
-/// IOCP 에서 실제로 받은 데이터를 확인하는 함수.
+/// IOCP 사용하는 UDP 에서 실제로 받은 데이터를 확인하는 함수.
 /// </summary>
 /// <param name="remoteAddress"></param>
 /// <param name="remotePort"></param>

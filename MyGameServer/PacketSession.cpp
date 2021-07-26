@@ -458,6 +458,12 @@ BOOL CPacketSession::WriteComplete(VOID)
 	return WriteQueue.Pop();
 }
 
+/// <summary>
+/// UDP 에서 관리하는 주소 벡터를 리셋한다. 그 외에 것은 하지 않는다.
+/// 전혀 다른 새로운 곳에서 데이터를 받아야 할 때에 사용한다. ex) 로비에서 게임을 시작하고 종료한 후, 새로운 사람들과 게임을 하게 될 때에 이것을 호출한다.
+/// </summary>
+/// <param name=""></param>
+/// <returns></returns>
 BOOL CPacketSession::ResetUdp(VOID)
 {
 	CThreadSync	Sync;
