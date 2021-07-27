@@ -173,3 +173,29 @@ MyGameServer/Debug/MyGameServer.tlog/Lib-link.write.1.tlog
 TCP_IP Socket Practice/TCP_IP Socket Practice/.vs/TCP_IP Socket Practice/v16/Solution.VC.db
 TCP_IP Socket Practice/TCP_IP Socket Practice/.vs/TCP_IP Socket Practice/v16/ipch/AutoPCH/9222c5d7cb864821/EVENTSELECT CLIENT.ipch
 TCP_IP Socket Practice/TCP_IP Socket Practice/.vs/TCP_IP Socket Practice/v16/ipch/AutoPCH/fe7261bca57b7499/EVENTSELECT SERVER.ipch
+MyGameServer/MyGameServer.sln
+MyGameServer/.vs/MyGameServer/v16/ipch/AutoPCH/c3abc0f07e01a8d5/PACKETGENERATOR.ipch
+MyGameServer/.vs/MyGameServer/v16/ipch/AutoPCH/f27b574310439414/PACKETGENERATOR.ipch
+MyGameServer/Debug/ClientSession.obj
+MyGameServer/Debug/MyGameServer.Build.CppClean.log
+MyGameServer/Debug/PacketGenerator.exe
+MyGameServer/Debug/PacketGenerator.ilk
+MyGameServer/Debug/PacketGenerator.pdb
+MyGameServer/Debug/MyGameServer.tlog/Lib-link.read.1.tlog
+PacketGenerator/PacketGenerator.vcxproj
+PacketGenerator/PacketGenerator.vcxproj.filters
+PacketGenerator/PacketGenerator.vcxproj.user
+PacketGenerator/Debug/PacketGenerator.Build.CppClean.log
+PacketGenerator/Debug/PacketGenerator.exe.recipe
+PacketGenerator/Debug/PacketGenerator.log
+PacketGenerator/Debug/PacketGenerator.obj
+PacketGenerator/Debug/PacketGenerator.vcxproj.FileListAbsolute.txt
+PacketGenerator/Debug/vc142.idb
+PacketGenerator/Debug/vc142.pdb
+PacketGenerator/Debug/PacketGenerator.tlog/CL.command.1.tlog
+PacketGenerator/Debug/PacketGenerator.tlog/CL.read.1.tlog
+PacketGenerator/Debug/PacketGenerator.tlog/CL.write.1.tlog
+PacketGenerator/Debug/PacketGenerator.tlog/link.command.1.tlog
+PacketGenerator/Debug/PacketGenerator.tlog/link.read.1.tlog
+PacketGenerator/Debug/PacketGenerator.tlog/link.write.1.tlog
+PacketGenerator/Debug/PacketGenerator.tlog/PacketGenerator.lastbuildstate
