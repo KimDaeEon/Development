@@ -1,4 +1,4 @@
-#include "Global.h"
+#include "stdafx.h"
 #include "CriticalSection.h"
 #include "MultiThreadSync.h"
 #include "CircularQueue.h"
