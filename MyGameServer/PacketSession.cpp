@@ -1,5 +1,10 @@
-#include "PacketSession.h"
+#include "stdafx.h"
 #include "Crypt.h"
+#include "CriticalSection.h"
+#include "MultiThreadSync.h"
+#include "CircularQueue.h"
+#include "NetworkSession.h"
+#include "PacketSession.h"
 
 CPacketSession::CPacketSession(VOID)
 {

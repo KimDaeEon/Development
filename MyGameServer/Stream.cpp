@@ -1,3 +1,7 @@
+#include "stdafx.h"
+#include "CriticalSection.h"
+#include "MultiThreadSync.h"
+#include "MemoryPool.h"
 #include "Stream.h"
 
 CStream::CStream(VOID) 
@@ -156,6 +160,24 @@ BOOL CStream::ReadBOOL(BOOL* data)
 	return TRUE;
 }
 
+BOOL CStream::ReadWCHAR(WCHAR* data)
+{
+	memcpy(data, mBufferPointer + mLength, sizeof(WCHAR));
+
+	mLength += sizeof(WCHAR);
+
+	return TRUE;
+}
+
+BOOL CStream::ReadWCHARs(LPWSTR data, DWORD length)
+{
+	memcpy(data, mBufferPointer + mLength, length * sizeof(WCHAR));
+
+	mLength += length * sizeof(WCHAR);
+
+	return TRUE;
+}
+
 #pragma endregion
 
 
@@ -268,6 +290,24 @@ BOOL CStream::WriteBOOL(BOOL data)
 	CopyMemory(mBufferPointer + mLength, &data, sizeof(BOOL));
 	mLength += sizeof(BOOL);
 	return true;
+}
+
+BOOL CStream::WriteWCHAR(WCHAR data)
+{
+	memcpy(mBufferPointer + mLength, &data, sizeof(WCHAR));
+
+	mLength += sizeof(WCHAR);
+
+	return TRUE;
+}
+
+BOOL CStream::WriteWCHARs(LPCWSTR data, DWORD length)
+{
+	memcpy(mBufferPointer + mLength, data, length * sizeof(WCHAR));
+
+	mLength += length * sizeof(WCHAR);
+
+	return TRUE;
 }
 
 /// <summary>

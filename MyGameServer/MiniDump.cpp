@@ -1,4 +1,6 @@
-#include"MiniDump.h"
+#include "stdafx.h"
+#include "MiniDump.h"
+
 
 typedef BOOL(WINAPI* MINIDUMPWRITEDUMP)( // Callback 함수 원형, 매번 이 형태로 함수 포인터 선언하기 귀찮으니 typedef 으로 이렇게 정의한 것이다.
 	HANDLE hProcess,

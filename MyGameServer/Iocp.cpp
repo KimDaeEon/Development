@@ -1,3 +1,4 @@
+#include "stdafx.h"
 #include "Iocp.h"
 
 DWORD WINAPI WorkerThreadCallback(LPVOID parameter)
@@ -45,8 +46,9 @@ BOOL CIocp::Begin(VOID)
 	/*HANDLE WINAPI CreateIoCompletionPort(
 		_In_     HANDLE    FileHandle,					// IOCP 에 등록할 핸들 값
 		_In_opt_ HANDLE    ExistingCompletionPort,		// 등록할 때에 미리 생성되어 있는 IOCP 핸들 값을 넣어준다. 생성시에는 NULL을 입력한다.
+															NULL 아니면 NumberOfConcurrentThreads 변수 값은 무시된다.	
 		_In_     ULONG_PTR CompletionKey,				// 등록할해당 핸들 값의 키 (대부분은 연결 개체를 입력)
-		_In_     DWORD     NumberOfConcurrentThreads	// 시스템에서 IOC용으로 할당할 스레드 개수, 0일 경우 자동으로 설정된다.
+		_In_     DWORD     NumberOfConcurrentThreads	// 시스템에서 IOC용으로 할당할 스레드 개수, 0일 경우 자동으로 CPU 갯수로 설정된다.
 	);*/
 	// IOCP 핸들 생성, 메인 IOCP 핸들이므로 모든 파라미터 값이 0이나 NULL이다. 앞으로 추가될 때에는 다른 패러미터들이 들어간다.
 	mIocpHandle = CreateIoCompletionPort(INVALID_HANDLE_VALUE, NULL, 0, 0);

@@ -1,8 +1,4 @@
 #pragma once
-#include "Global.h"
-#include "MultiThreadSync.h"
-#include "CircularQueue.h"
-
 
 class CNetworkSession : public CMultiThreadSync<CNetworkSession> 
 {

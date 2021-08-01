@@ -1,4 +1,5 @@
-#include"Crypt.h"
+#include "stdafx.h"
+#include "Crypt.h"
 
 const INT c1 = 52845;
 const INT c2 = 22719;

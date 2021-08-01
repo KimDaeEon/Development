@@ -1,5 +1,4 @@
 #pragma once
-#include "Global.h"
 
 /// <summary>
 /// 로그 클래스이다. 파일, 콘솔 화면, 디버그 창 3곳에 출력된다.

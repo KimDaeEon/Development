@@ -1,5 +1,4 @@
 #pragma once
-#include "Global.h"
 
 class CStream 
 {
@@ -25,6 +24,8 @@ public:
 	BOOL ReadSHORT(SHORT* data); 
 	BOOL ReadUSHORT(USHORT* data); 
 	BOOL ReadBOOL(BOOL* data); 
+	BOOL ReadWCHAR(WCHAR* data);
+	BOOL ReadWCHARs(LPWSTR data, DWORD length);
 
 	// Write ÇÔ¼ö
 	BOOL WriteInt32(INT data);
@@ -37,6 +38,8 @@ public:
 	BOOL WriteSHORT(SHORT data);
 	BOOL WriteUSHORT(USHORT data);
 	BOOL WriteBOOL(BOOL data);
+	BOOL WriteWCHAR(WCHAR data);
+	BOOL WriteWCHARs(LPCWSTR data, DWORD length);
 
 	DWORD GetLength(VOID);
 };

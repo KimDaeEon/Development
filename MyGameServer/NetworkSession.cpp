@@ -1,3 +1,7 @@
+#include "stdafx.h"
+#include "CriticalSection.h"
+#include "MultiThreadSync.h"
+#include "CircularQueue.h"
 #include "NetworkSession.h"
 // WaitForSingleObject = time-out 시간이 지날때까지 기다리거나, 어떤 오브젝트가 signaled 될 때까지 기다린다. (blocking), timeout 짧게 하면 스레드 끝나기 전에 리턴한다.
 // WAIT_OBJECT_0 해당 이벤트 오브젝트가 signaled 상태가 되었음을 알린다.

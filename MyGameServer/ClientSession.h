@@ -1,7 +1,4 @@
 #pragma once
-#include "Global.h"
-#include "PacketSession.h"
-#include "EventSelect.h"
 
 class CClientSession : public CEventSelect
 {

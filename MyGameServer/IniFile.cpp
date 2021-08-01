@@ -1,3 +1,4 @@
+#include "stdafx.h"
 #include "IniFile.h"
 // IniFile 에서 데이터를 가져올 때에 문자열로 가져오는 것을 기본으로 한다. 그래서 중간 중간 형변환 과정이 있다. 이것이 Registry 와의 차이점이다.
 

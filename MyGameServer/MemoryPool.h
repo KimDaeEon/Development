@@ -1,5 +1,4 @@
 #pragma once
-#include "Global.h"
 
 template <class T, int ALLOC_BLOCK_SIZE = 50>
 class CMemoryPool 

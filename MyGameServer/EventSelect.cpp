@@ -1,3 +1,4 @@
+#include "stdafx.h"
 #include "EventSelect.h"
 
 DWORD WINAPI SelectThreadCallback(LPVOID parameter)

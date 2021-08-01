@@ -1,5 +1,4 @@
 #pragma once
-#include "Global.h"
   
 typedef struct _QUEUE_DATA
 {

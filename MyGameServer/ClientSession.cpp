@@ -1,3 +1,10 @@
+#include "Global.h"
+#include "CriticalSection.h"
+#include "MultiThreadSync.h"
+#include "CircularQueue.h"
+#include "NetworkSession.h"
+#include "PacketSession.h"
+#include "EventSelect.h"
 #include "ClientSession.h"
 
 /// <summary>

@@ -1,6 +1,4 @@
 #pragma once
-#include "Global.h"
-#include "NetworkSession.h"
 
 typedef struct _READ_PACKET_INFO
 {

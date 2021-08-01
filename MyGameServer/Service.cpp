@@ -1,4 +1,5 @@
-#include"Service.h"
+#include "stdafx.h"
+#include "Service.h"
 
 CService* gOwner = NULL;
 
