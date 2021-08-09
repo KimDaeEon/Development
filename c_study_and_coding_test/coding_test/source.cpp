@@ -9,8 +9,7 @@ using namespace std;
 
 #pragma region hash(map)
 // 해시 > 완주하지 못한 선수
-
-string h_solution1(vector<string> participant, vector<string> completion) {
+string solution_h1(vector<string> participant, vector<string> completion) {
     // 아래는 모범 답안
     sort(participant.begin(), participant.end());
     sort(completion.begin(), completion.end());
@@ -52,6 +51,70 @@ string h_solution1(vector<string> participant, vector<string> completion) {
    
 }
 
+// 해시 > 전화번호 목록
+bool solution_h2(vector<string> phone_book) {
+    // 모범 답안
+    sort(phone_book.begin(), phone_book.end());
+
+    for (int i = 0; i < phone_book.size() - 1; i++) {
+        if (phone_book[i] == phone_book[i+1].substr(0,phone_book[i].size())) {
+            return false;
+        }
+    }
+
+    return true;
+}
+// 내가 한 것
+//bool is_prefix_h2(string& a, string& b) {
+//    for (int i = 0; i < a.size(); i++) {
+//        if (a[i] != b[i])
+//            return false;
+//    }
+//    return true;
+//}
+//bool solution_h2(vector<string> phone_book) {
+//    sort(phone_book.begin(), phone_book.end());
+//
+//    for (int i = 0; i < phone_book.size()-1; i++) {
+//        if (is_prefix_h2(phone_book[i], phone_book[i + 1])) {
+//            return false;
+//        }
+//    }
+//
+//    return true;
+//}
+
+// 해시 > 위장
+int solution_h3(vector<vector<string>> clothes) {
+     // 더 나은 답안
+    int result = 1;
+    map<string, int> m;
+
+    for (int i = 0; i < clothes.size(); i++) {
+        m[clothes[i][1]]++; // 아무것도 없어도 요렇게가 된다. 다음 코테 문제 풀 때에 참고.
+    }
+    for (auto it = m.begin(); it != m.end(); it++) {
+        result *= (it->second + 1);
+    }
+    return result -1;
+
+    // 아래는 내가 푼 답안.
+    //int result = 1;
+    //map<string, int> m;
+
+    //for (int i = 0; i < clothes.size(); i++) {
+    //    if (m.find(clothes[i][1]) == m.end())
+    //        m.insert(pair<string, int>(clothes[i][1], 1));
+    //    else {
+    //        m[clothes[i][1]] += 1;
+    //    }
+    //}
+
+    //for (auto it = m.begin(); it != m.end(); it++) {
+    //    result *= (it->second + 1);
+    //}
+    //return result -1;
+}
 #pragma endregion
 
 
@@ -119,8 +182,16 @@ string h_solution1(vector<string> participant, vector<string> completion) {
 //}
 #pragma endregion
 
+
 int main()
 {
-  
+    // 아래는 벡터 출력용
+    /*vector<string> tv = { "119", "976112", "1195524" };
+    sort(tv.begin(), tv.end());
+
+    for (auto it = tv.begin(); it != tv.end(); it++) {
+        cout << *it << endl;
+    }*/
+    
     return 0;
 }
