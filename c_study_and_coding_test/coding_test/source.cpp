@@ -115,10 +115,48 @@ int solution_h3(vector<vector<string>> clothes) {
     //}
     //return result -1;
 }
+
+bool my_sort1(pair<int, int>& a, pair<int, int>& b) {
+    if (a.second > b.second) // 플레이 수가 더 많다면 앞에 와야한다.
+        return true;
+    if (a.second == b.second) { // 플레이 수가 같다면
+        if (a.first < b.first) { // 플레이 수가 같다면 index 가 더 작으면 앞에 와야 한다.
+            return true;
+        }
+    }
+
+    return false; // a 의 플레이 수가 더 작거나, 플레이 수가 같은데 인덱스가 크지 않은 경우
+}
+
+bool my_sort2(pair<string, int>& a, pair<string, int>& b) {
+    return a.second > b.second;
+}
+
+vector<int> solution_h4(vector<string> genres, vector<int> plays) {
+    vector<int> answer;
+    map<string, int> m1;
+    map<string, vector<pair<int,int>>> m2;
+    for (int i = 0; i < genres.size(); i++) {
+        m1[genres[i]] += plays[i];
+        m2[genres[i]].push_back(pair<int, int>(i, plays[i]));
+    }
+    
+    for (auto it = m2.begin(); it != m2.end(); it++) {
+        sort(it->second.begin(), it->second.end(), my_sort1);
+    }
+
+    vector<pair<string, int>> tempVec(m1.begin(), m1.end());
+    sort(tempVec.begin(), tempVec.end(),my_sort2);
+
+    for (int i = 0; i < tempVec.size(); i++) {
+        for (int j = 0; j < m2[tempVec[i].first].size() && j < 2; j++) {
+            answer.push_back(m2[tempVec[i].first][j].first);
+        }
+    }
+
+    return answer;
+}
 #pragma endregion
-
-
-
 
 #pragma region vector_sort_vs_priority_queue_sort
 //class my_type {
@@ -182,6 +220,38 @@ int solution_h3(vector<vector<string>> clothes) {
 //}
 #pragma endregion
 
+#pragma region stack_and_queue
+
+vector<int> solution_sq_1(vector<int> progresses, vector<int> speeds) {
+    vector<int> result;
+    int distributions = 0;
+    int daysAfter = 0;
+
+    while (progresses[0] + daysAfter * speeds[0] < 100) {
+        daysAfter++;
+    }
+    distributions++;
+
+    for (int i = 1; i < progresses.size(); i++) {
+        if (progresses[i] + speeds[i] * daysAfter >= 100) {
+            distributions++;
+            continue;
+        }
+        else {
+            result.push_back(distributions);
+            distributions = 0;
+            while (progresses[i] + daysAfter * speeds[i] < 100) {
+                daysAfter++;
+            }
+        }
+    }
+
+    if (distributions >= 1)
+        result.push_back(distributions);
+
+    return result;
+}
+#pragma endregion
 
 int main()
 {
