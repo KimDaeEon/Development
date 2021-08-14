@@ -243,6 +243,7 @@ vector<int> solution_sq_1(vector<int> progresses, vector<int> speeds) {
             while (progresses[i] + daysAfter * speeds[i] < 100) {
                 daysAfter++;
             }
+            i = i - 1;
         }
     }
 
