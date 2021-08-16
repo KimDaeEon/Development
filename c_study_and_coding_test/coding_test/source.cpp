@@ -7,6 +7,9 @@
 #include <queue>
 using namespace std;
 
+// 기본적 주의 사항
+// cout 을 쓰는 경우 python 이나 C# 처럼 + 연산이 작동되지 않는다. << 를 다 써주도록 하자.
+
 #pragma region hash(map)
 // 해시 > 완주하지 못한 선수
 string solution_h1(vector<string> participant, vector<string> completion) {
@@ -223,46 +226,132 @@ vector<int> solution_h4(vector<string> genres, vector<int> plays) {
 #pragma region stack_and_queue
 
 vector<int> solution_sq_1(vector<int> progresses, vector<int> speeds) {
-    vector<int> result;
-    int distributions = 0;
+    // 모범 답안
+    vector<int> answer;
     int daysAfter = 0;
+    int daysAfterMax = 0; // 지난 날이 최대값이 된 경우에 바꾼다.
 
-    while (progresses[0] + daysAfter * speeds[0] < 100) {
-        daysAfter++;
-    }
-    distributions++;
+    for (int i = 0; i < progresses.size(); i++) {
+        // 이 부분도 중요하다. 100이라는 완성치가 정해져 있으므로 while 돌릴 필요 없이 이렇게 반복 횟수를 구할 수 있다.
+        daysAfter = (99 - progresses[i]) / speeds[i] + 1; 
 
-    for (int i = 1; i < progresses.size(); i++) {
-        if (progresses[i] + speeds[i] * daysAfter >= 100) {
-            distributions++;
-            continue;
+        if (daysAfter > daysAfterMax) {
+            answer.push_back(1);
+            daysAfterMax = daysAfter;
         }
         else {
-            result.push_back(distributions);
-            distributions = 0;
-            while (progresses[i] + daysAfter * speeds[i] < 100) {
-                daysAfter++;
-            }
-            i = i - 1;
+            ++answer.back(); // 이게 중요하다. 사실상 이것으로 인해 vector 가 stack 과 queue 로서 모두 쓰일 수 있다.
         }
     }
 
-    if (distributions >= 1)
-        result.push_back(distributions);
+    return answer;
+    // 아래는 내가 풀었던 답
+    //vector<int> result;
+    //int distributions = 0;
+    //int daysAfter = 0;
 
-    return result;
+    //while (progresses[0] + daysAfter * speeds[0] < 100) {
+    //    daysAfter++;
+    //}
+    //distributions++;
+
+    //for (int i = 1; i < progresses.size(); i++) {
+    //    if (progresses[i] + speeds[i] * daysAfter >= 100) {
+    //        distributions++;
+    //        continue;
+    //    }
+    //    else {
+    //        result.push_back(distributions);
+    //        distributions = 0;
+    //        while (progresses[i] + daysAfter * speeds[i] < 100) {
+    //            daysAfter++;
+    //        }
+    //        i = i - 1;
+    //    }
+    //}
+
+    //if (distributions >= 1)
+    //    result.push_back(distributions);
+
+    //return result;
 }
+
+int solution_sq_2(vector<int> priorities, int location) {
+    int answer = 0;
+    priority_queue<int ,vector<int>, less<int>> pq;
+    queue<pair<int, int>> entryQueue;
+    int currentMax;
+
+    for (int i = 0; i < priorities.size(); i++) {
+        pq.push(priorities[i]); // 우선 순위 판단을 위해 pq 에 삽입
+        entryQueue.push(pair<int, int>(i, priorities[i])); // 뒤섞으면서 나오게 하기 위해서..
+    }
+
+    while (true) { // location 이 pop 될 때까지 계속 돌린다.
+        currentMax = pq.top();
+        pq.pop();
+
+        while (true) { // pq 와 같은 하나의 원소가 pop 될 때까지 실행.
+            int checkedPriority = entryQueue.front().second;
+            int checkedIdx = entryQueue.front().first;
+            entryQueue.pop();
+
+            if (checkedPriority == currentMax) {
+                answer++;
+
+                if (checkedIdx == location) {
+                    return answer;
+                }
+                break;
+            }
+            else { // 아직 처리가 불가능하면 다시 푸쉬한다.
+                entryQueue.push(pair<int, int>(checkedIdx, checkedPriority));
+            }
+        }
+    }
+
+    return answer;
+}
+
+int solution_sq_3(int bridge_length, int weight, vector<int> truck_weights) {
+    // 매 순간 내리는지를 체크해야 한다.
+    // 맨 앞에 있는 놈이 다 건너면(bridge_length +1 후에) 현재 총 무게에서 건넌 놈 무게를 빼고 더 트럭을 올릴 수 있는지 봐야 한다.
+    int answer = 0;
+    int currentTotalWeight = 0;
+    int index = 0;
+    int end = truck_weights.size();
+    queue<pair<int,int>> passing;
+
+    while (true) {
+        answer++; // 시간 1초 경과
+        
+        if (!passing.empty()) {
+            if ((answer - passing.front().first) >= bridge_length) { // 경과한 시간 - 시작 시간 >= 다리 길이 이면 건넌 것이다.
+                currentTotalWeight -= passing.front().second; // 차량의 무게를 총 합 무게에서 빼준다.
+                passing.pop(); // 맨 앞에 있는 차가 빠질 때가 되었으므로 pop 한다.
+
+                if (index == end && passing.empty()) // pop 될 때에 마지막이면 break
+                    break;
+            }
+        }
+
+        if (index < end && currentTotalWeight + truck_weights[index] <= weight) {
+            currentTotalWeight += truck_weights[index];
+            passing.push(pair<int,int>(answer,truck_weights[index])); // 이 차량이 올라온 시간과 무게를 기록
+            index++; // 다음 트럭이 들어갈 수 있는지 체크.
+        }
+    }
+
+    return answer;
+}
+
+
 #pragma endregion
 
 int main()
 {
-    // 아래는 벡터 출력용
-    /*vector<string> tv = { "119", "976112", "1195524" };
-    sort(tv.begin(), tv.end());
+    vector<int> temp = { 1,1,1 };
+    cout << solution_sq_3(3, 3,temp) <<endl;
 
-    for (auto it = tv.begin(); it != tv.end(); it++) {
-        cout << *it << endl;
-    }*/
-    
     return 0;
 }
