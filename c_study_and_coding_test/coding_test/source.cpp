@@ -5,10 +5,12 @@
 #include <algorithm>
 #include <vector>
 #include <queue>
+#include <stack>
 using namespace std;
 
-// 기본적 주의 사항
+// 기본적 참고 사항 사항
 // cout 을 쓰는 경우 python 이나 C# 처럼 + 연산이 작동되지 않는다. << 를 다 써주도록 하자.
+// index 라는 것은 어떻게 보면 시간 순서도 될 수 있다. 풀었던 스택과 큐 문제의 내용을 생각하자.
 
 #pragma region hash(map)
 // 해시 > 완주하지 못한 선수
@@ -346,31 +348,55 @@ int solution_sq_3(int bridge_length, int weight, vector<int> truck_weights) {
 }
 
 vector<int> solution_sq_4(vector<int> prices) {
-	// 후우 이 문제 설명이 너무 그렇다.. 나중에 모범 답안에서 스택으로 인덱스 다루는 것은 보되 문제에 너무 집착하지 말자.
-	vector<int> answer;
-	int checked;
+	// 모범 답안
+	// 근데 내가 처음 푼 이중 포문이 속도가 더 빠른 케이스가 많다. 스택 자체가 메모리 입출력이 많아서..
+	vector<int> answer(prices.size());
+	stack<int> s;
+
 	for (int i = 0; i < prices.size(); i++) {
-		checked = 0;
-		for (int j = i + 1; j < prices.size(); j++) {
-			if (prices[i] <= prices[j])
-				checked++;
-			else { // 이 부분이 너무 헷갈리는데, 가격이 바로 떨어졌는데 1초간 떨어지지 않은 것으로 간주한다..
-				checked++;
-				break;
-			}
+		// stack 에서 작은 값이 나올때까지만 pop을 해야한다.
+		while (!s.empty() && prices[s.top()] > prices[i]) {
+			// 스택의 맨 위에 있는 index 는 도착 시간과 같은 개념이다. 
+			// 현재 index - stack top 이 경과한 시간이 되는 것이다.
+			answer[s.top()] = i - s.top();
+			s.pop(); // 현재 비교대상보다 작거나 같은 값이 나올 떄까지만 pop 한다.
 		}
-		answer.push_back(checked);
+		s.push(i);
 	}
+
+	while (!s.empty()) { // 계속 스택에 쌓여 있는 것이 있다면 위와 같은 식으로 pop 하며 할당해준다.
+		answer[s.top()] = prices.size() - 1 - s.top();
+		s.pop();
+	}
+
 	return answer;
+
+	// 내가 푼 답안
+	//vector<int> answer;
+	//int checked;
+	//for (int i = 0; i < prices.size(); i++) {
+	//	checked = 0;
+	//	for (int j = i + 1; j < prices.size(); j++) {
+	//		if (prices[i] <= prices[j])
+	//			checked++;
+	//		else { // 이 부분이 너무 헷갈리는데, 가격이 바로 떨어졌는데 1초간 떨어지지 않은 것으로 간주한다..
+	//			checked++;
+	//			break;
+	//		}
+	//	}
+	//	answer.push_back(checked);
+	//}
+	//return answer;
 }
 
 #pragma endregion
 
 int main()
 {
-	vector<int> temp = { 1,1,1 };
-	int x = 10;
-	int size = temp.size();
-	cout << min(1 + x, 2 + (const int)temp.size()) << endl;
+	vector<int> v = { 1,2,3,2,3 };
+	vector<int> result = solution_sq_4(v);
+	for (int i = 0; i < result.size(); i++) {
+		cout << result[i] << endl;
+	}
 	return 0;
 }
