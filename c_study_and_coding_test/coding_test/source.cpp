@@ -12,9 +12,14 @@ using namespace std;
 // cout 을 쓰는 경우 python 이나 C# 처럼 + 연산이 작동되지 않는다. << 를 다 써주도록 하자.
 // index 라는 것은 어떻게 보면 시간 순서도 될 수 있다. 풀었던 스택과 큐 문제의 내용을 생각하자.
 
+// priority_queue<int, vector<int>, greater<int>> pq; <- 이렇게 하면 작은 녀석부터 pq.top() 에서 나온다. 반대로 하려면 less<int> 넣자.
+// 헷갈리는 것이 vector 를 sort 할 때에 작은 것 -> 큰 것으로 하려면 less<int> 를 넣어야 한다는 것이다. 
+// sort 는 true 면 안바꾸고, heap 을 쓰는 pq는 true 면 위치 변환을 하기 때문에 이렇게 된다.
+ 
+
 #pragma region hash(map)
 // 해시 > 완주하지 못한 선수
-string solution_h1(vector<string> participant, vector<string> completion) {
+string solution_hash_1(vector<string> participant, vector<string> completion) {
 	// 아래는 모범 답안
 	sort(participant.begin(), participant.end());
 	sort(completion.begin(), completion.end());
@@ -57,7 +62,7 @@ string solution_h1(vector<string> participant, vector<string> completion) {
 }
 
 // 해시 > 전화번호 목록
-bool solution_h2(vector<string> phone_book) {
+bool solution_hash_2(vector<string> phone_book) {
 	// 모범 답안
 	sort(phone_book.begin(), phone_book.end());
 
@@ -90,7 +95,7 @@ bool solution_h2(vector<string> phone_book) {
 //}
 
 // 해시 > 위장
-int solution_h3(vector<vector<string>> clothes) {
+int solution_hash_3(vector<vector<string>> clothes) {
 	// 더 나은 답안
 	int result = 1;
 	map<string, int> m;
@@ -137,7 +142,7 @@ bool my_sort2(pair<string, int>& a, pair<string, int>& b) {
 	return a.second > b.second;
 }
 
-vector<int> solution_h4(vector<string> genres, vector<int> plays) {
+vector<int> solution_hash_4(vector<string> genres, vector<int> plays) {
 	vector<int> answer;
 	map<string, int> m1;
 	map<string, vector<pair<int, int>>> m2;
@@ -391,12 +396,47 @@ vector<int> solution_sq_4(vector<int> prices) {
 
 #pragma endregion
 
+#pragma region heap
+int solution_heap_1(vector<int> scoville, int K) {
+	// 내가 푼 답안, pq 를 좀 더 스마트하게 넣을 수 있다. 내일 그 내용 추가하자.
+	int answer = 0;
+	bool isAllOverK = false;
+	priority_queue<int, vector<int>, greater<int>> pq;
+
+	for (int i = 0; i < scoville.size(); i++) {
+		pq.push(scoville[i]); // 스코빌을 다 집어넣는다.
+	}
+
+	while (!pq.empty()) {
+		if (pq.top() >= K) {
+			isAllOverK = true;
+			break;
+		}
+
+		int least1 = pq.top();
+		pq.pop();
+
+		if (pq.empty())
+			break;
+
+		int least2 = pq.top();
+		pq.pop();
+
+		pq.push(least1 + least2 * 2);
+		answer++;
+	}
+
+	if (!isAllOverK)
+		answer = -1;
+
+	return answer;
+
+}
+#pragma endregion
+
 int main()
 {
-	vector<int> v = { 1,2,3,2,3 };
-	vector<int> result = solution_sq_4(v);
-	for (int i = 0; i < result.size(); i++) {
-		cout << result[i] << endl;
-	}
+	vector<int> v = { 1,2,3,9,10,12 };
+	cout << solution_heap_1(v, 7) << endl;
 	return 0;
 }
