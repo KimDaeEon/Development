@@ -401,23 +401,14 @@ int solution_heap_1(vector<int> scoville, int K) {
 	// 내가 푼 답안, pq 를 좀 더 스마트하게 넣을 수 있다. 내일 그 내용 추가하자.
 	int answer = 0;
 	bool isAllOverK = false;
-	priority_queue<int, vector<int>, greater<int>> pq;
+	priority_queue<int, vector<int>, greater<int>> pq(scoville.begin(), scoville.end()); // 이렇게 초기화가 가능하다.
 
-	for (int i = 0; i < scoville.size(); i++) {
-		pq.push(scoville[i]); // 스코빌을 다 집어넣는다.
-	}
-
-	while (!pq.empty()) {
-		if (pq.top() >= K) {
-			isAllOverK = true;
-			break;
-		}
+	while (pq.top() < K) {
+		if (pq.size() == 1)
+			return -1;
 
 		int least1 = pq.top();
 		pq.pop();
-
-		if (pq.empty())
-			break;
 
 		int least2 = pq.top();
 		pq.pop();
@@ -426,17 +417,75 @@ int solution_heap_1(vector<int> scoville, int K) {
 		answer++;
 	}
 
-	if (!isAllOverK)
-		answer = -1;
-
 	return answer;
 
+}
+
+struct solution_heap_2_sort {
+	bool operator()(vector<int>& a, vector<int>& b) {
+		if (a[1] > b[1]) // 요청 시간이 더 작은 녀석이 앞에 오게 한다.
+			return true;
+		if (a[1] == b[1]) {
+			return a[0] > b[0]; // 도착한 시간이 더 작은(빠른) 녀석이 앞에 오게 한다.
+		}
+
+		return false;
+	}
+};
+int solution_heap_2(vector<vector<int>> jobs) {
+	int answer = 0;
+	int times = 0;
+	vector<int> top(2);
+	priority_queue<vector<int>, vector<vector<int>>, solution_heap_2_sort> pq(jobs.begin(), jobs.end());
+	priority_queue<vector<int>, vector<vector<int>>, solution_heap_2_sort> pq2; // 밀린 작업들을 잠시 넣어주는 queue
+
+	while (true) {
+		if (!pq.empty()) {
+			top = pq.top();
+			pq.pop();
+			if (top[0] <= times) { // 현재 흐른 시간이 도착한 시간보다 크면 처리한다.
+				times += top[1]; // 처리하는데 걸린 시간만큼 times 를 더한다.
+				answer += times - top[0];
+				if (!pq2.empty()) {
+					while (!pq2.empty()) // 처리하고 나면 밀린 작업들을 다시 큐에 넣어준다.
+					{
+						pq.push(pq2.top());
+						pq2.pop();
+					}
+				}
+			}
+			else {
+				pq2.push(top); // 아직 시간 도착이 안되서 밀린 작업들을 벡터에 넣어준다.
+			}
+		}
+
+		if (pq.empty() && !pq2.empty()) { // pq 에 모든 queue 가 비었는데 pq2 가 안비었다는 것은 시간이 부족해서 작업이 쌓였다는 것이다.
+			// 이럴 때에는 시간을 증가시킨다.
+			times++;
+
+			while (!pq2.empty()) {
+				pq.push(pq2.top());
+				pq2.pop();
+			}
+		}
+
+		if (pq.empty() && pq2.empty())
+			break;
+	}
+
+	answer = answer / jobs.size();
+	return answer;
 }
 #pragma endregion
 
 int main()
 {
-	vector<int> v = { 1,2,3,9,10,12 };
-	cout << solution_heap_1(v, 7) << endl;
+	vector<vector<int>> v = { {1,2}, {2,2}, {3,1}, {3,2} };
+	priority_queue < vector<int>, vector<vector<int>>, solution_heap_2_sort> pq(v.begin(),v.end());
+
+	while (!pq.empty()) {
+		cout << pq.top()[0] <<","<< pq.top()[1] << endl;
+		pq.pop();
+	}
 	return 0;
 }
