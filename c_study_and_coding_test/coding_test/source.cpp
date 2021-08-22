@@ -6,6 +6,7 @@
 #include <vector>
 #include <queue>
 #include <stack>
+#include <set>
 using namespace std;
 
 // 기본적 참고 사항 사항
@@ -15,6 +16,9 @@ using namespace std;
 // priority_queue<int, vector<int>, greater<int>> pq; <- 이렇게 하면 작은 녀석부터 pq.top() 에서 나온다. 반대로 하려면 less<int> 넣자.
 // 헷갈리는 것이 vector 를 sort 할 때에 작은 것 -> 큰 것으로 하려면 less<int> 를 넣어야 한다는 것이다. 
 // sort 는 true 면 안바꾸고, heap 을 쓰는 pq는 true 면 위치 변환을 하기 때문에 이렇게 된다.
+
+// multiset 의 경우 minmax 를 구할 때의 용도로 활용될 수 있다.
+// substr 은 처음에 변수가 offset 위치고, 그 다음은 count 이다. a.substr(1,3) 이러면 1번째 index 를 포함해서 3개의 문자를 가지는 string 을 리턴한다.
  
 
 #pragma region hash(map)
@@ -476,16 +480,38 @@ int solution_heap_2(vector<vector<int>> jobs) {
 	answer = answer / jobs.size();
 	return answer;
 }
+
+
+//vector<string> split(string s, string divid) {
+//	// TODO: 이 부분 다시 확인, strtok 함수 예전에 보긴 했었는데 다시 한 번 봐보자.
+//	vector<string> v;
+//	char* c = strtok((char*)s.c_str(), divid.c_str());
+//	while (c) {
+//		v.push_back(c);
+//		c = strtok(NULL, divid.c_str());
+//	}
+//	return v;
+//}
+
+vector<int> solution_heap_3(vector<string> operations) {
+	vector<int> answer;
+	priority_queue<int, vector<int>, less<int>> maxHeap;
+	priority_queue<int, vector<int>, greater<int>> minHeap;
+	int operationCount = operations.size();
+
+
+	return answer;
+}
 #pragma endregion
 
 int main()
 {
-	vector<vector<int>> v = { {1,2}, {2,2}, {3,1}, {3,2} };
-	priority_queue < vector<int>, vector<vector<int>>, solution_heap_2_sort> pq(v.begin(),v.end());
+	vector<int> temp = { 5,3,2,1,5,3 };
+	multiset<int> ms(temp.begin(), temp.end());
+	string a = "1234";
+	string b;
+	b = a.substr(0,4);
 
-	while (!pq.empty()) {
-		cout << pq.top()[0] <<","<< pq.top()[1] << endl;
-		pq.pop();
-	}
+	cout << b << endl;
 	return 0;
 }
