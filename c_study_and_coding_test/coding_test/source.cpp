@@ -7,6 +7,7 @@
 #include <queue>
 #include <stack>
 #include <set>
+#include <string>
 using namespace std;
 
 // 기본적 참고 사항 사항
@@ -523,13 +524,75 @@ vector<int> solution_heap_3(vector<string> operations) {
 }
 #pragma endregion
 
+#pragma region sort
+vector<int> solution_sort_1(vector<int> array, vector<vector<int>> commands) {
+	vector<int> answer;
+
+	for (int i = 0; i < commands.size(); i++) {
+		vector<int> temp(array.begin() + commands[i][0]-1, array.begin() + commands[i][1]);
+		sort(temp.begin(), temp.end());
+		answer.push_back(temp[commands[i][2]-1]);
+	}
+	
+	return answer;
+}
+
+
+bool solution_sort_2_comp(int a, int b) {
+	// a와 b 중 앞 자리가 더 크면 그 놈이 더 큰 것
+	// 만약 a와 b가 자리 숫자가 다르면, 짧은 것을 기준으로 맞춰서 
+	string a_str = to_string(a);
+	string b_str = to_string(b);
+	int a_str_size = a_str.size();
+	int b_str_size = b_str.size();
+
+	if (a_str_size > b_str_size) { // a 가 자릿수가 더 많은 경우
+		int i = 0;
+		for (;i < b_str_size; i++) {
+			if (a_str[i] > b_str[i]) return true; // a 가 더 크면 true
+			else if (a_str[i] < b_str[i]) return false; // b 가 더 크면 false
+		}
+
+		for (int j = i; j < a_str_size; j++) {
+			if (a_str[j] > b_str[i-1]) return true;
+			else if (a_str[j] < b_str[i-1]) return false;
+		}
+
+		return false;
+	}
+	else { // b 가 자릿수가 더 많거나 둘이 같은 경우
+		int i = 0;
+		for (; i < a_str_size; i++) {
+			if (a_str[i] > b_str[i]) return true; // a 가 더 크면 true
+			else if (a_str[i] < b_str[i]) return false; // b 가 더 크면 false
+		}
+
+		for (int j = i; j < b_str_size; j++) {
+			if (a_str[i - 1] > b_str[j]) return true;
+			else if (a_str[i - 1] < b_str[j]) return false;
+		}
+
+		return false;
+	}
+}
+string solution_sort_2(vector<int> numbers) {
+	string answer;
+	sort(numbers.begin(), numbers.end(), solution_sort_2_comp);
+	
+	for (int i = 0; i < numbers.size(); i++) {
+		answer += to_string(numbers[i]);
+	}
+
+
+	return answer;
+}
+#pragma endregion
+
+
 int main()
 {
-	vector<string> temp = { "I -45", "I 653", "D 1", "I -642", "I 45", "I 97", "D 1", "D -1", "I 333" };
-	vector<int> result = solution_heap_3(temp);
+	vector<int> temp = { 222132,22213};
 
-	for (int i = 0; i < result.size(); i++) {
-		cout << result[i] << endl;
-	}
+	solution_sort_2(temp);
 	return 0;
 }
