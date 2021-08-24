@@ -495,23 +495,41 @@ int solution_heap_2(vector<vector<int>> jobs) {
 
 vector<int> solution_heap_3(vector<string> operations) {
 	vector<int> answer;
-	priority_queue<int, vector<int>, less<int>> maxHeap;
-	priority_queue<int, vector<int>, greater<int>> minHeap;
 	int operationCount = operations.size();
+	multiset<int> mset; // min max 값을 구할 때에는 multiset 을 활용하면 좋다는 것을 알자.
 
+	for (int i = 0; i < operationCount; i++) {
+		if (operations[i][0] == 'I') { // insert 인 경우이므로 mset 에 삽입한다.
+			mset.insert(atoi(&operations[i][2]));
+		}
+		else {
+			if (mset.size() >= 1) {
+				if (operations[i][2] == '1') { // 최대값을 삭제하는 경우
+					mset.erase(--mset.end());
+				}
+				else { // 최소값을 삭제하는 경우
+					mset.erase(mset.begin());
+				}
+			}
+		}
+	}
 
+	if (mset.size() == 0)
+		return { 0,0 };
+
+	answer.push_back(*(--mset.end())); // 최대값 삽입
+	answer.push_back(*mset.begin()); // 최소값 삽입
 	return answer;
 }
 #pragma endregion
 
 int main()
 {
-	vector<int> temp = { 5,3,2,1,5,3 };
-	multiset<int> ms(temp.begin(), temp.end());
-	string a = "1234";
-	string b;
-	b = a.substr(0,4);
+	vector<string> temp = { "I -45", "I 653", "D 1", "I -642", "I 45", "I 97", "D 1", "D -1", "I 333" };
+	vector<int> result = solution_heap_3(temp);
 
-	cout << b << endl;
+	for (int i = 0; i < result.size(); i++) {
+		cout << result[i] << endl;
+	}
 	return 0;
 }
