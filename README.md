@@ -6,9 +6,9 @@
 
 <p>
   ```
-  <p>FPS: 제가 Unity 네트워크 라이브러리를 활용하여 제작하였던 FPS 게임 코드입니다.</p>
-  <p>Temp 2D RPG: 간단히 만들어 본 2D RPG 게임입니다.</p>
-  <p>Temp SpaceMario: 간단히 만들어 본 2D 캐주얼 게임입니다.</p> 
+  FPS: 제가 Unity 네트워크 라이브러리를 활용하여 제작하였던 FPS 게임 코드입니다.
+  Temp 2D RPG: 간단히 만들어 본 2D RPG 게임입니다.
+  Temp SpaceMario: 간단히 만들어 본 2D 캐주얼 게임입니다.
   ```
 </p>
 
