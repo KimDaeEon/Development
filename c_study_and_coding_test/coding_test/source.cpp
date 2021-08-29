@@ -583,7 +583,6 @@ bool solution_sort_2_comp(int a, int b) {
 	//}
 }
 
-
 string solution_sort_2(vector<int> numbers) {
 	string answer;
 	sort(numbers.begin(), numbers.end(), solution_sort_2_comp);
@@ -602,7 +601,20 @@ string solution_sort_2(vector<int> numbers) {
 }
 #pragma endregion
 
+// 정렬 > H-Index
+int solution_sort_3(vector<int> citations) {
+	int answer = 0;
+	sort(citations.begin(), citations.end(), greater<int>());
 
+	for (int i = 0; i < citations.size(); i++) {
+		answer++;
+		// 6,5,3,1,0 인 경우 answer 의 값 이하의 숫자가 나오는 순간의 처음 answer 를 리턴하면 된다.
+		if(answer >= citations[i])
+			return answer;
+	}
+}
+
+#pragma endregion
 int main()
 {
 	vector<int> in = { 0, 0, 1000, 0 };
