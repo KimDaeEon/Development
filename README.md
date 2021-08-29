@@ -13,13 +13,9 @@ Temp SpaceMario: 간단히 만들어 본 2D 캐주얼 게임입니다.
 
 <p>
 TCP_IP Socket Practice: EventSelect, IOCP를 활용하여 만든 채팅 서버 및 클라이언트 프로그램의 코드입니다.
-
 ClientSolution: 게임 서버와 통신을 하기 위한 클라이언트 프로그램의 코드입니다.
-
 ServerSolution: 게임 서버 라이브러리를 기반으로 작성된 간단한 게임 서버 프로그램의 코드입니다.
-
 MyGameServer: 제가 책을 참고하며 제작한 게임 서버 라이브러리 코드입니다.
-
 PacketGenerator: 통신 프로토콜 별로 자동으로 전송 함수 코드를 만들어주는 프로그램의 코드입니다.
 </p>
 
