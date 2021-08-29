@@ -21,6 +21,9 @@ using namespace std;
 // multiset 의 경우 minmax 를 구할 때의 용도로 활용될 수 있다.
 // substr 은 처음에 변수가 offset 위치고, 그 다음은 count 이다. a.substr(1,3) 이러면 1번째 index 를 포함해서 3개의 문자를 가지는 string 을 리턴한다.
 
+// 함수 내부에서 반복적으로 생성될 필요 없는 전역변수는 바깥으로 빼주자.
+
+// 최대 크기나 최소 크기만 알면 된다면 max_element, min_element를 쓰자. sort하는 것보다 연산량을 많이 줄일 수 있다.
 #pragma region vector_sort_vs_priority_queue_sort
 //class my_type {
 //public:
@@ -599,7 +602,6 @@ string solution_sort_2(vector<int> numbers) {
 
 	return answer;
 }
-#pragma endregion
 
 // 정렬 > H-Index
 int solution_sort_3(vector<int> citations) {
@@ -615,11 +617,80 @@ int solution_sort_3(vector<int> citations) {
 }
 
 #pragma endregion
+
+#pragma region Brute-Force
+//struct my_comp_brute_force_1 {
+//
+//	bool operator()(pair<int, int>& a, pair<int, int>& b) {
+//		return a.second > b.second;
+//	}
+//};
+
+vector<vector<int>> supo_answers = {
+	{1,2,3,4,5},
+	{2,1,2,3,2,4,2,5},
+	{3,3,1,1,2,2,4,4,5,5}
+};
+
+vector<int> solution_brute_force_1(vector<int> answers) {
+	// 모범 답안
+	vector<int> ret;
+	vector<int> supos = { 0,0,0 };
+
+	for (int i = 0; i < answers.size(); i++) {
+		if (supo_answers[0][i % supo_answers[0].size()] == answers[i]) supos[0]++;
+		if (supo_answers[1][i % supo_answers[1].size()] == answers[i]) supos[1]++;
+		if (supo_answers[2][i % supo_answers[2].size()] == answers[i]) supos[2]++;
+	}
+
+	auto it = max_element(supos.begin(), supos.end()); // 최대 크기만 알고 있으면 된다면, max_element 한 번만 쓰고 이후에는 for문으로 비교하면 된다.
+	int max = *it;
+
+	for (int i = 0; i < supos.size(); i++) {
+		if (supos[i] == max)
+			ret.push_back(i + 1);
+	}
+
+	return ret;
+	// 아래가 이전에 내가 했던 답안
+	//vector<int> answer;
+	//vector<pair<int, int>> supo_score = { {0,0},{1,0},{2,0} };
+	//vector<int> supo1_answer = { 1, 2, 3, 4, 5 };
+	//vector<int> supo2_answer = { 2, 1, 2, 3, 2, 4, 2, 5 };
+	//vector<int> supo3_answer = { 3, 3, 1, 1, 2, 2, 4, 4, 5, 5 };
+
+
+	//for (int i = 0; i < answers.size(); i++) {
+	//	// 수포1
+	//	if (supo1_answer[i % supo1_answer.size()] == answers[i])
+	//		supo_score[0].second++;
+
+	//	// 수포2
+	//	if (supo2_answer[i % supo2_answer.size()] == answers[i])
+	//		supo_score[1].second++;
+
+	//	// 수포3
+	//	if (supo3_answer[i % supo3_answer.size()] == answers[i])
+	//		supo_score[2].second++;
+	//}
+
+	//sort(supo_score.begin(), supo_score.end(), my_comp_brute_force_1());
+
+	//answer.push_back(supo_score[0].first + 1);
+
+	//for (int i = 1; i < supo_score.size(); i++) {
+	//	if (supo_score[0].second == supo_score[i].second) // 최대값과 그 다음 요소가 같으면 추가
+	//		answer.push_back(supo_score[i].first + 1);
+	//	else // 없으면 뒤를 더 볼 필요가 없으므로 break
+	//		break;
+	//}
+
+	//return answer;
+}
+#pragma endregion
 int main()
 {
-	vector<int> in = { 0, 0, 1000, 0 };
-	string a = "asdf";
-	cout << atoi(a.c_str()) << endl;
-	cout << solution_sort_2(in) << endl;
+	vector<int> in = { 1,2,3,4,5};
+	solution_brute_force_1(in);
 	return 0;
 }
