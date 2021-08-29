@@ -20,7 +20,69 @@ using namespace std;
 
 // multiset 의 경우 minmax 를 구할 때의 용도로 활용될 수 있다.
 // substr 은 처음에 변수가 offset 위치고, 그 다음은 count 이다. a.substr(1,3) 이러면 1번째 index 를 포함해서 3개의 문자를 가지는 string 을 리턴한다.
- 
+
+#pragma region vector_sort_vs_priority_queue_sort
+//class my_type {
+//public:
+//    int a;
+//    int b;
+//
+//};
+
+//class my_func {
+//public:
+//    bool operator()(my_type& in1, my_type& in2) {
+//        if (in1.a > in2.a) {
+//            return true;
+//        }
+//        if (in1.a == in2.a) {
+//            if (in1.b > in2.b) {
+//                return true;
+//            }
+//            return false;
+//        }
+//
+//        return false;
+//    }
+//};
+
+//my_type a;
+//my_type b;
+//my_type c;
+//
+//a.a = 10;
+//a.b = 20;
+//
+//b.a = 10;
+//b.b = 30;
+//
+//c.a = 5;
+//c.b = 50;
+//
+//priority_queue<my_type, vector<my_type>, my_func> mtpq;
+//vector<my_type> mtv;
+//mtpq.push(a);
+//mtpq.push(b);
+//mtpq.push(c);
+//
+//mtv.push_back(a);
+//mtv.push_back(b);
+//mtv.push_back(c);
+//
+//sort(mtv.begin(), mtv.end(), my_func());
+//
+//int size = mtpq.size();
+//for (int i = 0; i < size; i++) {
+//    my_type top = mtpq.top();
+//    cout << top.a << top.b << endl;
+//    mtpq.pop();
+//}
+//
+//for (int i = 0; i < size; i++) {
+//    cout << mtv[i].a << mtv[i].b << endl;
+//}
+#pragma endregion
+
 
 #pragma region hash(map)
 // 해시 > 완주하지 못한 선수
@@ -147,6 +209,7 @@ bool my_sort2(pair<string, int>& a, pair<string, int>& b) {
 	return a.second > b.second;
 }
 
+// 해시 > 베스트앨범
 vector<int> solution_hash_4(vector<string> genres, vector<int> plays) {
 	vector<int> answer;
 	map<string, int> m1;
@@ -173,70 +236,10 @@ vector<int> solution_hash_4(vector<string> genres, vector<int> plays) {
 }
 #pragma endregion
 
-#pragma region vector_sort_vs_priority_queue_sort
-//class my_type {
-//public:
-//    int a;
-//    int b;
-//
-//};
-
-//class my_func {
-//public:
-//    bool operator()(my_type& in1, my_type& in2) {
-//        if (in1.a > in2.a) {
-//            return true;
-//        }
-//        if (in1.a == in2.a) {
-//            if (in1.b > in2.b) {
-//                return true;
-//            }
-//            return false;
-//        }
-//
-//        return false;
-//    }
-//};
-
-//my_type a;
-//my_type b;
-//my_type c;
-//
-//a.a = 10;
-//a.b = 20;
-//
-//b.a = 10;
-//b.b = 30;
-//
-//c.a = 5;
-//c.b = 50;
-//
-//priority_queue<my_type, vector<my_type>, my_func> mtpq;
-//vector<my_type> mtv;
-//mtpq.push(a);
-//mtpq.push(b);
-//mtpq.push(c);
-//
-//mtv.push_back(a);
-//mtv.push_back(b);
-//mtv.push_back(c);
-//
-//sort(mtv.begin(), mtv.end(), my_func());
-//
-//int size = mtpq.size();
-//for (int i = 0; i < size; i++) {
-//    my_type top = mtpq.top();
-//    cout << top.a << top.b << endl;
-//    mtpq.pop();
-//}
-//
-//for (int i = 0; i < size; i++) {
-//    cout << mtv[i].a << mtv[i].b << endl;
-//}
-#pragma endregion
 
 #pragma region stack_and_queue
 
+// 스택/큐 > 기능개발
 vector<int> solution_sq_1(vector<int> progresses, vector<int> speeds) {
 	// 모범 답안
 	vector<int> answer;
@@ -288,6 +291,7 @@ vector<int> solution_sq_1(vector<int> progresses, vector<int> speeds) {
 	//return result;
 }
 
+// 스택/큐 > 프린터
 int solution_sq_2(vector<int> priorities, int location) {
 	int answer = 0;
 	priority_queue<int, vector<int>, less<int>> pq;
@@ -325,6 +329,7 @@ int solution_sq_2(vector<int> priorities, int location) {
 	return answer;
 }
 
+// 스택/큐 > 다리를 지나는 트럭
 int solution_sq_3(int bridge_length, int weight, vector<int> truck_weights) {
 	// 매 순간 내리는지를 체크해야 한다.
 	// 맨 앞에 있는 놈이 다 건너면(bridge_length +1 후에) 현재 총 무게에서 건넌 놈 무게를 빼고 더 트럭을 올릴 수 있는지 봐야 한다.
@@ -357,6 +362,7 @@ int solution_sq_3(int bridge_length, int weight, vector<int> truck_weights) {
 	return answer;
 }
 
+// 스택/큐 > 주식가격
 vector<int> solution_sq_4(vector<int> prices) {
 	// 모범 답안
 	// 근데 내가 처음 푼 이중 포문이 속도가 더 빠른 케이스가 많다. 스택 자체가 메모리 입출력이 많아서..
@@ -402,6 +408,7 @@ vector<int> solution_sq_4(vector<int> prices) {
 #pragma endregion
 
 #pragma region heap
+// 힙 > 더 맵게
 int solution_heap_1(vector<int> scoville, int K) {
 	// 내가 푼 답안, pq 를 좀 더 스마트하게 넣을 수 있다. 내일 그 내용 추가하자.
 	int answer = 0;
@@ -426,6 +433,7 @@ int solution_heap_1(vector<int> scoville, int K) {
 
 }
 
+// 힙 > 디스크 컨트롤러
 struct solution_heap_2_sort {
 	bool operator()(vector<int>& a, vector<int>& b) {
 		if (a[1] > b[1]) // 요청 시간이 더 작은 녀석이 앞에 오게 한다.
@@ -482,18 +490,7 @@ int solution_heap_2(vector<vector<int>> jobs) {
 	return answer;
 }
 
-
-//vector<string> split(string s, string divid) {
-//	// TODO: 이 부분 다시 확인, strtok 함수 예전에 보긴 했었는데 다시 한 번 봐보자.
-//	vector<string> v;
-//	char* c = strtok((char*)s.c_str(), divid.c_str());
-//	while (c) {
-//		v.push_back(c);
-//		c = strtok(NULL, divid.c_str());
-//	}
-//	return v;
-//}
-
+// 힙 > 이중우선순위큐
 vector<int> solution_heap_3(vector<string> operations) {
 	vector<int> answer;
 	int operationCount = operations.size();
@@ -525,6 +522,8 @@ vector<int> solution_heap_3(vector<string> operations) {
 #pragma endregion
 
 #pragma region sort
+
+// 정렬 > K번째수
 vector<int> solution_sort_1(vector<int> array, vector<vector<int>> commands) {
 	vector<int> answer;
 
@@ -538,51 +537,66 @@ vector<int> solution_sort_1(vector<int> array, vector<vector<int>> commands) {
 }
 
 
+// 정렬 > 가장 큰 수
 bool solution_sort_2_comp(int a, int b) {
-	// a와 b 중 앞 자리가 더 크면 그 놈이 더 큰 것
-	// 만약 a와 b가 자리 숫자가 다르면, 짧은 것을 기준으로 맞춰서 
+	// 모범 답안
 	string a_str = to_string(a);
 	string b_str = to_string(b);
-	int a_str_size = a_str.size();
-	int b_str_size = b_str.size();
 
-	if (a_str_size > b_str_size) { // a 가 자릿수가 더 많은 경우
-		int i = 0;
-		for (;i < b_str_size; i++) {
-			if (a_str[i] > b_str[i]) return true; // a 가 더 크면 true
-			else if (a_str[i] < b_str[i]) return false; // b 가 더 크면 false
-		}
+	return a_str + b_str > b_str + a_str; // 대박.. 잊지 말자.
+	
+	// 아래는 이전에 풀었던 답
+	// a와 b 중 앞 자리가 더 크면 그 놈이 더 큰 것
+	// 만약 a와 b가 자리 숫자가 다르면, 짧은 것을 기준으로 맞춰서 
+	//string a_str = to_string(a);
+	//string b_str = to_string(b);
+	//int a_str_size = a_str.size();
+	//int b_str_size = b_str.size();
 
-		for (int j = i; j < a_str_size; j++) {
-			if (a_str[j] > b_str[i-1]) return true;
-			else if (a_str[j] < b_str[i-1]) return false;
-		}
+	//if (a_str_size > b_str_size) { // a 가 자릿수가 더 많은 경우
+	//	int i = 0;
+	//	for (;i < b_str_size; i++) {
+	//		if (a_str[i] > b_str[i]) return true; // a 가 더 크면 true
+	//		else if (a_str[i] < b_str[i]) return false; // b 가 더 크면 false
+	//	}
 
-		return false;
-	}
-	else { // b 가 자릿수가 더 많거나 둘이 같은 경우
-		int i = 0;
-		for (; i < a_str_size; i++) {
-			if (a_str[i] > b_str[i]) return true; // a 가 더 크면 true
-			else if (a_str[i] < b_str[i]) return false; // b 가 더 크면 false
-		}
+	//	for (int j = i; j < a_str_size; j++) {
+	//		if (a_str[j] > b_str[i-1]) return true;
+	//		else if (a_str[j] < b_str[i-1]) return false;
+	//	}
 
-		for (int j = i; j < b_str_size; j++) {
-			if (a_str[i - 1] > b_str[j]) return true;
-			else if (a_str[i - 1] < b_str[j]) return false;
-		}
+	//	return false;
+	//}
+	//else { // b 가 자릿수가 더 많거나 둘이 같은 경우
+	//	int i = 0;
+	//	for (; i < a_str_size; i++) {
+	//		if (a_str[i] > b_str[i]) return true; // a 가 더 크면 true
+	//		else if (a_str[i] < b_str[i]) return false; // b 가 더 크면 false
+	//	}
 
-		return false;
-	}
+	//	for (int j = i; j < b_str_size; j++) {
+	//		if (a_str[i - 1] > b_str[j]) return true;
+	//		else if (a_str[i - 1] < b_str[j]) return false;
+	//	}
+
+	//	return false;
+	//}
 }
+
+
 string solution_sort_2(vector<int> numbers) {
 	string answer;
 	sort(numbers.begin(), numbers.end(), solution_sort_2_comp);
-	
+
 	for (int i = 0; i < numbers.size(); i++) {
 		answer += to_string(numbers[i]);
 	}
 
+	if (answer[0] == '0')
+		answer = "0";
+
+	//if (atoi(answer.c_str()) == 0) // 프로그래머스에서 stoi 가 안된다.
+	//	answer = "0";
 
 	return answer;
 }
@@ -591,8 +605,9 @@ string solution_sort_2(vector<int> numbers) {
 
 int main()
 {
-	vector<int> temp = { 222132,22213};
-
-	solution_sort_2(temp);
+	vector<int> in = { 0, 0, 1000, 0 };
+	string a = "asdf";
+	cout << atoi(a.c_str()) << endl;
+	cout << solution_sort_2(in) << endl;
 	return 0;
 }
