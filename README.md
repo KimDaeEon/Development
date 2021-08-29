@@ -4,16 +4,14 @@
 <p>아래에는 포트폴리오 관련하여 간단히 설명을 적어두었으니 참고하시면서 포트폴리오를 봐주시면 감사하겠습니다.</p>
 </p>
 
-&nbsp
-&nbsp
 <p>
-<p>FPS: 제가 Unity 네트워크 라이브러리를 활용하여 제작하였던 FPS 게임 코드입니다.</p>
-<p>Temp 2D RPG: 간단히 만들어 본 2D RPG 게임입니다.</p>
-<p>Temp SpaceMario: 간단히 만들어 본 2D 캐주얼 게임입니다.</p>
+  ```
+  <p>FPS: 제가 Unity 네트워크 라이브러리를 활용하여 제작하였던 FPS 게임 코드입니다.</p>
+  <p>Temp 2D RPG: 간단히 만들어 본 2D RPG 게임입니다.</p>
+  <p>Temp SpaceMario: 간단히 만들어 본 2D 캐주얼 게임입니다.</p> 
+  ```
 </p>
 
-&nbsp
-&nbsp
 <p>
 <p>TCP_IP Socket Practice: EventSelect, IOCP를 활용하여 만든 채팅 서버 및 클라이언트 프로그램의 코드입니다.</p>
 <p>ClientSolution: 게임 서버와 통신을 하기 위한 클라이언트 프로그램의 코드입니다.</p>
