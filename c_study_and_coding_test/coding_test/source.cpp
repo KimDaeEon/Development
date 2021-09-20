@@ -8,11 +8,13 @@
 #include <stack>
 #include <set>
 #include <string>
+#include <sstream>
 using namespace std;
 
 // 기본적 참고 사항 사항
 // cout 을 쓰는 경우 python 이나 C# 처럼 + 연산이 작동되지 않는다. << 를 다 써주도록 하자.
 // index 라는 것은 어떻게 보면 시간 순서도 될 수 있다. 풀었던 스택과 큐 문제의 내용을 생각하자.
+// 어떠한 정확한 정보를 구하는 것이 아니라, 갯수, 길이만 구하는 것이면 훨씬 계산이 단순화될 수 있다. 명심!
 
 // priority_queue<int, vector<int>, greater<int>> pq; <- 이렇게 하면 작은 녀석부터 pq.top() 에서 나온다. 반대로 하려면 less<int> 넣자.
 // 헷갈리는 것이 vector 를 sort 할 때에 작은 것 -> 큰 것으로 하려면 less<int> 를 넣어야 한다는 것이다. 
@@ -24,6 +26,13 @@ using namespace std;
 // 함수 내부에서 반복적으로 생성될 필요 없는 전역변수는 바깥으로 빼주자.
 
 // 최대 크기나 최소 크기만 알면 된다면 max_element, min_element를 쓰자. sort하는 것보다 연산량을 많이 줄일 수 있다.
+
+// DFS 는 스택, BFS 는 queue 를 통해서 구현할 수 있다.
+
+// vector 는 () 으로 크기를 지정하여 생성하면 기본 인자들이 전부 다 0으로 초기화된다. vector<pair<int,int>> 이렇게 하면 pair 가 각각 다 0으로 초기화된다.
+
+// map<int,int> m 이렇게 하면 m[10] = 10 이런 식으로 추가가 가능하고, auto it = m.begin() 으로 할당하면 pair<int, int> 형식을 가리키는 it가 된다.
+// 사용할 때에는 (*it).first, (*it).second 이런 식으로 사용하면 된다.
 #pragma region vector_sort_vs_priority_queue_sort
 //class my_type {
 //public:
@@ -688,9 +697,249 @@ vector<int> solution_brute_force_1(vector<int> answers) {
 	//return answer;
 }
 #pragma endregion
+
+
+#pragma region DFS_BFS
+
+int answer_dfs_bfs_1;
+void DFS_1(vector<int>& numbers, int depth, int sum, int target) {
+	if (sum == target && depth == numbers.size() - 1) // 목표 찾았으므로 답 ++
+	{
+		answer_dfs_bfs_1++;
+		return;
+	}
+
+	if (depth == numbers.size()-1) // depth 끝에 도달했으므로 ++
+		return;
+
+	depth++;
+	DFS_1(numbers, depth, sum + numbers[depth], target);
+	DFS_1(numbers, depth, sum - numbers[depth], target);
+
+}
+int solution_dfs_bfs_1(vector<int> numbers, int target) {
+	DFS_1(numbers, 0, numbers[0], target);
+	DFS_1(numbers, 0, -numbers[0], target);
+
+	return answer_dfs_bfs_1;
+}
+
+
+void DFS_2(vector<bool>& visited, vector<vector<int>>& computers, int start) {
+	// 재귀말고 stack 으로 인한 풀이
+	stack<int> s;
+	s.push(start);
+	
+	while (!s.empty()) {
+		int from = s.top();
+		s.pop();
+		for (int i = 0; i < visited.size(); i++) {
+			if ((visited[i] == false && computers[from][i])) { // 현재 시작 점에서 방문하려고 하는 곳이 방문 가능하고, 방문한 적이 없으면
+				visited[i] = true; // 해당 장소를 방문한다.
+				s.push(i); // 방문 가능한 노드를 다시 푸쉬한다.
+			}
+		}
+	}
+
+	// 아래는 재귀로 인한 풀이
+	//for (int i = 0; i < visited.size(); i++) {
+	//	if ( (visited[i] == false && computers[start][i])) { // 현재 시작 점에서 방문하려고 하는 곳이 방문 가능하고, 방문한 적이 없으면
+	//		visited[i] = true; // 해당 장소를 방문한다.
+	//		DFS_2(visited, computers, i); // 방문한 장소에서 다시 DFS를 실행한다.
+	//	}
+	//}
+}
+
+// 깊이/너비 우선 탐색 > 네트워크
+int solution_dfs_bfs_2(int n, vector<vector<int>> computers) {
+	int answer = 0;
+	vector<bool> visited(n); // vector 는 초기값이 다 0으로 초기화된다.
+
+	// i 부터 시작해서 깊이 탐색을 시작하며 지나간 곳은 다 visted를 true로 바꾼다.
+	for (int i = 0; i < computers.size(); i++) {
+		if (!visited[i]) {// 아직 이 장소를 방문한 적이 없으면
+			visited[i] = true;
+			DFS_2(visited, computers, i);
+			answer++; // DFS가 끝나면 하나의 네트워크가 완성되므로 네트워크 한 개 추가.
+		}
+	}
+
+	return answer;
+	
+	// 아래는 재귀로 인한 풀이
+	//int answer = 0;
+	//vector<bool> visited(n); // vector 는 초기값이 다 0으로 초기화된다.
+
+	//// i 부터 시작해서 깊이 탐색을 시작하며 지나간 곳은 다 visted를 true로 바꾼다.
+	//for (int i = 0; i < computers.size(); i++) {
+	//	if (!visited[i]) {// 아직 이 장소를 방문한 적이 없으면
+	//		visited[i] = true;
+	//		DFS_2(visited, computers, i);
+	//		answer++; // DFS가 끝나면 하나의 네트워크가 완성되므로 네트워크 한 개 추가.
+	//	}
+	//}
+
+	//return answer;
+}
+#pragma endregion
+
+
+#pragma region Greedy
+
+
+// 탐욕법 > 큰 수 만들기
+string solution_greedy_2(string number, int k) {
+	string answer = "";
+	int targetLength = number.size() - k;
+	char max;
+	int maxIndex;
+	// 앞에서 k 만큼 확인하면서, 뽑을 수 있는 가장 큰수부터 answer에 넣고, k를 감소시킨다.
+	// 시작점부터 시작점+selectedNumber 가 문자열 끝에 다다르면 모두 다 뽑는다.
+
+	for (int i = 0; i < number.size(); i++) {
+		max = 0; // max값 초기화
+		maxIndex = -1; // maxIndex 초기화, -1이면 찾지 못했다는 뜻이다.
+		for (int j = i; j <= i + k; j++) { // 가장 먼저 나온 최대 값의 위치를 찾는 것
+			if (max < number[j]) {
+				max = number[j];
+				maxIndex = j;
+			}
+		}
+		k -= (maxIndex-i); // 문자를 제거 한 만큼 k를 감소
+		i = maxIndex; // 다음 문자열 검사는 현재 answer에 추가된 다음 항목부터 검사한다.
+		answer += max;
+		if (answer.size() == targetLength) // 목표 길이에 도달하면 문자열을 리턴
+			return answer;
+	}
+
+	return answer;
+}
+#pragma endregion
+
+#pragma region Dynamic Programming
+
+
+// 동적계획법 > N으로 표현
+int solution_dynamic_1(int N, int number) {
+	vector<set<int>> entries(9);
+	entries[1].insert(N);
+	for (int i = 1; i < 9; i++) { // i 개의 N 을 사용하는 경우
+		for (int j = 1; j <= i ; j++) { // j + i-j 로 쪼개진 경우의 수를 모두 구하기 위한 것
+			for (auto it1 = entries[j].begin(); it1 != entries[j].end(); it1++) {
+				for (auto it2 = entries[i - j].begin(); it2 != entries[i - j].end(); it2++) {
+					// 덧셈
+					entries[i].insert(*it1 + *it2);
+
+					// 곱셈
+					entries[i].insert(*it1 * *it2);
+
+					// 뺄셈
+					entries[i].insert(*it1 - *it2);
+					entries[i].insert(*it2 - *it1);
+
+					// 나눗셈
+					if (*it2 != 0)
+						entries[i].insert(*it1 / *it2);
+					if (*it1 != 0)
+						entries[i].insert(*it2 / *it1);
+
+				}
+			}
+		}
+		string temp;
+		for (int t = 1; t <= i; t++) {
+			temp += to_string(N);
+		}
+		entries[i].insert(atoi(temp.c_str()));
+	}
+
+	for (int i = 1; i < 9; i++) { // N이 연속해서 나오는 경우
+		auto it = entries[i].find(number);
+
+		if (it != entries[i].end())
+			return i;
+	}
+
+	return -1;
+}
+
+#pragma endregion
+
+
+#pragma region Graph
+
+// 그래프 > 가장 먼 노드
+bool isPath[20001][20001];
+
+int solution_graph_1(int n, vector<vector<int>> edge) {
+	// 1번 노드에서 가장 멀리 떨어진 노드의 갯수를 구한다.
+	// input: 간선에 대한 정보가 담긴 2차원 배열 edge, 노드 개수 n
+	// 2 <= n <= 20000
+	// 간선은 양방향
+	// 1 <= edge.size() <= 50000
+
+	
+	// 1번 노드부터 시작
+	// 1번 노드에서 갈 수 있는 곳 모두 방문 체크, 거리 1로 할당
+	// 방문한 노드들 큐에 집어넣고 다시 거기서 방문할 수 있는 노드들 방문 거리 2로 할당. (이미 queue에 들어갔으면 방문 x)
+	const int impossibleDistance = 50000;
+	vector<int> dist(n,40000);
+	vector<bool> checked(n);
+	queue<int> readyQ;
+	queue<int> processQ;
+
+	for (int i = 0; i < edge.size(); i++) {
+		isPath[edge[i][0] - 1][edge[i][1] - 1] = true;
+		isPath[edge[i][1] - 1][edge[i][0] - 1] = true;
+	}
+
+	int answer = 0;
+
+	readyQ.push(0);
+	int level = 0;
+	checked[0] = true;
+	dist[0] = 0;
+
+
+	while (!readyQ.empty()) {
+		while (!readyQ.empty()) { // ready queue 에 있는 것 process queue 로 옮긴다.
+			processQ.push(readyQ.front());
+			readyQ.pop();
+		}
+		level++;
+		while (!processQ.empty()) {
+			int front = processQ.front();
+			processQ.pop();
+
+			for (int i = 0; i < n; i++) {
+				if ((isPath[front][i] || isPath[i][front]) && !checked[i]) { // 갈 수 있으면서 아직 체크 안된 경우일 때에
+					checked[i] = true;
+					readyQ.push(i);
+					dist[i] = min(dist[i],level);
+				}
+			}
+		}
+	}
+	
+	sort(dist.begin(), dist.end(), greater<int>());
+
+	int biggest = dist[0];
+	for (int i = 0; i < dist.size(); i++) {
+		if (biggest == dist[i])
+			answer++;
+		else
+			break;
+	}
+
+	return answer;
+}
+
+
+#pragma endregion
+
+
 int main()
 {
-	vector<int> in = { 1,2,3,4,5};
-	solution_brute_force_1(in);
+	
 	return 0;
 }

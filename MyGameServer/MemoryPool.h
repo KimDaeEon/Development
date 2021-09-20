@@ -15,7 +15,7 @@ public:
 
 		UCHAR* returnPointer = mFreePointer;
 
-		// mPreePointer 에 들어가 있는 값은 다음 메모리 블럭의 시작 주소를 가리키고 있다. 아래와 같이 연산을 하면 다음 메모리 블럭의 시작 주소를 가리키게 된다.
+		// mFreePointer 에 들어가 있는 값은 다음 메모리 블럭의 시작 주소를 가리키고 있다. 아래와 같이 연산을 하면 다음 메모리 블럭의 시작 주소를 가리키게 된다.
 		// 바이너리 값(주소 값)을 유지하는 retinerpret_cast 를 써서 계속 UCHAR* 형을 유지하면서 다음 할당 가능한 블럭의 주소를 mFreePointer 가 가리키도록 하는 것이다.
 		mFreePointer = *reinterpret_cast<UCHAR**>(returnPointer);
 
