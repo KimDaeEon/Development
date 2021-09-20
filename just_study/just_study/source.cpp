@@ -342,7 +342,7 @@ T* Factory(U&& arg) { // 다른 클래스를 생성해서 리턴해주는 함수
 #pragma endregion
 
 
-#pragma region
+#pragma region Casting
 class refTest {
 public:
     int a;
@@ -393,8 +393,6 @@ void printStr(unsigned char* str) {
 #pragma endregion
 int main()
 {
-  
-    
     return 0;
 
 }
