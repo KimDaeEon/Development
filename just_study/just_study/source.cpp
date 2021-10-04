@@ -375,23 +375,231 @@ namespace RAII_SmartPointer {
         cout << "in test_func()" << endl;
         cout << t.use_count() << endl;
     }
+
+    /* shared_ptr<test> a(new test());
+   weak_ptr<test> b = a;
+
+   cout << a.use_count() << endl;
+   cout << b.use_count() << endl;
+
+   cout << b.expired() << endl;
+   (*(b.lock())).a = 150;
+   a.reset();*/
+}
+
+namespace C_Based_VirtualFuction {
+    typedef struct s_person {
+        char* name;
+        int age;
+        char* company;
+        char* address;
+    } t_person;
+
+    typedef struct s_dog {
+        char* name;
+        int age;
+        char* owner_name;
+    } t_dog;
+
+    void walk_person(void* raw_self) {
+        t_person* self;
+
+        self = (t_person*)raw_self;
+        printf("%s은(는) 걸어간다..\n", self->name);
+    }
+
+    void walk_dog(void* raw_self) {
+        t_dog* self;
+
+        self = (t_dog*)raw_self;
+        printf("%s은(는) 주인인 %s와(과) 함께 산책한다..\n", self->name, self->owner_name);
+    }
+
+    typedef struct s_bag {
+        void** arr;
+        int len;
+        int max;
+    } t_bag;
+
+    // bool 정의
+    typedef int t_bool;
+    #define TRUE 1
+    #define FALSE 0
+
+    t_bool m(void* target, size_t size) { // 메모리 할당을 해주고 잘 되었는지 확인해주는 함수
+        void** pt;
+
+        pt = (void**)target;
+        *pt = malloc(size);
+        if (*pt == 0)
+            return (FALSE);
+
+        return (TRUE);
+    }
+
+    t_bag create_bag() {
+        t_bag bag;
+
+        bag.len = 0;
+        bag.max = 10;
+
+        if (!m(&bag.arr, sizeof(void*) * 10)) // 메모리할당 실패하면 종료
+            exit(0);
+
+        return bag;
+    }
+
+    void bag_add(t_bag* bag, void* item) {
+        void** new_arr;
+
+        bag->arr[bag->len] = (void*)item;
+        bag->len += 1;
+        if (bag->len > bag->max / 2) {
+            bag->max *= 2;
+            m(&new_arr, sizeof(void*) * bag->max);
+            for (int i = 0; i < bag->len; i++)
+                new_arr[i] = bag->arr[i];
+            free(bag->arr);
+            bag->arr = new_arr;
+        }
+    }
+
+    void bag_foreach(t_bag* bag, void(*func)(void*)) {
+        for (int i = 0; i < bag->len; i++)
+            func(bag->arr[i]);
+    }
+
+    typedef struct s_walkable { // walk 기능을 구현하고 있음을 알려주는 구조체, t_bag 에 저장되는 것들은 모두 t_walkable 을 저장하고 있다고 생각해야 한다.
+        void (*walk)(void* raw_self); // 실행할 함수
+        void* object; // 실행할 주체, 어떤 함수를 실행할지를 정해준다.
+    }t_walkable;
+
+    typedef struct s_vtables {
+        t_bag walkables;
+    } t_vtables;
+
+    t_vtables* get_vtables() {
+        static t_vtables t;
+
+        if (!t.walkables.arr)
+            t.walkables = create_bag();
+        return &t;
+    }
+
+    t_walkable* create_walkable(void* obj, void(*walk_handler)(void*)) {
+        t_walkable* walkable; // 실행할 함수, 실행할 주체가 담겨 있다.
+
+        m(& walkable, sizeof(t_walkable));
+        walkable->object = obj;
+        walkable->walk = walk_handler;
+        bag_add(&get_vtables()->walkables, walkable);
+        return walkable;
+   }
+
+    void create_person(t_person p) {
+        t_person* person;
+
+        m(&person, sizeof(t_person));
+        person->address = p.address;
+        person->age = p.age;
+        person->company = p.company;
+        person->name = p.name;
+        create_walkable(person, walk_person);
+    }
+
+    void create_dog(t_dog d) {
+        t_dog* dog;
+
+        m(&dog, sizeof(t_dog));
+        dog->age = d.age;
+        dog->name = d.name;
+        dog->owner_name = d.owner_name;
+        create_walkable(dog, walk_dog);
+    }
+
+    void do_walk(void* ptr) {
+        t_walkable* walkable;
+
+        walkable = (t_walkable*)ptr;
+        walkable->walk(walkable->object);
+    }
+
+    void all_walk() {
+        bag_foreach(&get_vtables()->walkables, do_walk);
+    }
+
+    void test_all_walk() {
+        t_person p;
+        p.address = (char*)"사당동";
+        p.age = 31;
+        p.name = (char*)"김대언";
+        p.company = (char*)"LoadComplete";
+
+        t_dog dog;
+        dog.age = 5;
+        dog.name = (char*)"뿌꾸";
+        dog.owner_name = (char*)"김대언";
+
+        create_person(p);
+        create_dog(dog);
+        all_walk();
+
+    }
+
+    // test_all_walk();
 }
 
 
-using namespace RAII_SmartPointer;
+namespace ExceptionTest {
+    class stack_unwind {
+    public:
+        int a;
+        stack_unwind() {
+            cout << "stack_unwind constructor" << endl;
+            throw 123;
+        }
+        ~stack_unwind() {
+            cout << "stack_unwind destructor" << endl;
+        }
+    };
+    void throw_test(int a) {
+        if (a == 1)
+            throw out_of_range("exception test 1");
+        else
+            throw runtime_error("exception test 2");
+    }
+
+    void stack_unwindling_test() {
+        stack_unwind a;
+
+        throw_test(2);
+    }
+
+    /*try {
+            stack_unwindling_test();
+        }
+        catch (int e) {
+            cout << e << endl;
+        }
+        catch (...) {
+            cout << "default" << endl;
+        }*/
+}
+
+class tt {
+public:
+    static const int aa = 50;
+    int scores[aa];
+};
+
 int main()
 {
 
-    shared_ptr<test> a(new test());
-    weak_ptr<test> b = a;
-
-    cout << a.use_count() << endl;
-    cout << b.use_count() << endl;
-
-    cout << b.expired() << endl;
-    (*(b.lock())).a = 150;
-    a.reset();
-
+    const char* ac = "asfdsadf";
+    tt a;
+    cout << a.scores[48] << endl;
+    cout << a.aa << endl;
+    cout << &a.aa << endl;
 
     _CrtDumpMemoryLeaks();
     return 0;
