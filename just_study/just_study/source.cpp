@@ -590,18 +590,25 @@ class tt {
 public:
     static const int aa = 50;
     int scores[aa];
+
+    tt() {
+        cout << "const" << endl;
+    }
+
+    ~tt() {
+        cout << "dest" << endl;
+    }
 };
 
 int main()
 {
-
-    const char* ac = "asfdsadf";
-    tt a;
-    cout << a.scores[48] << endl;
-    cout << a.aa << endl;
-    cout << &a.aa << endl;
+    tt* t = new tt[4];
 
     _CrtDumpMemoryLeaks();
+
+    delete[](t);
+
+
     return 0;
 
 }
