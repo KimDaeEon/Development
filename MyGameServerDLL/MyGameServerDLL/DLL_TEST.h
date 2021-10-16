@@ -14,6 +14,7 @@ extern "C" {
 
 	MYTESTLIBRARY_API int test2(int a, int b);
 
+
 	class MYTESTLIBRARY_API myclass {
 	public:
 		myclass(int a, int b);
@@ -23,5 +24,17 @@ extern "C" {
 		int a;
 		int b;
 	};
+
+	MYTESTLIBRARY_API myclass* createMyClass(int a, int b) {
+		myclass* new_instance = new myclass(a, b);
+		return new_instance;
+	}
+
+	MYTESTLIBRARY_API bool deleteMyClass(myclass* deleted) {
+		delete deleted;
+		return true;
+	}
+
+
 
 }

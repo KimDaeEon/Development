@@ -586,29 +586,75 @@ namespace ExceptionTest {
         }*/
 }
 
-class tt {
-public:
-    static const int aa = 50;
-    int scores[aa];
+namespace eff_cpp_ch3_use_const {
+    class tt {
+    public:
+        static const int aa = 50;
+        int scores[aa];
 
-    tt() {
-        cout << "const" << endl;
-    }
+        tt() {
+            cout << "const" << endl;
+        }
 
-    ~tt() {
-        cout << "dest" << endl;
-    }
-};
+        ~tt() {
+            cout << "dest" << endl;
+        }
+    };
+
+    class CTextBook {
+    public:
+        size_t length() const;
+
+        CTextBook(const char* in) {
+            pText = (char*)in;
+        }
+        char* pText;
+
+        mutable size_t textLength;
+        mutable bool isLengthValid;
+
+        void t1() const {
+            cout << "t1 const 용" << endl;
+        }
+
+        void t1() {
+            cout << "t1 non-const 용" << endl;
+        }
+
+        const char& operator[](size_t position) const {
+            cout << "const [] 호출" << endl;
+            return pText[position];
+        }
+
+        char& operator[](size_t position) {
+            cout << "non-const [] 호출" << endl;
+
+            return
+                const_cast<char&>(
+                    (static_cast<const CTextBook&>(*this))[position]
+                    );
+        }
+
+        //char bb[] = "asdfasdf";
+        //CTextBook a(bb);
+        //const CTextBook c(a);
+
+        //a[0] = 't';
+        //cout << a.pText << endl;
+        //cout << c.pText << endl;
+        //
+        //a.t1();
+        //c.t1();
+
+    };
+}
+
 
 int main()
 {
-    tt* t = new tt[4];
+    
 
     _CrtDumpMemoryLeaks();
 
-    delete[](t);
-
-
     return 0;
-
 }
