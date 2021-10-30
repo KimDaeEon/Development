@@ -9,6 +9,7 @@
 #define new new(_NORMAL_BLOCK, __FILE__, __LINE__)
 #define malloc(s) _malloc_dbg(s, _NORMAL_BLOCK, __FILE__, __LINE__)
 #endif
+#include <cassert>
 using namespace std;
 
 
@@ -586,75 +587,239 @@ namespace ExceptionTest {
         }*/
 }
 
-namespace eff_cpp_ch3_use_const {
-    class tt {
-    public:
-        static const int aa = 50;
-        int scores[aa];
+namespace effective_cpp {
+    namespace ch3_use_const {
+        class tt {
+        public:
+            static const int aa = 50;
+            int scores[aa];
 
-        tt() {
-            cout << "const" << endl;
+            tt() {
+                cout << "const" << endl;
+            }
+
+            ~tt() {
+                cout << "dest" << endl;
+            }
+        };
+
+        class CTextBook {
+        public:
+            size_t length() const;
+
+            CTextBook(const char* in) {
+                pText = (char*)in;
+            }
+            char* pText;
+
+            mutable size_t textLength;
+            mutable bool isLengthValid;
+
+            void t1() const {
+                cout << "t1 const 용" << endl;
+            }
+
+            void t1() {
+                cout << "t1 non-const 용" << endl;
+            }
+
+            const char& operator[](size_t position) const {
+                cout << "const [] 호출" << endl;
+                return pText[position];
+            }
+
+            char& operator[](size_t position) {
+                cout << "non-const [] 호출" << endl;
+
+                return
+                    const_cast<char&>(
+                        (static_cast<const CTextBook&>(*this))[position]
+                        );
+            }
+
+            //char bb[] = "asdfasdf";
+            //CTextBook a(bb);
+            //const CTextBook c(a);
+
+            //a[0] = 't';
+            //cout << a.pText << endl;
+            //cout << c.pText << endl;
+            //
+            //a.t1();
+            //c.t1();
+        };
+    } // ch3_use_const 
+
+    namespace ch4_must_initialize_object {
+        class t {
+        public:
+            const int a;
+            int b;
+
+            t() :a(10), b(10) {
+                cout << "t 기본 생성자 호출" << endl;
+            }
+        };
+
+        class dt : public t {
+        public:
+            const int a;
+            int b;
+
+            dt() :a(20), b(20) {
+                cout << "dt 기본 생성자 호출" << endl;
+            }
+        };
+
+        class tt {
+        public:
+            // 선언된 순서대로 멤버 초기화리스트에서 초기화된다.
+            t a;
+            dt b;
+            int c;
+
+            tt() : a(), b(), c() { // b(), a(), c()를 해도 a,b,c 순으로 초기화된다.
+                // 위와 같이 멤버 이름에 인수를 안넣어서 기본 생성자를 호출할 수도 있다.
+                cout << "tt 멤버 초기화 리스트 쓴 생성자" << endl;
+            }
+
+            ~tt() {
+                cout << "tt 파괴자 호출" << endl;
+            }
+
+            //tt(const t& in1, const int in2){
+            //    // 멤버 초기화 리스트 안써서 in1이 기본 생성자를 호출하는 경우
+            //    cout << "멤버 초기화 리스트 안쓴 생성자" << endl;
+            //    a = in1;
+            //    b = in2;
+            //}
+        };
+
+        tt& f() {
+            static tt a;
+            cout << "f" << endl;
+            cout << a.a.a << endl;
+            cout << a.b.a << endl;
+
+            return a;
         }
 
-        ~tt() {
-            cout << "dest" << endl;
-        }
-    };
+        /*tt a = f();
+        a.a.b = 30;
+        cout << a.a.b << endl;*/
+    } // ch4_must_initialize_object 
 
-    class CTextBook {
-    public:
-        size_t length() const;
+    namespace  ch_6_ban_unnecessary_default_function {
 
-        CTextBook(const char* in) {
-            pText = (char*)in;
-        }
-        char* pText;
+        class uncopyable {
+        public:
+            uncopyable() {};
+            ~uncopyable() {};
 
-        mutable size_t textLength;
-        mutable bool isLengthValid;
+        private:
+            // 이렇게 해놓으면 이것을 상속받는 클래스는 대입 과정에서 아래 함수들이 호출될 수 밖에 없기에 
+            // = 연산과 복사 생성자가 기능이 막히는 것이다.
+            uncopyable(const uncopyable& rhs) {};
+            uncopyable& operator =(const uncopyable& rhs) {};
+        };
 
-        void t1() const {
-            cout << "t1 const 용" << endl;
-        }
+        class HomeForSale : uncopyable {
+        public:
+            int id;
+            HomeForSale(int _id = 0) :id(_id) {
 
-        void t1() {
-            cout << "t1 non-const 용" << endl;
-        }
+            }
+        };
 
-        const char& operator[](size_t position) const {
-            cout << "const [] 호출" << endl;
-            return pText[position];
-        }
 
-        char& operator[](size_t position) {
-            cout << "non-const [] 호출" << endl;
+        //HomeForSale i;
+        //HomeForSale i2 = i;
 
-            return
-                const_cast<char&>(
-                    (static_cast<const CTextBook&>(*this))[position]
-                    );
-        }
+    } // ch_6_ban_unnecessary_default_function 
 
-        //char bb[] = "asdfasdf";
-        //CTextBook a(bb);
-        //const CTextBook c(a);
+    namespace ch_12_copy_everything {
+        class customer {
+        public:
+            string name;
 
-        //a[0] = 't';
-        //cout << a.pText << endl;
-        //cout << c.pText << endl;
-        //
-        //a.t1();
-        //c.t1();
+            customer() : name("default"){
+                cout << "customer default constructor" << endl;
+            }
+            customer(const customer& rhs) : name(rhs.name){
+                cout << "customer copy constructor" << endl;
+            }
 
-    };
+            customer& operator=(const customer& rhs) {
+                cout << "customer = operator" << endl;
+                name = rhs.name;
+                return *this;
+            }
+        };
+
+        class vip_customer : public customer {
+        public:
+            int vip_num;
+            vip_customer() :vip_num(0) {
+                cout << "vip_customer default constructor" << endl;
+            }
+
+            vip_customer(const vip_customer& rhs) : customer(rhs), vip_num(rhs.vip_num) {
+                cout << "vip_customer copy constructor" << endl;
+            }
+
+            customer& operator=(const vip_customer& rhs) {
+                cout << "vip_customer = operator" << endl;
+                customer::operator=(rhs);
+                vip_num = rhs.vip_num;
+                return *this;
+            }
+        };
+
+        //vip_customer b;
+
+        //b.name = "aa";
+        //b.vip_num = 10;
+
+        //vip_customer c(b);
+
+        //vip_customer a;
+        //a = b;
+
+        //cout << a.name << endl;
+        //cout << c.name << endl;
+
+    }// ch_12_copy_everything 
 }
 
+class t {
+public:
+    t() {
+        cout << "t 생성자" << endl;
+    }
 
+    ~t() {
+        cout << "t 소멸자" << endl;
+    }
+};
+void raii_test() {
+    shared_ptr<t> b(new t);
+
+    cout << b.use_count() << endl;
+    cout << "raii_test" << endl;
+}
+
+void my_deleter(t* in) {
+    cout << "my deleter" << endl;
+    delete in;
+}
+
+void tt() {
+    shared_ptr<t> a(new t, my_deleter);
+
+}
 int main()
 {
-    
-
+    tt();
     _CrtDumpMemoryLeaks();
-
     return 0;
 }
