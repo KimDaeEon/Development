@@ -1,17 +1,22 @@
-#include<iostream>
-#include<Windows.h>
-#include <vector>
-#include <assert.h>
-#include <map>
-#include <unordered_map>
+#pragma once
+#include <stdio.h>
+#include <iostream>
 #include <crtdbg.h>
+
+
+// boost의 asio라이브러리 크로스 플렛폼에 관계된 라이브러리
+#include <boost/asio/thread_pool.hpp>
+#include <boost/asio/post.hpp>
+
+
 #if _DEBUG
 #define new new(_NORMAL_BLOCK, __FILE__, __LINE__)
 #define malloc(s) _malloc_dbg(s, _NORMAL_BLOCK, __FILE__, __LINE__)
 #endif
-#include <cassert>
 using namespace std;
-
+using namespace boost::asio;
+using namespace this_thread;
+using namespace chrono;
 
 
 namespace Decorator {
@@ -791,35 +796,182 @@ namespace effective_cpp {
     }// ch_12_copy_everything 
 }
 
-class t {
+
+namespace singleton_test {
+
+    class SingletonClass {
+
+    private:
+
+        /**
+         * 생성자
+         * 외부에서 인스턴스를 생성할 수 없도록 private 영역에 정의하고 구현함
+         * 원리: private 영역에 생성자가 존재하므로 외부에서 SingletonClass()를 호출할 수 없음
+         */
+        SingletonClass() { total = 0; };
+
+        // 싱글턴 인스턴스가 생성되었는지 여부
+        static bool instanceFlag;
+
+        // 싱글턴 인스턴스
+        static SingletonClass* instance;
+
+        // private 멤버 변수(멤버 변수!!!!!)
+        int total;
+
+    public:
+
+        // 싱글턴 인스턴스를 반환할 멤버함수
+        static SingletonClass* getInstance();
+
+        // 소멸자, instanceFlag를 false로 변경
+        virtual ~SingletonClass() {
+            instanceFlag = false;
+        };
+
+        // value의 값을 증가 시킴
+        void addValue(int value);
+        // value 값을 반환
+        int getTotalValue();
+
+    };
+
+
+    /*
+     *  헤더에서 선언한 static 멤버들을 다시한전 선언한다.
+     * 이는 static 멤버를 일반 멤버함수처럼 참조할 수 있도록 한다(?)
+     */
+    bool SingletonClass::instanceFlag = false;
+    SingletonClass* SingletonClass::instance = NULL;
+
+    // 싱글턴 인스턴스를 반환할 멤버함수
+    SingletonClass* SingletonClass::getInstance() {
+        if (!instance) {
+            instance = new SingletonClass();
+            instanceFlag = true;
+        }
+        return instance;
+    }
+
+    // total의 값을 증가 시킴
+    void SingletonClass::addValue(int value) {
+        total = total + value;
+    }
+    // totla 값을 반환
+    int SingletonClass::getTotalValue() {
+        return total;
+    }
+
+//    cout << "SingleTonTest" << endl; // prints SingleTonTest
+//
+//// SingletonClass의 인스턴스 변수를 포인터 변수 형태로 선언
+//    SingletonClass* ins1, * ins2, * ins3;
+//
+//    // 각각의 변수에 인스턴스를 저장
+//    ins1 = SingletonClass::getInstance();
+//    ins2 = SingletonClass::getInstance();
+//    ins3 = SingletonClass::getInstance();
+//
+//    // 각 인스턴스별로 멤버변수 total에 10씩 증가 시키고, 그 결과를 출력
+//    ins1->addValue(10);
+//    cout << "total: " << ins1->getTotalValue() << endl;
+//    ins2->addValue(10);
+//    cout << "total: " << ins2->getTotalValue() << endl;
+//    ins3->addValue(10);
+//    cout << "total: " << ins3->getTotalValue() << endl;
+
+}
+
+
+
+template< class Type >
+class SingletonT
+{
 public:
-    t() {
-        cout << "t 생성자" << endl;
-    }
+    static bool Available();
+    static Type* GetInstance();
 
-    ~t() {
-        cout << "t 소멸자" << endl;
-    }
+protected:
+    void install();
+    void uninstall();
+
+private:
+    static Type* m_pInstance;
+
 };
-void raii_test() {
-    shared_ptr<t> b(new t);
 
-    cout << b.use_count() << endl;
-    cout << "raii_test" << endl;
+template< class Type >
+Type* SingletonT<Type>::m_pInstance = NULL;
+
+template< class Type >
+inline bool
+SingletonT<Type>::Available()
+{
+    if (m_pInstance != NULL)
+    {
+        return TRUE;
+    }
+
+    return FALSE;
 }
 
-void my_deleter(t* in) {
-    cout << "my deleter" << endl;
-    delete in;
+template< class Type >
+inline Type* SingletonT<Type>::GetInstance()
+{
+    ASSERT(m_pInstance != NULL);
+
+    return m_pInstance;
 }
 
-void tt() {
-    shared_ptr<t> a(new t, my_deleter);
+template< class Type >
+inline void SingletonT<Type>::install()
+{
+    ASSERT(m_pInstance == NULL);
 
+    m_pInstance = static_cast<Type*>(this);
 }
+
+template< class Type >
+inline void SingletonT<Type>::uninstall()
+{
+    ASSERT(m_pInstance != NULL);
+
+    m_pInstance = NULL;
+}
+
+
+
+void threadTest()
+{
+    // 반복문을 돌면서 콘솔에 값을 출력한다.
+    for (int i = 0; i < 4; i++)
+    {
+        cout << i << endl;
+        sleep_for(microseconds(1));
+    }
+}
+
+
+
 int main()
 {
-    tt();
-    _CrtDumpMemoryLeaks();
+    typedef void(*myFunc)();
+
+    cout << _MSC_VER << endl;
+
+    // thread pool 내에 thread 최대 갯수를 한개로 제한한다.
+    thread_pool* pool = new thread_pool(1);
+    // 쓰레드 실행
+    post(*pool, threadTest);
+    // 쓰레드 실행
+    post(*pool, threadTest);
+    // 쓰레드 실행
+    post(*pool, threadTest);
+    // pool 내의 모든 쓰레드가 종료할 때까지 기다린다.
+    pool->join();
+    // 메모리 해제
+    delete pool;
+
+    _CrtDumpMemoryLeaks();  
     return 0;
 }
