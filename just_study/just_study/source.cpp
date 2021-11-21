@@ -1,12 +1,19 @@
 #pragma once
+#ifndef _WIN32_WINNT        
+#define _WIN32_WINNT 0x0500    // 윈도우 2000 이상 지원
+#endif 
+
+
 #include <stdio.h>
 #include <iostream>
 #include <crtdbg.h>
-
-
+#include <conio.h>
 // boost의 asio라이브러리 크로스 플렛폼에 관계된 라이브러리
-#include <boost/asio/thread_pool.hpp>
 #include <boost/asio/post.hpp>
+#include <boost/function.hpp>
+#include <boost/serialization/vector.hpp>
+#include <boost/serialization/singleton.hpp>
+
 
 
 #if _DEBUG
@@ -15,8 +22,6 @@
 #endif
 using namespace std;
 using namespace boost::asio;
-using namespace this_thread;
-using namespace chrono;
 
 
 namespace Decorator {
@@ -27,7 +32,7 @@ namespace Decorator {
         virtual void draw() = 0;
         virtual ~Widget() {}
     };
-
+        
     /* ConcreteComponent */
     class TextField : public Widget {
 
@@ -251,7 +256,7 @@ namespace RvalueReference_Forwarding {
 
     class A {
     public:
-        A(int& _a) {
+        A([[maybe_unused]]int& _a) {
             cout << "A int& " << endl;
         }
     };
@@ -796,182 +801,215 @@ namespace effective_cpp {
     }// ch_12_copy_everything 
 }
 
+namespace variadic_arguments_and_templates {
+    // 가변 인자 및 템플릿 테스트용 코드
+    template <typename T>
+    void myPrint(T arg) {
+        cout << arg << endl;
+    }
 
-namespace singleton_test {
+    template <typename T, typename... Types>
+    void myPrint(T arg, Types... args) {
+        cout << arg << endl;
+        myPrint(args...);
+    }
 
-    class SingletonClass {
+    #define makeArray(TypeName, variableName, ...)\
+    char TypeName[5] = ###variableName; \
+    myPrint(##__VA_ARGS__);
 
-    private:
 
-        /**
-         * 생성자
-         * 외부에서 인스턴스를 생성할 수 없도록 private 영역에 정의하고 구현함
-         * 원리: private 영역에 생성자가 존재하므로 외부에서 SingletonClass()를 호출할 수 없음
-         */
-        SingletonClass() { total = 0; };
+    //int c = 1000;
+    //makeArray(AAA, c, 10);
 
-        // 싱글턴 인스턴스가 생성되었는지 여부
-        static bool instanceFlag;
+}
 
-        // 싱글턴 인스턴스
-        static SingletonClass* instance;
 
-        // private 멤버 변수(멤버 변수!!!!!)
-        int total;
+struct myStruct {
+    int a=3;
+    int b=4;
+};
 
-    public:
+int32_t HoldItem(short* a)  
+{
+    return ::InterlockedIncrement16(a);
+}
 
-        // 싱글턴 인스턴스를 반환할 멤버함수
-        static SingletonClass* getInstance();
+template <class T, typename std::enable_if<std::is_integral<T>::value,
+    T>::type* = nullptr>
+    void do_stuff(T& t) {
+    std::cout << "do_stuff integral\n";
+    // 정수 타입들을 받는 함수 (int, char, unsigned, etc.)
+}
 
-        // 소멸자, instanceFlag를 false로 변경
-        virtual ~SingletonClass() {
-            instanceFlag = false;
-        };
+template <class T,
+    typename std::enable_if<std::is_class<T>::value, T>::type* = nullptr>
+    void do_stuff(T& t) {
+    // 일반적인 클래스들을 받음
+}
 
-        // value의 값을 증가 시킴
-        void addValue(int value);
-        // value 값을 반환
-        int getTotalValue();
 
+
+class myClass : public boost::serialization::singleton<myClass> {
+public:
+    int a;
+    int value_type;
+};
+
+
+
+//template <typename T>
+//struct enable_if<true, T> {
+//    typedef T type;
+//
+//    enable_if() {
+//        cout << "enable_if true 있는 버전" << endl;
+//    }
+//};
+
+
+
+namespace enable_if_test {
+
+    template <bool _Test, typename _Ty = void>
+    struct my_enable_if {
+        my_enable_if() {
+            cout << "my_enable_if _Ty = void" << endl;
+        }
+    };
+
+    template <typename _Ty>
+    struct my_enable_if<true, _Ty> {
+        using type = _Ty;
+
+        my_enable_if() {
+            cout << "my_enable_if _Ty = true" << endl;
+        }
     };
 
 
-    /*
-     *  헤더에서 선언한 static 멤버들을 다시한전 선언한다.
-     * 이는 static 멤버를 일반 멤버함수처럼 참조할 수 있도록 한다(?)
-     */
-    bool SingletonClass::instanceFlag = false;
-    SingletonClass* SingletonClass::instance = NULL;
+    template <typename T>
+    typename enable_if_t<is_class_v<T>, void>
+        ffff(T a) {
+        cout << "class 형" << endl;
+    }
 
-    // 싱글턴 인스턴스를 반환할 멤버함수
-    SingletonClass* SingletonClass::getInstance() {
-        if (!instance) {
-            instance = new SingletonClass();
-            instanceFlag = true;
+    template <typename T>
+    typename enable_if_t<is_integral_v<T>, void>
+        ffff(T a) {
+        cout << "int 형" << endl;
+    }
+
+    //my_enable_if<true, int> a;
+    //my_enable_if<false, int> b;
+
+
+}
+
+
+
+
+
+
+namespace IOCP_test {
+    struct myOverlapped {
+        OVERLAPPED overLapped;
+        int number;
+    };
+
+    DWORD WINAPI myCallBack(LPVOID completionPort) {
+        DWORD NumberOfByteTransfered = 0;
+        VOID* CompletionKey = NULL;
+        OVERLAPPED* overlappedPointer = NULL;
+
+
+        while (true) {
+            auto success = GetQueuedCompletionStatus(
+                (HANDLE)completionPort,
+                &NumberOfByteTransfered,
+                (LPDWORD)&CompletionKey,
+                &overlappedPointer,
+                INFINITE);
+
+
+            if (success) {
+                myOverlapped* mO = (myOverlapped*)overlappedPointer;
+
+                cout << mO->number << endl;
+                Sleep(10);
+                PostQueuedCompletionStatus(completionPort, 0, 0, overlappedPointer);
+            }
         }
-        return instance;
     }
 
-    // total의 값을 증가 시킴
-    void SingletonClass::addValue(int value) {
-        total = total + value;
+
+    void IOCP_test() { 
+        // TODO: IOCP에서 concurrent thread 랑 worker thread가 다른 것 같아서 테스트용으로 만든 것. 추후에 소켓을 사용해서 concurrent thread 수 제한하면 GQCS 늦게 빠지는지 확인하자.
+        int workerThreadCount = 1; // TODO: 이거 갯수 5까지 올리고 아래 concurrent_thread 수를 1로 하고, 위에 callback 무한 루프 돌게 하면 처리가 1만 처리되어야 할 것 같은데.. 왜 다되는지를 확인해야한다.
+        HANDLE hIOCP = CreateIoCompletionPort(INVALID_HANDLE_VALUE, NULL, 0, 3);
+        vector<HANDLE> workerThreadVector;
+
+        DWORD NumberOfByteTransfered = 0;
+        VOID* CompletionKey = NULL;
+        OVERLAPPED* overlappedPointer = NULL;
+
+        for (DWORD i = 0; i < workerThreadCount; i++)
+        {
+            HANDLE WorkerThread = CreateThread(NULL, 0, myCallBack, hIOCP, 0, NULL);
+            workerThreadVector.push_back(WorkerThread);
+        }
+
+        myOverlapped a1;
+        a1.number = 1;
+
+        myOverlapped a2;
+        a2.number = 2;
+
+        myOverlapped a3;
+        a3.number = 3;
+
+        myOverlapped a4;
+        a4.number = 4;
+
+        myOverlapped a5;
+        a5.number = 5;
+
+        if (hIOCP) {
+            PostQueuedCompletionStatus(hIOCP, 0, 0, (LPOVERLAPPED)&a1);
+            PostQueuedCompletionStatus(hIOCP, 0, 0, (LPOVERLAPPED)&a2);
+            PostQueuedCompletionStatus(hIOCP, 0, 0, (LPOVERLAPPED)&a3);
+            PostQueuedCompletionStatus(hIOCP, 0, 0, (LPOVERLAPPED)&a4);
+            PostQueuedCompletionStatus(hIOCP, 0, 0, (LPOVERLAPPED)&a5);
+        }
+
+        char key;
+        while (true) {
+            key = _getch();
+
+            if (key == 'e') {
+                break;
+            }
+
+            if (key == 'n') {
+                cout << endl;
+            }
+        }
+
+        for (DWORD i = 0; i < workerThreadVector.size(); i++)
+        {
+            CloseHandle(workerThreadVector[i]);
+        }
+
+        if (hIOCP) {
+            CloseHandle(hIOCP);
+        }
     }
-    // totla 값을 반환
-    int SingletonClass::getTotalValue() {
-        return total;
-    }
-
-//    cout << "SingleTonTest" << endl; // prints SingleTonTest
-//
-//// SingletonClass의 인스턴스 변수를 포인터 변수 형태로 선언
-//    SingletonClass* ins1, * ins2, * ins3;
-//
-//    // 각각의 변수에 인스턴스를 저장
-//    ins1 = SingletonClass::getInstance();
-//    ins2 = SingletonClass::getInstance();
-//    ins3 = SingletonClass::getInstance();
-//
-//    // 각 인스턴스별로 멤버변수 total에 10씩 증가 시키고, 그 결과를 출력
-//    ins1->addValue(10);
-//    cout << "total: " << ins1->getTotalValue() << endl;
-//    ins2->addValue(10);
-//    cout << "total: " << ins2->getTotalValue() << endl;
-//    ins3->addValue(10);
-//    cout << "total: " << ins3->getTotalValue() << endl;
-
+    
 }
-
-
-
-template< class Type >
-class SingletonT
-{
-public:
-    static bool Available();
-    static Type* GetInstance();
-
-protected:
-    void install();
-    void uninstall();
-
-private:
-    static Type* m_pInstance;
-
-};
-
-template< class Type >
-Type* SingletonT<Type>::m_pInstance = NULL;
-
-template< class Type >
-inline bool
-SingletonT<Type>::Available()
-{
-    if (m_pInstance != NULL)
-    {
-        return TRUE;
-    }
-
-    return FALSE;
-}
-
-template< class Type >
-inline Type* SingletonT<Type>::GetInstance()
-{
-    ASSERT(m_pInstance != NULL);
-
-    return m_pInstance;
-}
-
-template< class Type >
-inline void SingletonT<Type>::install()
-{
-    ASSERT(m_pInstance == NULL);
-
-    m_pInstance = static_cast<Type*>(this);
-}
-
-template< class Type >
-inline void SingletonT<Type>::uninstall()
-{
-    ASSERT(m_pInstance != NULL);
-
-    m_pInstance = NULL;
-}
-
-
-
-void threadTest()
-{
-    // 반복문을 돌면서 콘솔에 값을 출력한다.
-    for (int i = 0; i < 4; i++)
-    {
-        cout << i << endl;
-        sleep_for(microseconds(1));
-    }
-}
-
-
 
 int main()
 {
-    typedef void(*myFunc)();
-
-    cout << _MSC_VER << endl;
-
-    // thread pool 내에 thread 최대 갯수를 한개로 제한한다.
-    thread_pool* pool = new thread_pool(1);
-    // 쓰레드 실행
-    post(*pool, threadTest);
-    // 쓰레드 실행
-    post(*pool, threadTest);
-    // 쓰레드 실행
-    post(*pool, threadTest);
-    // pool 내의 모든 쓰레드가 종료할 때까지 기다린다.
-    pool->join();
-    // 메모리 해제
-    delete pool;
-
+    IOCP_test::IOCP_test();
     _CrtDumpMemoryLeaks();  
     return 0;
 }
