@@ -3,24 +3,23 @@
 #define _WIN32_WINNT 0x0500    // 윈도우 2000 이상 지원
 #endif 
 
-
+#include <functional>
 #include <stdio.h>
 #include <iostream>
 #include <crtdbg.h>
 #include <conio.h>
+#include <array>
+#include <unordered_map>
 // boost의 asio라이브러리 크로스 플렛폼에 관계된 라이브러리
 #include <boost/asio/post.hpp>
 #include <boost/function.hpp>
 #include <boost/serialization/vector.hpp>
 #include <boost/serialization/singleton.hpp>
-
-
-
+using namespace std;
 #if _DEBUG
 #define new new(_NORMAL_BLOCK, __FILE__, __LINE__)
 #define malloc(s) _malloc_dbg(s, _NORMAL_BLOCK, __FILE__, __LINE__)
 #endif
-using namespace std;
 using namespace boost::asio;
 
 
@@ -909,9 +908,10 @@ namespace enable_if_test {
 
 
 
-
-
 namespace IOCP_test {
+
+    int iocpTest = -1;
+
     struct myOverlapped {
         OVERLAPPED overLapped;
         int number;
@@ -934,18 +934,20 @@ namespace IOCP_test {
 
             if (success) {
                 myOverlapped* mO = (myOverlapped*)overlappedPointer;
-
-                cout << mO->number << endl;
-                Sleep(10);
-                PostQueuedCompletionStatus(completionPort, 0, 0, overlappedPointer);
+                while (true) {
+                    iocpTest = mO->number;
+                }
+                //Sleep(10);
+                //PostQueuedCompletionStatus(completionPort, 0, 0, overlappedPointer);
             }
         }
     }
 
 
     void IOCP_test() { 
-        // TODO: IOCP에서 concurrent thread 랑 worker thread가 다른 것 같아서 테스트용으로 만든 것. 추후에 소켓을 사용해서 concurrent thread 수 제한하면 GQCS 늦게 빠지는지 확인하자.
-        int workerThreadCount = 1; // TODO: 이거 갯수 5까지 올리고 아래 concurrent_thread 수를 1로 하고, 위에 callback 무한 루프 돌게 하면 처리가 1만 처리되어야 할 것 같은데.. 왜 다되는지를 확인해야한다.
+        // sleep을 안걸었는데.. 왜 5개 스레드가 모두 작동할까? 
+        // cout 같은 IO 인터럽트가 호출되면 IOCP에서 그 스레드는 작업 중이 아닌 스레드로 판단하는 것 같다.
+        int workerThreadCount = 5; 
         HANDLE hIOCP = CreateIoCompletionPort(INVALID_HANDLE_VALUE, NULL, 0, 3);
         vector<HANDLE> workerThreadVector;
 
@@ -985,7 +987,7 @@ namespace IOCP_test {
         char key;
         while (true) {
             key = _getch();
-
+            cout << iocpTest;
             if (key == 'e') {
                 break;
             }
@@ -993,6 +995,7 @@ namespace IOCP_test {
             if (key == 'n') {
                 cout << endl;
             }
+
         }
 
         for (DWORD i = 0; i < workerThreadVector.size(); i++)
@@ -1004,12 +1007,48 @@ namespace IOCP_test {
             CloseHandle(hIOCP);
         }
     }
-    
+    //IOCP_test::IOCP_test();
+
 }
+
+namespace emplace_back_test {
+
+    class vt {
+    public:
+        vt() {
+            cout << "기본 생성자 호출" << endl;
+        }
+
+        vt(const vt& _a) {
+            cout << "복사 생성자 호출" << endl;
+        }
+
+        vt(vt&& _a) {
+            cout << "이동 생성자 호출" << endl;
+        }
+    };
+
+    //vector<vt> bb;
+    //vt item;
+    //cout << endl;
+
+    //cout << "emplace_back인 경우" << endl;
+    //bb.emplace_back(item);
+
+    //cout << endl;
+    //cout << "push_back인 경우" << endl;
+    //bb.push_back(item);
+
+    // 참조 링크 https://shaeod.tistory.com/630
+}
+
+
 
 int main()
 {
+
     IOCP_test::IOCP_test();
+
     _CrtDumpMemoryLeaks();  
     return 0;
 }
