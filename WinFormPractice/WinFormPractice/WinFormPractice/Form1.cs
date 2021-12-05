@@ -10,8 +10,10 @@ using System.Windows.Forms;
 
 namespace WinFormPractice
 {
+
     public partial class Form1 : Form
     {
+        HistoryForm historyForm;
         public Form1()
         {
             InitializeComponent();
@@ -30,6 +32,21 @@ namespace WinFormPractice
         private void button1_Click(object sender, EventArgs e)
         {
             ttBtn.Text = false.ToString();
+            historyForm = new HistoryForm();
+            historyForm.Show();
+        }
+
+        private void button1_Click_1(object sender, EventArgs e)
+        {
+            historyForm.richTextBox1.AppendText("hehehe\r\n");
+        }
+
+        private void button2_Click(object sender, EventArgs e)
+        {
+            if (historyForm != null)
+            {
+                historyForm.richTextBox1.Text = "";
+            }
         }
     }
 }

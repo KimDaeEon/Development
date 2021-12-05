@@ -10,11 +10,18 @@
 #include <conio.h>
 #include <array>
 #include <unordered_map>
+#include <bitset>
+#include <json/json.h>
+
 // boost의 asio라이브러리 크로스 플렛폼에 관계된 라이브러리
 #include <boost/asio/post.hpp>
 #include <boost/function.hpp>
 #include <boost/serialization/vector.hpp>
 #include <boost/serialization/singleton.hpp>
+#include <boost/format.hpp>
+
+#include <Windows.h>
+#include <mutex>
 using namespace std;
 #if _DEBUG
 #define new new(_NORMAL_BLOCK, __FILE__, __LINE__)
@@ -1043,12 +1050,221 @@ namespace emplace_back_test {
 }
 
 
+namespace template_meta_programming {
+    template <int X, int Y>
+    struct GCD {
+        static const int value = GCD<Y, X% Y>::value;
+    };
+
+    template <int X>
+    struct GCD<X, 0> {
+        static const int value = X;
+    };
+
+    template <int N, int D = 1>
+    struct Ratio {
+        typedef Ratio<N, D> type;
+        static const int num = N;  // 분자
+        static const int den = D;  // 분모
+    };
+    template <class R1, class R2>
+    struct _Ratio_add {
+        typedef Ratio<R1::num* R2::den + R2::num * R1::den, R1::den* R2::den> type;
+    };
+
+    template <class R1, class R2>
+    struct Ratio_add : _Ratio_add<R1, R2>::type {};
+
+    enum myE {
+        aa = 30
+    };
+
+    //typedef Ratio<2, 4> rat;
+    //typedef Ratio<4, 2> rat2;
+    //typedef Ratio_add<rat, rat2> rat3;
+
+    //std::cout << rat3::num << " / " << rat3::den << std::endl;
+
+}
+
+
+namespace lock_test {
+    std::recursive_mutex g_num_mutex;
+    constexpr int rountine_count = 100;
+    static unsigned int g_num = 0;
+
+    struct t {
+        int id;
+
+        void real_increment() {
+            cout << this->id << "에서 " << "lock 획득 시도 중" << '\n';
+            g_num_mutex.lock();
+            for (int i = 0; i < rountine_count; ++i) {
+                ++g_num;
+                std::cout << this->id << " => " << g_num << '\n';
+            }
+            g_num_mutex.unlock();
+        }
+    };
+    void lock_increment(t* _t)
+    {
+        _t->real_increment();
+    }
+
+    void trylock_increment(t* _t)
+    {
+        int count = 0;
+        do
+        {
+            // 뮤텍스 획득 성공
+            if (g_num_mutex.try_lock())
+            {
+                ++g_num;
+                count++;
+                std::cout << _t->id << " => " << g_num << '\n';
+                g_num_mutex.unlock();
+            }
+            // else 뮤텍스 획득 실패
+        } while (count < rountine_count);
+    };
+
+    //t a;
+    //a.id = 0;
+    //t b;
+    //b.id = 1;
+    //t c;
+    //c.id = 2;
+    //std::thread t1(lock_increment, &a);
+    //std::thread t2(lock_increment, &b);
+    //std::thread t3(lock_increment, &c);
+    //t1.join();
+    //t2.join();
+    //t3.join();
+
+}
+
+using namespace lock_test;
+
+constexpr int tt(int n) {
+    int result = 0;
+
+    if (n <= 1)
+        result = 1;
+    else
+        result = n * tt(n - 1);
+
+    return result;
+}
+
+namespace const_expr {
+    template<int n>
+    struct constN {
+        // constexpr로 만든 함수가 상수 리터럴인지 확인하는 템플릿
+        constN() { std::cout << n << endl; }
+    };
+
+    //constexpr int rand_test() {
+    //    // 상수 식이 생길 수가 없어서 이럴 때에는 컴파일 에러가 뜬다.
+    //    return rand() % 655;
+    //}
+    //constexpr int a = tt(5);
+
+    //constexpr int b = tt(4);
+}
+
+namespace string_view {
+    // c++ 14버전
+    std::string FiveCharacterOnlyString(const std::string& str)
+    {
+        if (str.size() < 5) return str;
+        return str.substr(0, 5);
+    }
+
+    // c++ 17 string_view
+    // string_view를 사용하면 string 객체의 복사가 발생하지 않습니다. 
+    std::string_view FiveCharacterOnlyStringView(const std::string_view str)
+    {
+        if (str.size() < 5) return str;
+        return str.substr(0, 5);
+    }
+
+    void UsedString(std::string& str)
+    {
+        // string 원본 객체에 대한 변경이 이루어진다.
+        str = "실수로 데이터 변경 시도";
+    }
+
+    void UsedStringView(std::string_view str_v)
+    {
+        // string_view 원본 객체에 대한 변경이 발생하지 않는다.
+        str_v = "실수로 데이터 변경 시도";
+    }
+
+    void CallerOriginStringObject(std::string_view str_v, std::string& str)
+    {
+        std::cout << "[origindata] str_v = " << str_v.data() << " Size = " << str_v.size() << std::endl;
+        str = "modify";
+        // 원본데이터가 변경되면 string_view의 데이터가 변경됩니다.
+        // 문자열 : "modify", size = 15
+        // 남아있는 빈 공간에는 이전 데이터가 들어 있습니다. 
+        std::cout << "[origindata modify] str_v = " << str_v.data() << " Size = " << str_v.size() << std::endl;
+
+        // original string -> modify l string 이렇게 된 상태, 원본에서 마지막 문자에 null을 넣어서 a가 없어졌다.
+        std::cout << str_v.data()[6] << std::endl;
+        std::cout << str_v.data()[7] << std::endl;
+        std::cout << str_v.data()[8] << std::endl;
+        std::cout << str_v.data()[9] << std::endl;
+        std::cout << str_v.data()[10] << std::endl;
+        std::cout << str_v.data()[11] << std::endl;
+        std::cout << str_v.data()[12] << std::endl;
+        std::cout << str_v.data()[13] << std::endl;
+        std::cout << str_v.data()[14] << std::endl;
+
+        // 원래 string 데이터는 size까지 모두 바뀌었다.
+        std::cout << str << std::endl;
+        std::cout << str.size() << std::endl;
+       
+        // string_view 자체는 원본 데이터를 수정할 수 없지만, 바라보고 있는 원본 데이터가 수정되면 string_view가 수정된다.
+        // 이 때에 string_view 는 초기의 size로 고정되어 있기 때문에 예상하지 않은 동작이 발생할 수 있다.
+        // 그렇기에 string_view를 사용 도중에는 호출하는 입장에서 원본 데이터가 수정되지 않을 것을 보장해줘야 한다.
+
+        // 이렇게 된 이유는 내부적으로 const 문자열 포인터와 사이즈를 저장하는 변수만 basic_string_view에 갖기 때문이다.
+        // 이로 인해 string 처럼 문자열 복사가 아니라서 생성이 빠르고, 데이터 수정이 불가능해서 읽기 전용으로만 사용이 가능하다.
+    }
+
+    //// std::string val1 = "12345"
+    //auto val1 = FiveCharacterOnlyString("123456789");
+    //// std::string_view val2 = "12345"
+    //auto val2 = FiveCharacterOnlyStringView("123456789");
+
+    //cout << val1 << endl;
+    //cout << val2 << endl;
+
+    //UsedString(val1);
+    //UsedStringView(val2);
+
+    //cout << val1 << endl;
+    //cout << val2 << endl;
+
+    //std::string str("original string");
+    //CallerOriginStringObject(str, str);
+
+    //string a = "asd";
+    //string b = "ddd";
+
+    //std::string_view c = a;
+    //cout << c << endl;
+
+    ////c[0] = 'a'; // 할당 불가
+    //c = b;
+    //cout << c << endl;
+
+}
+
+using namespace string_view;
 
 int main()
 {
-
-    IOCP_test::IOCP_test();
-
     _CrtDumpMemoryLeaks();  
     return 0;
 }

@@ -31,35 +31,61 @@ namespace WinFormPractice
         {
             this.test_label1 = new System.Windows.Forms.Label();
             this.ttBtn = new System.Windows.Forms.Button();
+            this.button1 = new System.Windows.Forms.Button();
+            this.button2 = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // test_label1
             // 
             this.test_label1.AutoSize = true;
-            this.test_label1.Location = new System.Drawing.Point(427, 112);
+            this.test_label1.Location = new System.Drawing.Point(374, 90);
             this.test_label1.Name = "test_label1";
-            this.test_label1.Size = new System.Drawing.Size(64, 15);
+            this.test_label1.Size = new System.Drawing.Size(55, 12);
             this.test_label1.TabIndex = 0;
             this.test_label1.Text = "TestText";
             this.test_label1.Click += new System.EventHandler(this.label1_Click);
             // 
             // ttBtn
             // 
-            this.ttBtn.Location = new System.Drawing.Point(267, 104);
+            this.ttBtn.Location = new System.Drawing.Point(234, 83);
+            this.ttBtn.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.ttBtn.Name = "ttBtn";
-            this.ttBtn.Size = new System.Drawing.Size(75, 23);
+            this.ttBtn.Size = new System.Drawing.Size(66, 18);
             this.ttBtn.TabIndex = 1;
             this.ttBtn.Text = "button1";
             this.ttBtn.UseVisualStyleBackColor = true;
             this.ttBtn.Click += new System.EventHandler(this.button1_Click);
             // 
+            // button1
+            // 
+            this.button1.Location = new System.Drawing.Point(234, 136);
+            this.button1.Name = "button1";
+            this.button1.Size = new System.Drawing.Size(75, 23);
+            this.button1.TabIndex = 2;
+            this.button1.Text = "button2";
+            this.button1.UseVisualStyleBackColor = true;
+            this.button1.Click += new System.EventHandler(this.button1_Click_1);
+            // 
+            // button2
+            // 
+            this.button2.Location = new System.Drawing.Point(243, 180);
+            this.button2.Name = "button2";
+            this.button2.Size = new System.Drawing.Size(75, 23);
+            this.button2.TabIndex = 3;
+            this.button2.Text = "refreshTextBox";
+            this.button2.UseVisualStyleBackColor = true;
+            this.button2.Click += new System.EventHandler(this.button2_Click);
+            // 
             // Form1
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 15F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(800, 450);
+            this.ClientSize = new System.Drawing.Size(700, 360);
+            this.Controls.Add(this.button2);
+            this.Controls.Add(this.button1);
             this.Controls.Add(this.ttBtn);
             this.Controls.Add(this.test_label1);
+            this.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.Name = "Form1";
             this.Text = "Form1";
             this.Load += new System.EventHandler(this.Form1_Load);
@@ -72,6 +98,8 @@ namespace WinFormPractice
 
         private System.Windows.Forms.Label test_label1;
         private System.Windows.Forms.Button ttBtn;
+        private System.Windows.Forms.Button button1;
+        private System.Windows.Forms.Button button2;
     }
 }
 
