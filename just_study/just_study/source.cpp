@@ -12,6 +12,7 @@
 #include <unordered_map>
 #include <bitset>
 #include <json/json.h>
+#include <optional>
 
 // boost의 asio라이브러리 크로스 플렛폼에 관계된 라이브러리
 #include <boost/asio/post.hpp>
@@ -374,35 +375,7 @@ namespace hash {
     };
 }
 
-namespace RAII_SmartPointer {
-    // https://openmynotepad.tistory.com/33 <- 링크 참조 
-    // https://webnautes.tistory.com/1451 <- shared_ptr 참조 카운팅 관련 설명 자세함.
-    class test {
-    public:
-        int a;
-        int b;
 
-        ~test(){
-            cout << "a = " << a << endl;
-            cout << "test destructor" << endl;
-        }
-    };
-
-    void test_func(shared_ptr<test>& t) {
-        cout << "in test_func()" << endl;
-        cout << t.use_count() << endl;
-    }
-
-    /* shared_ptr<test> a(new test());
-   weak_ptr<test> b = a;
-
-   cout << a.use_count() << endl;
-   cout << b.use_count() << endl;
-
-   cout << b.expired() << endl;
-   (*(b.lock())).a = 150;
-   a.reset();*/
-}
 
 namespace C_Based_VirtualFuction {
     typedef struct s_person {
@@ -841,15 +814,15 @@ int32_t HoldItem(short* a)
     return ::InterlockedIncrement16(a);
 }
 
-template <class T, typename std::enable_if<std::is_integral<T>::value,
+template <class T, typename enable_if<is_integral<T>::value,
     T>::type* = nullptr>
     void do_stuff(T& t) {
-    std::cout << "do_stuff integral\n";
+    cout << "do_stuff integral\n";
     // 정수 타입들을 받는 함수 (int, char, unsigned, etc.)
 }
 
 template <class T,
-    typename std::enable_if<std::is_class<T>::value, T>::type* = nullptr>
+    typename enable_if<is_class<T>::value, T>::type* = nullptr>
     void do_stuff(T& t) {
     // 일반적인 클래스들을 받음
 }
@@ -1083,26 +1056,30 @@ namespace template_meta_programming {
     //typedef Ratio<4, 2> rat2;
     //typedef Ratio_add<rat, rat2> rat3;
 
-    //std::cout << rat3::num << " / " << rat3::den << std::endl;
+    //cout << rat3::num << " / " << rat3::den << endl;
 
 }
 
 
 namespace lock_test {
-    std::recursive_mutex g_num_mutex;
-    constexpr int rountine_count = 100;
+    constexpr int rountine_count = 1000000;
     static unsigned int g_num = 0;
+    recursive_mutex g_num_mutex; // 이거 t 내부에 들어가면 한 객체마다 락을 보장하는 락이 된다.
 
     struct t {
         int id;
+        //recursive_mutex g_num_mutex; // 이거 t 내부에 들어가면 한 객체마다 락을 보장하는 락이 된다. 
+        // 단 그렇게 하면 그러면 아래 실행 구문은 락이 안잡히는 거라서 g_num을 10만 이상 정도로 주면 숫자가 이상해진다.
 
         void real_increment() {
-            cout << this->id << "에서 " << "lock 획득 시도 중" << '\n';
             g_num_mutex.lock();
+            cout << this->id << "에서 " << "lock 획득!" << '\n';
             for (int i = 0; i < rountine_count; ++i) {
                 ++g_num;
-                std::cout << this->id << " => " << g_num << '\n';
+                //cout << this->id << " => " << g_num << '\n';
             }
+            cout << this->id << "에서 " << "lock 해제" << '\n';
+            cout << this->id << " => " << g_num << '\n';
             g_num_mutex.unlock();
         }
     };
@@ -1111,39 +1088,41 @@ namespace lock_test {
         _t->real_increment();
     }
 
-    void trylock_increment(t* _t)
-    {
-        int count = 0;
-        do
-        {
-            // 뮤텍스 획득 성공
-            if (g_num_mutex.try_lock())
-            {
-                ++g_num;
-                count++;
-                std::cout << _t->id << " => " << g_num << '\n';
-                g_num_mutex.unlock();
-            }
-            // else 뮤텍스 획득 실패
-        } while (count < rountine_count);
-    };
-
+    //void trylock_increment(t* _t)
+    //{
+    //    int count = 0;
+    //    do
+    //    {
+    //        // 뮤텍스 획득 성공
+    //        if (_t->g_num_mutex.try_lock())
+    //        {
+    //            ++g_num;
+    //            count++;
+    //            cout << _t->id << " => " << g_num << '\n';
+    //            _t->g_num_mutex.unlock();
+    //        }
+    //        // else 뮤텍스 획득 실패
+    //    } while (count < rountine_count);
+    //};
+    
+    //using namespace lock_test;
     //t a;
     //a.id = 0;
     //t b;
     //b.id = 1;
     //t c;
     //c.id = 2;
-    //std::thread t1(lock_increment, &a);
-    //std::thread t2(lock_increment, &b);
-    //std::thread t3(lock_increment, &c);
+    //thread t1(lock_increment, &a);
+    //thread t2(lock_increment, &b);
+    //thread t3(lock_increment, &c);
+    //for (int i = 0; i < 100; i++) {
+    //    g_num = g_num + 1;
+    //    cout << "락 안잡고 쓰고 있는 중" << g_num << endl;
+    //}
     //t1.join();
     //t2.join();
     //t3.join();
-
 }
-
-using namespace lock_test;
 
 constexpr int tt(int n) {
     int result = 0;
@@ -1160,7 +1139,7 @@ namespace const_expr {
     template<int n>
     struct constN {
         // constexpr로 만든 함수가 상수 리터럴인지 확인하는 템플릿
-        constN() { std::cout << n << endl; }
+        constN() { cout << n << endl; }
     };
 
     //constexpr int rand_test() {
@@ -1172,9 +1151,9 @@ namespace const_expr {
     //constexpr int b = tt(4);
 }
 
-namespace string_view {
+namespace string_view_test {
     // c++ 14버전
-    std::string FiveCharacterOnlyString(const std::string& str)
+    string FiveCharacterOnlyString(const string& str)
     {
         if (str.size() < 5) return str;
         return str.substr(0, 5);
@@ -1182,47 +1161,47 @@ namespace string_view {
 
     // c++ 17 string_view
     // string_view를 사용하면 string 객체의 복사가 발생하지 않습니다. 
-    std::string_view FiveCharacterOnlyStringView(const std::string_view str)
+    string_view FiveCharacterOnlyStringView(const string_view str)
     {
         if (str.size() < 5) return str;
         return str.substr(0, 5);
     }
 
-    void UsedString(std::string& str)
+    void UsedString(string& str)
     {
         // string 원본 객체에 대한 변경이 이루어진다.
         str = "실수로 데이터 변경 시도";
     }
 
-    void UsedStringView(std::string_view str_v)
+    void UsedStringView(string_view str_v)
     {
         // string_view 원본 객체에 대한 변경이 발생하지 않는다.
         str_v = "실수로 데이터 변경 시도";
     }
 
-    void CallerOriginStringObject(std::string_view str_v, std::string& str)
+    void CallerOriginStringObject(string_view str_v, string& str)
     {
-        std::cout << "[origindata] str_v = " << str_v.data() << " Size = " << str_v.size() << std::endl;
+        cout << "[origindata] str_v = " << str_v.data() << " Size = " << str_v.size() << endl;
         str = "modify";
         // 원본데이터가 변경되면 string_view의 데이터가 변경됩니다.
         // 문자열 : "modify", size = 15
         // 남아있는 빈 공간에는 이전 데이터가 들어 있습니다. 
-        std::cout << "[origindata modify] str_v = " << str_v.data() << " Size = " << str_v.size() << std::endl;
+        cout << "[origindata modify] str_v = " << str_v.data() << " Size = " << str_v.size() << endl;
 
         // original string -> modify l string 이렇게 된 상태, 원본에서 마지막 문자에 null을 넣어서 a가 없어졌다.
-        std::cout << str_v.data()[6] << std::endl;
-        std::cout << str_v.data()[7] << std::endl;
-        std::cout << str_v.data()[8] << std::endl;
-        std::cout << str_v.data()[9] << std::endl;
-        std::cout << str_v.data()[10] << std::endl;
-        std::cout << str_v.data()[11] << std::endl;
-        std::cout << str_v.data()[12] << std::endl;
-        std::cout << str_v.data()[13] << std::endl;
-        std::cout << str_v.data()[14] << std::endl;
+        cout << str_v.data()[6] << endl;
+        cout << str_v.data()[7] << endl;
+        cout << str_v.data()[8] << endl;
+        cout << str_v.data()[9] << endl;
+        cout << str_v.data()[10] << endl;
+        cout << str_v.data()[11] << endl;
+        cout << str_v.data()[12] << endl;
+        cout << str_v.data()[13] << endl;
+        cout << str_v.data()[14] << endl;
 
         // 원래 string 데이터는 size까지 모두 바뀌었다.
-        std::cout << str << std::endl;
-        std::cout << str.size() << std::endl;
+        cout << str << endl;
+        cout << str.size() << endl;
        
         // string_view 자체는 원본 데이터를 수정할 수 없지만, 바라보고 있는 원본 데이터가 수정되면 string_view가 수정된다.
         // 이 때에 string_view 는 초기의 size로 고정되어 있기 때문에 예상하지 않은 동작이 발생할 수 있다.
@@ -1232,9 +1211,9 @@ namespace string_view {
         // 이로 인해 string 처럼 문자열 복사가 아니라서 생성이 빠르고, 데이터 수정이 불가능해서 읽기 전용으로만 사용이 가능하다.
     }
 
-    //// std::string val1 = "12345"
+    //// string val1 = "12345"
     //auto val1 = FiveCharacterOnlyString("123456789");
-    //// std::string_view val2 = "12345"
+    //// string_view val2 = "12345"
     //auto val2 = FiveCharacterOnlyStringView("123456789");
 
     //cout << val1 << endl;
@@ -1246,13 +1225,13 @@ namespace string_view {
     //cout << val1 << endl;
     //cout << val2 << endl;
 
-    //std::string str("original string");
+    //string str("original string");
     //CallerOriginStringObject(str, str);
 
     //string a = "asd";
     //string b = "ddd";
 
-    //std::string_view c = a;
+    //string_view c = a;
     //cout << c << endl;
 
     ////c[0] = 'a'; // 할당 불가
@@ -1261,10 +1240,185 @@ namespace string_view {
 
 }
 
-using namespace string_view;
+namespace vector_test {
+    struct temp {
+        int a;
+        int b;
+    };
+
+    void CapacitySizeTest() {
+        vector<int> v;
+
+        v.resize(30); // size, capacity 다 증가
+        cout << v.size() << endl;
+        cout << v.capacity() << endl;
+
+        v.resize(10); // capacity 변함 없음, size만 변화
+        cout << v.size() << endl;
+        cout << v.capacity() << endl;
+
+        v.reserve(20); // 여기서 capacity 변함 없음
+        cout << v.size() << endl;
+        cout << v.capacity() << endl;
+
+        v.reserve(40); // 여기서 capacity 증가
+        cout << v.size() << endl;
+        cout << v.capacity() << endl;
+    }
+}
+
+namespace optional_test {
+    optional<string> GetValueFromMap(map<int, string>& m,
+        int key) {
+        auto itr = m.find(key);
+        if (itr != m.end()) {
+            return itr->second;
+        }
+
+        // nullopt 는 <optional> 에 정의된 객체로 비어있는 optional 을 의미한다.
+        return nullopt;
+    }
+
+    optional<string> OptionalNullTest() {
+        return nullopt; // 이렇게 주면 캐스팅되어서 없는 포인터가 된다.
+        //return "임시"; // 이렇게 주면 있는 포인터로 넘겨준다.
+    }
+
+    class A {
+    public:
+        int data;
+        A():data(0) { cout << "A객체 디폴트 생성" << endl; }
+
+        A(const A& a) { cout << "A객체 복사 생성" << endl; }
+    };
+
+    //using namespace optional_test;
+    //map<int, string> data = { {1, "hi"}, {2, "hello"}, {3, "hiroo"} };
+    //auto t = GetValueFromMap(data, 2);
+    //optional<string> aa = OptionalNullTest();
+
+    //// 아래 2개는 같은 것이다.
+    //cout << *t << endl;
+    //cout << t.value() << endl;
+
+    //if (aa) {
+    //    cout << "nullopt여도 포인터 있다고 나온다" << endl;
+    //}
+    //else {
+    //    cout << "nullopt를 주면 없는 캐스팅되어서 null포인터로 친다" << endl;
+    //}
+
+    //// 복사 생성자 호출 테스트
+
+    //A a;
+
+    //cout << "Optional 객체 만듦 ---- " << endl;
+    //optional<A> maybe_a;
+
+    //cout << "maybe_a 는 A 객체를 포함하고 있지 않기 때문에 디폴트 생성할 "
+    //    "필요가 없다."
+    //    << endl;
+
+    //// 아래처럼 할당을 해야지 복사생성자를 호출해서 보관한다.
+    //maybe_a = a;
+
+    //optional<reference_wrapper<A>> maybe_a2 = ref(a); // reference로 할당하는 것이라서 복사 생성자 호출 안된다.
+    //maybe_a2->get().data = 10; // wrapper를 사용했으면 객체를 얻어오려고 할 때에 get()을 사용
+    //cout << maybe_a2->get().data << endl;
+    //cout << a.data << endl; // a도 10으로 수정된 것을 알 수 있다.
+
+    //string b = "asdf";
+    //optional<reference_wrapper<string>> maybe_a3 = ref(b); // reference로 할당하는 것이라서 복사 생성자 호출 안된다.
+    //maybe_a3->get()[0] = 'c'; // 스트링을 수정
+
+    //cout << b << endl; // 수정된 사탕이 스트링에도 반영됨
+    //cout << maybe_a3->get() << endl;
+
+}
+
+namespace RAII_SmartPointer {
+    // https://openmynotepad.tistory.com/33 <- 링크 참조 
+    // https://webnautes.tistory.com/1451 <- shared_ptr 참조 카운팅 관련 설명 자세함.
+    class test {
+    public:
+        int a;
+        int b;
+
+        ~test() {
+            cout << "a = " << a << endl;
+            cout << "test destructor" << endl;
+        }
+    };
+
+    void test_func(shared_ptr<test>& t) {
+        cout << "in test_func()" << endl;
+        cout << t.use_count() << endl;
+
+    }
+
+    //using namespace RAII_SmartPointer;
+
+    //// unique_ptr test
+    //test* t = new test[3];
+    //t[0].a = 10;
+    //test* t2 = new test[4];
+    //t2[0].a = 1000;
+    //test* t3;
+
+    ////unique_ptr<test> a(t); // 이렇게 되면 온전히 t를 해제해주지 못한다.
+    //unique_ptr<test[]> up(t); // 이렇게 배열 형태로 템플릿을 받게 해야 온전히 해제된다. 
+    //unique_ptr<test[]> up2(t2); // up보다 up2가 나중에 선언되어서 stack 위에 있으므로 메모리 해제는 up2가 먼저 된다. 배열의 경우 t[0]보다 t[2]가 먼저 해제된다. (나중에 할당되었으므로)
+
+    ////t3 = up.release(); // 이렇게만 넘겨주면 메모리가 해제되지 않는다. unique_ptr을 null로 만들고, 가지고 있던 객체를 리턴
+
+    //up.swap(up2); // 소유하고 있는 포인터를 바꾼다. 만약 기존 것의 메모리를 해제하고 받을 거면 up.reset(up2)를 하면 된다.
+
+    //cout << up[0].a << endl; // 1000이 나온다. 값이 바뀌었다.
+
+    ////up.reset(); // 이렇게 되면 바로 메모리가 해제된다. 이렇게 안하면 아래 cout 문장이 호출된 후에 메모리가 해제된다.
+    //cout << "reset 불린 후" << endl;
+
+    //cout << up2[0].a << endl;
+    //// unique_ptr test
+
+    //using namespace RAII_SmartPointer;
+    /* shared_ptr<test> a(new test());
+   weak_ptr<test> b = a;
+
+   cout << a.use_count() << endl;
+   cout << b.use_count() << endl;
+
+   cout << b.expired() << endl;
+   (*(b.lock())).a = 150;
+   a.reset();*/
+}
+
+namespace template_specialization_overloading_test {
+    template<typename t>
+    bool isBigger(t a, t b) {
+        cout << "일반 IsBigger()" << endl;
+        return a > b;
+    }
+
+    // 요렇게 특수화된 템플릿 함수를 헤더에 선언해두면 아래와 같이 정의를 안해두면 링크 에러가 뜬다.
+    template<> bool isBigger(double a, double b);
+
+    bool isBigger(double a, double b) { // 이렇게 되면 double 형에 대해서 아래 함수만 호출한다.
+        // 템플릿 함수 호출 우선순위는 특수화가 1순위이고, 이후에는 알맞은 코드가 2순위가 된다.
+        cout << "double로 특수화된 IsBigger()" << endl;
+        return a > b;
+    }
+
+    //using namespace template_specialization_overloading_test;
+    //isBigger(12, 2);        // 일반화된 템플릿 함수가 불린다.
+    //isBigger(12, 2.3);      // 특수화된 템플릿 함수가 불린다.
+
+}
+
 
 int main()
-{
-    _CrtDumpMemoryLeaks();  
+{   
+        
+	_CrtDumpMemoryLeaks();  
     return 0;
 }
