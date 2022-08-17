@@ -17223,3 +17223,10 @@ WinFormPractice/WinFormPractice/WinFormPractice/obj/Debug/WinFormPractice.csproj
 WinFormPractice/WinFormPractice/WinFormPractice/obj/Debug/WinFormPractice.exe
 WinFormPractice/WinFormPractice/WinFormPractice/obj/Debug/WinFormPractice.Form1.resources
 WinFormPractice/WinFormPractice/WinFormPractice/obj/Debug/WinFormPractice.Properties.Resources.resources
+*.obj
+*.exe
+*.tlog
+*.recipe
+*.iobj
+*.ipdb
+*.log
