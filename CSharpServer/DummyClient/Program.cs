@@ -1,12 +1,12 @@
 ﻿using System;
 
-namespace CSharpServer
+namespace DummyClient
 {
     class Program
     {
         static void Main(string[] args)
         {
-            Console.WriteLine("Hello Server!");
+            Console.WriteLine("Hello Core!");
         }
     }
 }
