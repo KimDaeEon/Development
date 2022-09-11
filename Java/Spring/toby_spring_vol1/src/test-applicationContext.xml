@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+xsi:schemaLocation="http://www.springframework.org/schema/beans
+					http://www.springframework.org/schema/beans/spring-beans-3.0.xsd">
+	<bean id="dataSource" class="org.springframework.jdbc.datasource.SimpleDriverDataSource">
+		<property name="DriverClass" value="com.mysql.cj.jdbc.Driver"></property>
+		<!-- ;delimeter 오류 밣생 시에 &를 &amp;로 바꿔야 한다. -->
+		<!-- 현재는 차이가 없지만.. 차후에는 여기에 test db 용으로 설정 필요 -->
+		<property name="Url" value="jdbc:mysql://localhost/sys?useUnicode=true&amp;serverTimezone=Asia/Seoul&amp;characterEncoding=utf8"></property>
+		<property name="Username" value="root"></property>
+		<property name="Password" value="1q2w3e4r!@"></property>
+	</bean>
+	<bean id ="jdbcContext" class="user.dao.JdbcContext">
+		<property name="dataSource" ref="dataSource"></property>
+	</bean>
+	<bean id="userDao" class="user.dao.UserDao">
+		<!-- ref 안에 들어가는 것은 bean id가 되어야 한다.-->
+		<!-- name이 method의 이름이다. dataSource = setDataSource이다. -->
+		<property name="dataSource" ref="dataSource"></property>
+	</bean>
+</beans>

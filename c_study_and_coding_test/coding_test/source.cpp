@@ -9,6 +9,7 @@
 #include <set>
 #include <string>
 #include <sstream>
+#include <unordered_map>
 using namespace std;
 
 // 기본적 참고 사항 사항
@@ -25,7 +26,8 @@ using namespace std;
 
 // 함수 내부에서 반복적으로 생성될 필요 없는 전역변수는 바깥으로 빼주자.
 
-// 최대 크기나 최소 크기만 알면 된다면 max_element, min_element를 쓰자. sort하는 것보다 연산량을 많이 줄일 수 있다.
+// 최대 크기나 최소 크기만 알면 된다면 max_element, min_element를 쓰자. sort 하는 것보다 연산량을 많이 줄일 수 있다.
+// STL 컨테이너 간에는 상호 변환이 가능한데, 이러한 경우 생성자에서 바로 컨테이너 간에 변환이 이루어지도록 하자. ex) unordered_set<int> us(v.begin(), v.end());
 
 // DFS 는 스택, BFS 는 queue 를 통해서 구현할 수 있다.
 
@@ -33,6 +35,8 @@ using namespace std;
 
 // map<int,int> m 이렇게 하면 m[10] = 10 이런 식으로 추가가 가능하고, auto it = m.begin() 으로 할당하면 pair<int, int> 형식을 가리키는 it가 된다.
 // 사용할 때에는 (*it).first, (*it).second 이런 식으로 사용하면 된다.
+
+
 #pragma region vector_sort_vs_priority_queue_sort
 //class my_type {
 //public:
@@ -97,6 +101,8 @@ using namespace std;
 
 
 #pragma region hash(map)
+
+
 // 해시 > 완주하지 못한 선수
 string solution_hash_1(vector<string> participant, vector<string> completion) {
 	// 아래는 모범 답안
@@ -134,7 +140,7 @@ string solution_hash_1(vector<string> participant, vector<string> completion) {
 	//    else {
 	//        target->second--;
 	//    }
-	//}
+	//} 
 
 
 
@@ -245,6 +251,15 @@ vector<int> solution_hash_4(vector<string> genres, vector<int> plays) {
 	}
 
 	return answer;
+}
+
+// 해시 > 폰켓몬
+using namespace std;
+
+int solution_hash_5(vector<int> nums)
+{
+	unordered_set<int> us(nums.begin(), nums.end());
+	return min(nums.size() / 2, us.size());
 }
 #pragma endregion
 
@@ -419,6 +434,7 @@ vector<int> solution_sq_4(vector<int> prices) {
 
 #pragma endregion
 
+
 #pragma region heap
 // 힙 > 더 맵게
 int solution_heap_1(vector<int> scoville, int K) {
@@ -533,6 +549,7 @@ vector<int> solution_heap_3(vector<string> operations) {
 }
 #pragma endregion
 
+
 #pragma region sort
 
 // 정렬 > K번째수
@@ -626,6 +643,7 @@ int solution_sort_3(vector<int> citations) {
 }
 
 #pragma endregion
+
 
 #pragma region Brute-Force
 //struct my_comp_brute_force_1 {
@@ -816,6 +834,7 @@ string solution_greedy_2(string number, int k) {
 }
 #pragma endregion
 
+
 #pragma region Dynamic Programming
 
 
@@ -933,13 +952,66 @@ int solution_graph_1(int n, vector<vector<int>> edge) {
 
 	return answer;
 }
-
-
 #pragma endregion
 
 
+#pragma region KKO-Blind
+namespace kko {
+
+	namespace blind_2018{
+		// [1차] 비밀지도
+		string decode(int N, int cryptedNum) {
+			static unordered_map<int, string> cachedMap;
+
+			if (cachedMap.find(cryptedNum) != cachedMap.end()) {
+				return cachedMap[cryptedNum];
+			}
+
+			string decoded = "";
+			int dividend = cryptedNum;
+			int remainder = 0;
+
+			while (true) {
+				// 1이면 현재까지 만들어진 스트링 캐싱하고 종료
+				if (dividend == 0) {
+					if (decoded.size() < N) {
+
+					}
+					cachedMap[cryptedNum] = decoded;
+					return decoded;
+				}
+
+				// 2로 나눈 나머지를 구하고 문자열에 +
+				remainder = dividend % 2;
+				if (remainder == 1)
+					decoded += '#';
+				else
+					decoded += ' ';
+
+				dividend = dividend / 2;
+			}
+		}
+
+		vector<string> solution1(int n, vector<int> arr1, vector<int> arr2) {
+			vector<int> original(arr1.size());
+			vector<string> answer;
+
+			for (int i = 0; i < original.size(); i++) {
+				original[i] = arr1[i] | arr2[i];
+			}
+
+			for (auto i : original) {
+				answer.push_back(decode(i));
+			}
+
+			return answer;
+		}
+	}
+}
+#pragma endregion
+
 int main()
 {
-	
+	kko::blind_2018::solution1({ 9, 20, 28, 18, 11}, { 30, 1, 21, 17, 28});
 	return 0;
 }

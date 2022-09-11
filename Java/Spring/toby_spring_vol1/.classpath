@@ -31,7 +31,7 @@
 	<classpathentry kind="lib" path="C:/spring_tools/Study Book Example/toby-spring3-1-main/Vol1-30/Lib/lib/org.springframework.expression-3.0.7.RELEASE.jar"/>
 	<classpathentry kind="lib" path="C:/spring_tools/Study Book Example/toby-spring3-1-main/Vol1-30/Lib/lib/org.springframework.jdbc-3.0.7.RELEASE.jar"/>
 	<classpathentry kind="lib" path="C:/spring_tools/Study Book Example/toby-spring3-1-main/Vol1-30/Lib/lib/org.springframework.oxm-3.0.7.RELEASE.jar"/>
-	<classpathentry kind="lib" path="C:/spring_tools/Study Book Example/toby-spring3-1-main/Vol1-30/Lib/lib/org.springframework.test-3.0.7.RELEASE.jar"/>
 	<classpathentry kind="lib" path="C:/spring_tools/Study Book Example/toby-spring3-1-main/Vol1-30/Lib/lib/org.springframework.transaction-3.0.7.RELEASE.jar"/>
+	<classpathentry kind="lib" path="C:/spring_tools/Study Book Example/toby-spring3-1-main/Vol1-30/Lib/lib/org.springframework.test-3.0.7.RELEASE.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

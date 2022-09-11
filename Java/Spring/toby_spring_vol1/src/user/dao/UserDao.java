@@ -8,31 +8,25 @@ import java.sql.SQLException;
 import javax.sql.DataSource;
 
 import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.PreparedStatementCreator;
 
 import user.domain.User;
 
 public class UserDao {
 	private DataSource dataSource;
+	private JdbcTemplate jdbcTemplate;
 	
 	public void setDataSource(DataSource dataSource) {
+		this.jdbcTemplate = new JdbcTemplate(dataSource);
 		this.dataSource = dataSource;
 	}
 
 	public void add(User user) throws SQLException {
-		Connection c = dataSource.getConnection();
-
-		PreparedStatement ps = c.prepareStatement("insert into user(id, name, level) values(?,?,?)");
-
-		ps.setString(1, user.getId());
-		ps.setString(2, user.getName());
-		ps.setInt(3, user.getLevel());
-
-		ps.executeUpdate();
-
-		ps.close();
-		c.close();
+		this.jdbcTemplate.update("insert into user(id, name, level) values(?,?,?)", 
+				user.getId(), user.getName(), user.getLevel());
 	}
-	
+
 	public User get(String id) throws SQLException {
 		Connection c = dataSource.getConnection();
 
@@ -42,7 +36,7 @@ public class UserDao {
 		ResultSet rs = ps.executeQuery();
 
 		User user = null;
-		if(rs.next()) {
+		if (rs.next()) {
 			user = new User();
 			user.setId(rs.getString("id"));
 			user.setName(rs.getString("name"));
@@ -52,35 +46,35 @@ public class UserDao {
 		rs.close();
 		ps.close();
 		c.close();
-		
-		if(user == null) throw new EmptyResultDataAccessException(1);
-		
+
+		if (user == null)
+			throw new EmptyResultDataAccessException(1);
+
 		return user;
 	}
-	
-	public void deleteAll() throws SQLException{
-		Connection c = dataSource.getConnection();
-		
-		PreparedStatement ps = c.prepareStatement("delete from user");
-		ps.executeUpdate();
-		
-		ps.close();
-		c.close();
+
+	public void deleteAll() throws SQLException {
+		this.jdbcTemplate.update(new PreparedStatementCreator() {
+			@Override
+			public PreparedStatement createPreparedStatement(Connection con) throws SQLException {
+				return con.prepareStatement("delete from user");
+			}
+		});
 	}
-	
-	public int getCount() throws SQLException{
+
+	public int getCount() throws SQLException {
 		Connection c = dataSource.getConnection();
-		
+
 		PreparedStatement ps = c.prepareStatement("select count(*) from user");
-		
+
 		ResultSet rs = ps.executeQuery();
 		rs.next();
 		int count = rs.getInt(1);
-		
+
 		rs.close();
 		ps.close();
 		c.close();
-		
+
 		return count;
 	}
 }
