@@ -1,0 +1,16 @@
+C:\git_portfolio\CSharpServer\DummyClient\bin\Debug\net5.0\DummyClient.exe
+C:\git_portfolio\CSharpServer\DummyClient\bin\Debug\net5.0\DummyClient.deps.json
+C:\git_portfolio\CSharpServer\DummyClient\bin\Debug\net5.0\DummyClient.runtimeconfig.json
+C:\git_portfolio\CSharpServer\DummyClient\bin\Debug\net5.0\DummyClient.runtimeconfig.dev.json
+C:\git_portfolio\CSharpServer\DummyClient\bin\Debug\net5.0\DummyClient.dll
+C:\git_portfolio\CSharpServer\DummyClient\bin\Debug\net5.0\ref\DummyClient.dll
+C:\git_portfolio\CSharpServer\DummyClient\bin\Debug\net5.0\DummyClient.pdb
+C:\git_portfolio\CSharpServer\DummyClient\obj\Debug\net5.0\DummyClient.csproj.AssemblyReference.cache
+C:\git_portfolio\CSharpServer\DummyClient\obj\Debug\net5.0\DummyClient.GeneratedMSBuildEditorConfig.editorconfig
+C:\git_portfolio\CSharpServer\DummyClient\obj\Debug\net5.0\DummyClient.AssemblyInfoInputs.cache
+C:\git_portfolio\CSharpServer\DummyClient\obj\Debug\net5.0\DummyClient.AssemblyInfo.cs
+C:\git_portfolio\CSharpServer\DummyClient\obj\Debug\net5.0\DummyClient.csproj.CoreCompileInputs.cache
+C:\git_portfolio\CSharpServer\DummyClient\obj\Debug\net5.0\DummyClient.dll
+C:\git_portfolio\CSharpServer\DummyClient\obj\Debug\net5.0\ref\DummyClient.dll
+C:\git_portfolio\CSharpServer\DummyClient\obj\Debug\net5.0\DummyClient.pdb
+C:\git_portfolio\CSharpServer\DummyClient\obj\Debug\net5.0\DummyClient.genruntimeconfig.cache
