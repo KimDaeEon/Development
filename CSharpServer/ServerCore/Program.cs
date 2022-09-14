@@ -9,6 +9,26 @@ namespace ServerCore
 {
     class Program
     {
+        static Listener _listener = new Listener();
+        static void OnAcceptHandler(Socket clientSocket)
+        {
+            try
+            {
+                Session session = new Session();
+                session.Start(clientSocket);
+
+                byte[] sendBuff = Encoding.UTF8.GetBytes("Hello Client");
+                session.Send(sendBuff);
+
+                Thread.Sleep(500);
+                session.Disconnect();
+            }
+            catch(Exception e)
+            {
+
+            }
+        }
+
         static void Main(string[] args)
         {
             // DNS 활용
@@ -17,38 +37,13 @@ namespace ServerCore
             IPAddress ipAddr = ipHost.AddressList[0];
             IPEndPoint endPoint = new IPEndPoint(ipAddr, 8888); // 포트는 8888번으로 설정
 
-            Console.WriteLine(ipHost.AddressList);
-            Console.WriteLine(ipAddr);
-
             try
             {
-                // Listen 소켓 생성
-                Socket listenSocket = new Socket(endPoint.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
 
-                // Bind
-                listenSocket.Bind(endPoint);
-
-                // Listen 시작
-                // 접속 대기열 숫자를 10으로 설정, backlog 라고 쓰여있는데 '밀린 일'이라는 뜻이다.
-                listenSocket.Listen(10);
-
+                _listener.Init(endPoint, OnAcceptHandler);
+                Console.WriteLine("Listening...");
                 while (true)
                 {
-                    Console.WriteLine("Listening...");
-
-                    Socket clientSocket = listenSocket.Accept(); // 접속 요청을 기다리고, 접속 요청이 오면 client 용 socket 을 생성
-
-                    byte[] recvBuff = new byte[1024];
-                    int recvBytesCnt = clientSocket.Receive(recvBuff);
-                    string recvStrData = Encoding.UTF8.GetString(recvBuff, 0, recvBytesCnt);
-                    Console.WriteLine(recvStrData);
-
-                    byte[] sendBuff = Encoding.UTF8.GetBytes("Hello, Client");
-                    clientSocket.Send(sendBuff);
-
-                    // Client 와 연결 종료
-                    clientSocket.Shutdown(SocketShutdown.Both);
-                    clientSocket.Close();
                 }
             }
             catch(Exception e)
