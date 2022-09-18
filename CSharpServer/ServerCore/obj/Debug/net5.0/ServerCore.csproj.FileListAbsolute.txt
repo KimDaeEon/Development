@@ -1,7 +1,4 @@
-C:\git_portfolio\CSharpServer\ServerCore\bin\Debug\net5.0\ServerCore.exe
 C:\git_portfolio\CSharpServer\ServerCore\bin\Debug\net5.0\ServerCore.deps.json
-C:\git_portfolio\CSharpServer\ServerCore\bin\Debug\net5.0\ServerCore.runtimeconfig.json
-C:\git_portfolio\CSharpServer\ServerCore\bin\Debug\net5.0\ServerCore.runtimeconfig.dev.json
 C:\git_portfolio\CSharpServer\ServerCore\bin\Debug\net5.0\ServerCore.dll
 C:\git_portfolio\CSharpServer\ServerCore\bin\Debug\net5.0\ref\ServerCore.dll
 C:\git_portfolio\CSharpServer\ServerCore\bin\Debug\net5.0\ServerCore.pdb
@@ -13,4 +10,3 @@ C:\git_portfolio\CSharpServer\ServerCore\obj\Debug\net5.0\ServerCore.csproj.Core
 C:\git_portfolio\CSharpServer\ServerCore\obj\Debug\net5.0\ServerCore.dll
 C:\git_portfolio\CSharpServer\ServerCore\obj\Debug\net5.0\ref\ServerCore.dll
 C:\git_portfolio\CSharpServer\ServerCore\obj\Debug\net5.0\ServerCore.pdb
-C:\git_portfolio\CSharpServer\ServerCore\obj\Debug\net5.0\ServerCore.genruntimeconfig.cache

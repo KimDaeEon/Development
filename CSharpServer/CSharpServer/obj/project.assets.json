@@ -1,11 +1,30 @@
 {
   "version": 3,
   "targets": {
-    "net5.0": {}
+    "net5.0": {
+      "ServerCore/1.0.0": {
+        "type": "project",
+        "framework": ".NETCoreApp,Version=v5.0",
+        "compile": {
+          "bin/placeholder/ServerCore.dll": {}
+        },
+        "runtime": {
+          "bin/placeholder/ServerCore.dll": {}
+        }
+      }
+    }
   },
-  "libraries": {},
+  "libraries": {
+    "ServerCore/1.0.0": {
+      "type": "project",
+      "path": "../ServerCore/ServerCore.csproj",
+      "msbuildProject": "../ServerCore/ServerCore.csproj"
+    }
+  },
   "projectFileDependencyGroups": {
-    "net5.0": []
+    "net5.0": [
+      "ServerCore >= 1.0.0"
+    ]
   },
   "packageFolders": {
     "C:\\Users\\밥벌레\\.nuget\\packages\\": {},
@@ -38,7 +57,11 @@
       "frameworks": {
         "net5.0": {
           "targetAlias": "net5.0",
-          "projectReferences": {}
+          "projectReferences": {
+            "C:\\git_portfolio\\CSharpServer\\ServerCore\\ServerCore.csproj": {
+              "projectPath": "C:\\git_portfolio\\CSharpServer\\ServerCore\\ServerCore.csproj"
+            }
+          }
         }
       },
       "warningProperties": {

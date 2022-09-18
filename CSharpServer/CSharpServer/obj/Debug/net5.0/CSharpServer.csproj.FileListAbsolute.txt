@@ -14,3 +14,6 @@ C:\git_portfolio\CSharpServer\CSharpServer\obj\Debug\net5.0\CSharpServer.dll
 C:\git_portfolio\CSharpServer\CSharpServer\obj\Debug\net5.0\ref\CSharpServer.dll
 C:\git_portfolio\CSharpServer\CSharpServer\obj\Debug\net5.0\CSharpServer.pdb
 C:\git_portfolio\CSharpServer\CSharpServer\obj\Debug\net5.0\CSharpServer.genruntimeconfig.cache
+C:\git_portfolio\CSharpServer\CSharpServer\bin\Debug\net5.0\ServerCore.dll
+C:\git_portfolio\CSharpServer\CSharpServer\bin\Debug\net5.0\ServerCore.pdb
+C:\git_portfolio\CSharpServer\CSharpServer\obj\Debug\net5.0\CSharpServer.csproj.CopyComplete

@@ -14,3 +14,6 @@ C:\git_portfolio\CSharpServer\DummyClient\obj\Debug\net5.0\DummyClient.dll
 C:\git_portfolio\CSharpServer\DummyClient\obj\Debug\net5.0\ref\DummyClient.dll
 C:\git_portfolio\CSharpServer\DummyClient\obj\Debug\net5.0\DummyClient.pdb
 C:\git_portfolio\CSharpServer\DummyClient\obj\Debug\net5.0\DummyClient.genruntimeconfig.cache
+C:\git_portfolio\CSharpServer\DummyClient\bin\Debug\net5.0\ServerCore.dll
+C:\git_portfolio\CSharpServer\DummyClient\bin\Debug\net5.0\ServerCore.pdb
+C:\git_portfolio\CSharpServer\DummyClient\obj\Debug\net5.0\DummyClient.csproj.CopyComplete
