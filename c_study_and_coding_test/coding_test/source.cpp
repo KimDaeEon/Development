@@ -10,6 +10,7 @@
 #include <string>
 #include <sstream>
 #include <unordered_map>
+#include <unordered_set>
 using namespace std;
 
 // 기본적 참고 사항 사항
@@ -557,11 +558,11 @@ vector<int> solution_sort_1(vector<int> array, vector<vector<int>> commands) {
 	vector<int> answer;
 
 	for (int i = 0; i < commands.size(); i++) {
-		vector<int> temp(array.begin() + commands[i][0]-1, array.begin() + commands[i][1]);
+		vector<int> temp(array.begin() + commands[i][0] - 1, array.begin() + commands[i][1]);
 		sort(temp.begin(), temp.end());
-		answer.push_back(temp[commands[i][2]-1]);
+		answer.push_back(temp[commands[i][2] - 1]);
 	}
-	
+
 	return answer;
 }
 
@@ -573,7 +574,7 @@ bool solution_sort_2_comp(int a, int b) {
 	string b_str = to_string(b);
 
 	return a_str + b_str > b_str + a_str; // 대박.. 잊지 말자.
-	
+
 	// 아래는 이전에 풀었던 답
 	// a와 b 중 앞 자리가 더 크면 그 놈이 더 큰 것
 	// 만약 a와 b가 자리 숫자가 다르면, 짧은 것을 기준으로 맞춰서 
@@ -637,7 +638,7 @@ int solution_sort_3(vector<int> citations) {
 	for (int i = 0; i < citations.size(); i++) {
 		answer++;
 		// 6,5,3,1,0 인 경우 answer 의 값 이하의 숫자가 나오는 순간의 처음 answer 를 리턴하면 된다.
-		if(answer >= citations[i])
+		if (answer >= citations[i])
 			return answer;
 	}
 }
@@ -727,7 +728,7 @@ void DFS_1(vector<int>& numbers, int depth, int sum, int target) {
 		return;
 	}
 
-	if (depth == numbers.size()-1) // depth 끝에 도달했으므로 ++
+	if (depth == numbers.size() - 1) // depth 끝에 도달했으므로 ++
 		return;
 
 	depth++;
@@ -747,7 +748,7 @@ void DFS_2(vector<bool>& visited, vector<vector<int>>& computers, int start) {
 	// 재귀말고 stack 으로 인한 풀이
 	stack<int> s;
 	s.push(start);
-	
+
 	while (!s.empty()) {
 		int from = s.top();
 		s.pop();
@@ -783,7 +784,7 @@ int solution_dfs_bfs_2(int n, vector<vector<int>> computers) {
 	}
 
 	return answer;
-	
+
 	// 아래는 재귀로 인한 풀이
 	//int answer = 0;
 	//vector<bool> visited(n); // vector 는 초기값이 다 0으로 초기화된다.
@@ -823,7 +824,7 @@ string solution_greedy_2(string number, int k) {
 				maxIndex = j;
 			}
 		}
-		k -= (maxIndex-i); // 문자를 제거 한 만큼 k를 감소
+		k -= (maxIndex - i); // 문자를 제거 한 만큼 k를 감소
 		i = maxIndex; // 다음 문자열 검사는 현재 answer에 추가된 다음 항목부터 검사한다.
 		answer += max;
 		if (answer.size() == targetLength) // 목표 길이에 도달하면 문자열을 리턴
@@ -843,7 +844,7 @@ int solution_dynamic_1(int N, int number) {
 	vector<set<int>> entries(9);
 	entries[1].insert(N);
 	for (int i = 1; i < 9; i++) { // i 개의 N 을 사용하는 경우
-		for (int j = 1; j <= i ; j++) { // j + i-j 로 쪼개진 경우의 수를 모두 구하기 위한 것
+		for (int j = 1; j <= i; j++) { // j + i-j 로 쪼개진 경우의 수를 모두 구하기 위한 것
 			for (auto it1 = entries[j].begin(); it1 != entries[j].end(); it1++) {
 				for (auto it2 = entries[i - j].begin(); it2 != entries[i - j].end(); it2++) {
 					// 덧셈
@@ -897,12 +898,12 @@ int solution_graph_1(int n, vector<vector<int>> edge) {
 	// 간선은 양방향
 	// 1 <= edge.size() <= 50000
 
-	
+
 	// 1번 노드부터 시작
 	// 1번 노드에서 갈 수 있는 곳 모두 방문 체크, 거리 1로 할당
 	// 방문한 노드들 큐에 집어넣고 다시 거기서 방문할 수 있는 노드들 방문 거리 2로 할당. (이미 queue에 들어갔으면 방문 x)
 	const int impossibleDistance = 50000;
-	vector<int> dist(n,40000);
+	vector<int> dist(n, 40000);
 	vector<bool> checked(n);
 	queue<int> readyQ;
 	queue<int> processQ;
@@ -934,12 +935,12 @@ int solution_graph_1(int n, vector<vector<int>> edge) {
 				if ((isPath[front][i] || isPath[i][front]) && !checked[i]) { // 갈 수 있으면서 아직 체크 안된 경우일 때에
 					checked[i] = true;
 					readyQ.push(i);
-					dist[i] = min(dist[i],level);
+					dist[i] = min(dist[i], level);
 				}
 			}
 		}
 	}
-	
+
 	sort(dist.begin(), dist.end(), greater<int>());
 
 	int biggest = dist[0];
@@ -958,8 +959,33 @@ int solution_graph_1(int n, vector<vector<int>> edge) {
 #pragma region KKO-Blind
 namespace kko {
 
-	namespace blind_2018{
+	namespace blind_2018 {
 		// [1차] 비밀지도
+
+		// 내 풀이
+		int divider[] = {
+			1,
+			1 << 1,
+			1 << 2,
+			1 << 3,
+			1 << 4,
+			1 << 5,
+			1 << 6,
+			1 << 7,
+			1 << 8,
+			1 << 9,
+			1 << 10,
+			1 << 11,
+			1 << 12,
+			1 << 13,
+			1 << 14,
+			1 << 15,
+			1 << 16
+		};
+
+		char one = '#';
+		char zero = ' ';
+
 		string decode(int N, int cryptedNum) {
 			static unordered_map<int, string> cachedMap;
 
@@ -967,29 +993,18 @@ namespace kko {
 				return cachedMap[cryptedNum];
 			}
 
-			string decoded = "";
+			string decoded = string(N, zero);
 			int dividend = cryptedNum;
-			int remainder = 0;
 
-			while (true) {
-				// 1이면 현재까지 만들어진 스트링 캐싱하고 종료
-				if (dividend == 0) {
-					if (decoded.size() < N) {
-
-					}
-					cachedMap[cryptedNum] = decoded;
-					return decoded;
+			for (int i = N - 1; i >= 0; i--) {
+				if ((dividend / divider[i]) >= 1) {
+					decoded[N - 1 - i] = one;
 				}
-
-				// 2로 나눈 나머지를 구하고 문자열에 +
-				remainder = dividend % 2;
-				if (remainder == 1)
-					decoded += '#';
-				else
-					decoded += ' ';
-
-				dividend = dividend / 2;
+				dividend = dividend % divider[i];
 			}
+
+			cachedMap[cryptedNum] = decoded;
+			return decoded;
 		}
 
 		vector<string> solution1(int n, vector<int> arr1, vector<int> arr2) {
@@ -1001,17 +1016,44 @@ namespace kko {
 			}
 
 			for (auto i : original) {
-				answer.push_back(decode(i));
+				answer.push_back(decode(n, i));
+			}
+
+			return answer;
+		}
+
+		// 다른 좋아 보이는 풀이
+		vector<string> solution1_other(int n, vector<int> arr1, vector<int> arr2) {
+			vector<int> original(arr1.size());
+			vector<string> answer;
+
+			for (int i = 0; i < original.size(); i++) {
+				original[i] = arr1[i] | arr2[i];
+
+				string temp = "";
+				for (int j = 0; j < n; j++) {
+					if (original[i] % 2 == 1) {
+						temp = '#' + temp ;
+					}
+					else {
+						temp = ' ' + temp;
+					}
+
+					original[i] = original[i] / 2;
+				}
+
+				answer.push_back(temp);
 			}
 
 			return answer;
 		}
 	}
+
 }
 #pragma endregion
 
 int main()
 {
-	kko::blind_2018::solution1({ 9, 20, 28, 18, 11}, { 30, 1, 21, 17, 28});
+	cout << kko::blind_2018::decode(5, 9) << endl;
 	return 0;
 }
