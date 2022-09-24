@@ -14,13 +14,19 @@
 using namespace std;
 
 // 기본적 참고 사항 사항
-// cout 을 쓰는 경우 python 이나 C# 처럼 + 연산이 작동되지 않는다. << 를 다 써주도록 하자.
 // index 라는 것은 어떻게 보면 시간 순서도 될 수 있다. 풀었던 스택과 큐 문제의 내용을 생각하자.
-// 어떠한 정확한 정보를 구하는 것이 아니라, 갯수, 길이만 구하는 것이면 훨씬 계산이 단순화될 수 있다. 명심!
+// 어떠한 정확한 정보를 구하는 것이 아니라, 갯수, 길이만 구하는 것이면 훨씬 계산이 단순화될 수 있다.
+
+// unordered_map 은 key value 를 넣은 순서대로 auto [k,v] 를 하면 key 가 뽑히고, map 은 key 가 정렬되어서 뽑힌다. 은근 쓸곳이 생기니 기억해두자.
+
+// unsigned int 와 int 가 < 비교로 들어가선 안된다. 예를 들어 -1 < (unsigned int)0 을 하면, 비교 연산이 unsigned int 로 묶여서 들어가서 -1이 엄청나게 큰 수가 되어버린다.
+// 비교를 할 때에는 변수 형태를 꼭 통일해서 실시하자.
+
+// vector<vector<int>> 를 초기값을 주려 한다면, vector<vector<int>> v (5, vector<int>(5, 0)) 이런 식으로 하면 된다.
 
 // priority_queue<int, vector<int>, greater<int>> pq; <- 이렇게 하면 작은 녀석부터 pq.top() 에서 나온다. 반대로 하려면 less<int> 넣자.
 // 헷갈리는 것이 vector 를 sort 할 때에 작은 것 -> 큰 것으로 하려면 less<int> 를 넣어야 한다는 것이다. 
-// sort 는 true 면 안바꾸고, heap 을 쓰는 pq는 true 면 위치 변환을 하기 때문에 이렇게 된다.
+// sort 는 true 면 안바꾸고, heap 을 쓰는 pq 는 true 면 위치 변환을 하기 때문에 이렇게 된다.
 
 // multiset 의 경우 minmax 를 구할 때의 용도로 활용될 수 있다.
 // substr 은 처음에 변수가 offset 위치고, 그 다음은 count 이다. a.substr(1,3) 이러면 1번째 index 를 포함해서 3개의 문자를 가지는 string 을 리턴한다.
@@ -28,14 +34,12 @@ using namespace std;
 // 함수 내부에서 반복적으로 생성될 필요 없는 전역변수는 바깥으로 빼주자.
 
 // 최대 크기나 최소 크기만 알면 된다면 max_element, min_element를 쓰자. sort 하는 것보다 연산량을 많이 줄일 수 있다.
+
 // STL 컨테이너 간에는 상호 변환이 가능한데, 이러한 경우 생성자에서 바로 컨테이너 간에 변환이 이루어지도록 하자. ex) unordered_set<int> us(v.begin(), v.end());
 
 // DFS 는 스택, BFS 는 queue 를 통해서 구현할 수 있다.
 
 // vector 는 () 으로 크기를 지정하여 생성하면 기본 인자들이 전부 다 0으로 초기화된다. vector<pair<int,int>> 이렇게 하면 pair 가 각각 다 0으로 초기화된다.
-
-// map<int,int> m 이렇게 하면 m[10] = 10 이런 식으로 추가가 가능하고, auto it = m.begin() 으로 할당하면 pair<int, int> 형식을 가리키는 it가 된다.
-// 사용할 때에는 (*it).first, (*it).second 이런 식으로 사용하면 된다.
 
 
 #pragma region vector_sort_vs_priority_queue_sort
@@ -186,7 +190,7 @@ int solution_hash_3(vector<vector<string>> clothes) {
 	int result = 1;
 	map<string, int> m;
 
-	for (int i = 0; i < clothes.size(); i++) {
+	for (auto i = 0; i < clothes.size(); i++) {
 		m[clothes[i][1]]++; // 아무것도 없어도 요렇게가 된다. 다음 코테 문제 풀 때에 참고.
 	}
 	for (auto it = m.begin(); it != m.end(); it++) {
@@ -397,7 +401,7 @@ vector<int> solution_sq_4(vector<int> prices) {
 	vector<int> answer(prices.size());
 	stack<int> s;
 
-	for (int i = 0; i < prices.size(); i++) {
+	for (auto i = 0; i < prices.size(); i++) {
 		// stack 에서 작은 값이 나올때까지만 pop을 해야한다.
 		while (!s.empty() && prices[s.top()] > prices[i]) {
 			// 스택의 맨 위에 있는 index 는 도착 시간과 같은 개념이다. 
@@ -960,100 +964,877 @@ int solution_graph_1(int n, vector<vector<int>> edge) {
 namespace kko {
 
 	namespace blind_2018 {
-		// [1차] 비밀지도
 
-		// 내 풀이
-		int divider[] = {
-			1,
-			1 << 1,
-			1 << 2,
-			1 << 3,
-			1 << 4,
-			1 << 5,
-			1 << 6,
-			1 << 7,
-			1 << 8,
-			1 << 9,
-			1 << 10,
-			1 << 11,
-			1 << 12,
-			1 << 13,
-			1 << 14,
-			1 << 15,
-			1 << 16
-		};
+		// 비밀지도
+		namespace secret_map {
 
-		char one = '#';
-		char zero = ' ';
+			// 내 풀이
+			int divider[] = {
+				1,
+				1 << 1,
+				1 << 2,
+				1 << 3,
+				1 << 4,
+				1 << 5,
+				1 << 6,
+				1 << 7,
+				1 << 8,
+				1 << 9,
+				1 << 10,
+				1 << 11,
+				1 << 12,
+				1 << 13,
+				1 << 14,
+				1 << 15,
+				1 << 16
+			};
 
-		string decode(int N, int cryptedNum) {
-			static unordered_map<int, string> cachedMap;
+			char one = '#';
+			char zero = ' ';
 
-			if (cachedMap.find(cryptedNum) != cachedMap.end()) {
-				return cachedMap[cryptedNum];
-			}
+			string decode(int N, int cryptedNum) {
+				static unordered_map<int, string> cachedMap;
 
-			string decoded = string(N, zero);
-			int dividend = cryptedNum;
-
-			for (int i = N - 1; i >= 0; i--) {
-				if ((dividend / divider[i]) >= 1) {
-					decoded[N - 1 - i] = one;
+				if (cachedMap.find(cryptedNum) != cachedMap.end()) {
+					return cachedMap[cryptedNum];
 				}
-				dividend = dividend % divider[i];
+
+				string decoded = string(N, zero);
+				int dividend = cryptedNum;
+
+				for (int i = N - 1; i >= 0; i--) {
+					if ((dividend / divider[i]) >= 1) {
+						decoded[N - 1 - i] = one;
+					}
+					dividend = dividend % divider[i];
+				}
+
+				cachedMap[cryptedNum] = decoded;
+				return decoded;
 			}
 
-			cachedMap[cryptedNum] = decoded;
-			return decoded;
+			vector<string> solution(int n, vector<int> arr1, vector<int> arr2) {
+				vector<int> original(arr1.size());
+				vector<string> answer;
+
+				for (int i = 0; i < original.size(); i++) {
+					original[i] = arr1[i] | arr2[i];
+				}
+
+				for (auto i : original) {
+					answer.push_back(decode(n, i));
+				}
+
+				return answer;
+			}
+
+			// 다른 좋아 보이는 풀이
+			vector<string> solution_other(int n, vector<int> arr1, vector<int> arr2) {
+				vector<int> original(arr1.size());
+				vector<string> answer;
+
+				for (int i = 0; i < original.size(); i++) {
+					original[i] = arr1[i] | arr2[i];
+
+					string temp = "";
+					for (int j = 0; j < n; j++) {
+						if (original[i] % 2 == 1) {
+							temp = '#' + temp;
+						}
+						else {
+							temp = ' ' + temp;
+						}
+
+						original[i] = original[i] / 2;
+					}
+
+					answer.push_back(temp);
+				}
+
+				return answer;
+			}
+
 		}
 
-		vector<string> solution1(int n, vector<int> arr1, vector<int> arr2) {
-			vector<int> original(arr1.size());
-			vector<string> answer;
+		// 캐시
+		namespace cache {
 
-			for (int i = 0; i < original.size(); i++) {
-				original[i] = arr1[i] | arr2[i];
+			//  0 <= cacheSize <= 30
+			// cities.size <= 100000 
+			// 도시 이름 최대 20자인 영문자, 대소문자 구분 x
+
+			constexpr int maxAge = 1000000;
+			int solution(int cacheSize, vector<string> cities) {
+				if (cacheSize == 0) {
+					return 5 * cities.size();
+				}
+
+				int answer = 0;
+
+				bool isCacheHit = false;
+				int timeElapsed = 0;
+
+				for (auto& cityName : cities) {
+					transform(cityName.begin(), cityName.end(), cityName.begin(), tolower);
+				}
+
+				for (auto& str : cities) {
+					cout << str << endl;
+				}
+
+				unordered_map<string, int> cache;
+
+				for (auto& city : cities) {
+					timeElapsed++;
+
+					if (cache.find(city) == cache.end()) {
+						// 캐시 여유 공간이 있다면 캐싱
+						if (cache.size() < cacheSize) {
+							cache[city] = timeElapsed;
+						}
+						// 캐시 여유 공간이 없다면
+						else {
+							int lruTime = maxAge;
+							string deletedCityName = "";
+
+							// cacheHitTime 이 가장 작은 녀석을 찾아서 삭제, 새로운 내용을 캐싱
+							for (auto& [cityName, cacheHitTime] : cache) {
+								if (lruTime >= cacheHitTime) {
+									deletedCityName = cityName;
+									lruTime = cacheHitTime;
+								}
+							}
+
+							cache.erase(deletedCityName);
+
+							cache[city] = timeElapsed;
+						}
+
+						isCacheHit = false;
+					}
+					// 캐시 hit 되었으면 현재 시간을 입력
+					else {
+						cache[city] = timeElapsed;
+						isCacheHit = true;
+					}
+
+					answer += (isCacheHit) ? 1 : 5;
+
+				}
+
+				return answer;
 			}
-
-			for (auto i : original) {
-				answer.push_back(decode(n, i));
-			}
-
-			return answer;
 		}
 
-		// 다른 좋아 보이는 풀이
-		vector<string> solution1_other(int n, vector<int> arr1, vector<int> arr2) {
-			vector<int> original(arr1.size());
-			vector<string> answer;
+		// 뉴스 클러스터링
+		namespace news_clustering {
+			// 문자열이 들어오면 공백, 숫자, 특수 문자 외의 숫자가 들어오면 다 없앤다.
+			// 다 없앤 문자열을 다 소문자로 바꾼다.
+			// 문자열을 2개씩 쪼갠 문자열로 바꾸고, 이를 dict 로 만든다.
+			// 만들어진 두 dict 로 min, max 다 구해서 AnB / AuB * 65536 을 리턴
 
-			for (int i = 0; i < original.size(); i++) {
-				original[i] = arr1[i] | arr2[i];
+			void makeStrDict(unordered_map<string, int>& outDict, string& str) {
+				for (int i = 0; i < str.length(); i++) {
+					if (isalpha(str[i]) && isalpha(str[i + 1])) {
+						string subStr = "";
+						subStr.push_back(tolower(str[i]));
+						subStr.push_back(tolower(str[i + 1]));
+						cout << subStr << endl;
+						if (outDict.find(subStr) == outDict.end()) {
+							outDict[subStr] = 1;
+						}
+						else {
+							outDict[subStr]++;
+						}
+					}
+				}
+			}
 
-				string temp = "";
-				for (int j = 0; j < n; j++) {
-					if (original[i] % 2 == 1) {
-						temp = '#' + temp ;
+			int solution(string str1, string str2) {
+				// 문자열을 2개씩 쪼개서 집합으로 만든다.
+				// 연속된 문자열이 alpha 여야지만 문자열로 만든다.
+
+				unordered_map<string, int> strDict1;
+				unordered_map<string, int> strDict2;
+
+				makeStrDict(strDict1, str1);
+				makeStrDict(strDict2, str2);
+
+				int sizeOfInterSection = 0;
+				int sizeOfUnion = 0;
+
+				for (auto& [words1, cnt1] : strDict1) {
+					// 두 단어 집합에 모두 존재하면
+					if (strDict2.find(words1) != strDict2.end()) {
+						sizeOfInterSection += min(cnt1, strDict2[words1]);
+						sizeOfUnion += max(cnt1, strDict2[words1]);
+					}
+					// 단어 집합 1에는 있는데 2에는 없으면 1것만 더함
+					else {
+						sizeOfUnion += cnt1;
+					}
+				}
+
+				for (auto& [words2, cnt2] : strDict2) {
+					// 앞에서 첫 단어 집합 기준으로 하였으므로, 두 번째 단어 집합에만 있는 경우이면
+					if (strDict1.find(words2) == strDict1.end()) {
+						sizeOfUnion += cnt2;
+					}
+				}
+
+				if (sizeOfUnion == 0) {
+					return 65536;
+				}
+
+				int answer = ((double)(sizeOfInterSection) / sizeOfUnion) * 65536;
+				return answer;
+			}
+		} // news_clustering
+
+		// 다트 게임
+		namespace dart_game {
+			// S, D, T 는 각각 점수^1, 점수^2, 점수^3
+			// S, D, T 는 점수마다 하나씩 존재
+
+			// * 스타상 당첨시 해당 점수와 바로 전에 얻은 점수를 2배
+			// # 아차상 당첨 시 해당 점수는 마이너스
+
+			// *는 첫 번째 기회에서도 나올 수 있고, 첫 번째 *의 점수가 2배가 된다.
+			// * 효과는 다른 *& 효과와 중첩된다. 이 경우 중첩된 *는 점수가 4배가 된다.
+			// *의 효과는 # 효과와 중첩될 수 있고, 이 경우 점수는 -2배가 된다.
+
+			// *, #은 점수마다 둘 중 하나만 존재, 존재하지 않을 수도 있음
+
+
+			// 숫자가 나오면 push
+			// SDT 체크 및 점수 부여
+			// 옵션 채크 및 점수 부여 (*나오면 앞 뒤로 2배, #는 해당 내용만 -1 곱하기
+
+			int score[4];
+
+			int solution(string dartResult) {
+
+				int currentIdx = 0;
+				int consecutiveDigitCnt = 0;
+
+				// dartResult 에서 숫자로 된 부분만 추출한다.
+				vector<string> numberStrings;
+				vector<string> expressionStrings;
+
+				string tempStr = "";
+				for (int i = 0; i < dartResult.length(); i++) {
+					if (isdigit(dartResult[i])) {
+						if (tempStr != "") {
+							expressionStrings.push_back(tempStr);
+							tempStr = "";
+						}
+						consecutiveDigitCnt++;
 					}
 					else {
-						temp = ' ' + temp;
+						tempStr += dartResult[i];
+						if (consecutiveDigitCnt > 0) {
+							numberStrings.push_back(dartResult.substr(i - consecutiveDigitCnt, consecutiveDigitCnt));
+							consecutiveDigitCnt = 0;
+						}
 					}
-
-					original[i] = original[i] / 2;
 				}
 
-				answer.push_back(temp);
+				if (tempStr != "") {
+					expressionStrings.push_back(tempStr);
+				}
+
+				for (int i = 1; i < 4; i++) {
+					score[i] = atoi(numberStrings[i - 1].c_str());
+				}
+
+				for (auto& str : expressionStrings) {
+					currentIdx++;
+					for (auto i = 0; i < str.length(); i++) {
+						char tempChar = str[i];
+						switch (tempChar)
+						{
+						case 'D':
+							score[currentIdx] = pow(score[currentIdx], 2);
+							break;
+						case 'T':
+							score[currentIdx] = pow(score[currentIdx], 3);
+							break;
+						case '#':
+							score[currentIdx] = -score[currentIdx];
+							break;
+						case '*':
+							score[currentIdx] = score[currentIdx] * 2;
+							score[currentIdx - 1] = score[currentIdx - 1] * 2;
+							break;
+						default:
+							break;
+						}
+					}
+				}
+
+				int answer = 0;
+
+				for (int i = 1; i < 4; i++) {
+					answer += score[i];
+				}
+
+				return answer;
 			}
 
-			return answer;
+			int solution_other(string dartResult) {
+				int digit;
+				char bonus;
+				char option;
+
+				stringstream ss(dartResult);
+
+				for (int i = 1; i < 4; i++)
+				{
+					ss >> digit;
+					bonus = ss.get();
+					option = ss.get();
+
+					// 이 문자가 아니면 option 이 아니다.
+					if ((option != '*') && (option != '#'))
+					{
+						ss.unget();
+					}
+
+					score[i] = digit;
+
+					switch (bonus)
+					{
+					case 'D':
+						score[i] = pow(score[i], 2);
+						break;
+
+					case 'T':
+						score[i] = pow(score[i], 3);
+						break;
+
+					default:
+						break;
+					}
+
+					switch (option)
+					{
+					case '*':
+						score[i] = 2 * score[i];
+						score[i - 1] = 2 * score[i - 1];
+						break;
+
+					case '#':
+						score[i] = -score[i];
+						break;
+
+					default:
+						break;
+					}
+				}
+
+				int answer = 0;
+
+				for (int i = 1; i < 4; i++) {
+					answer += score[i];
+				}
+
+				return answer;
+			}
+		}
+
+		// 프렌즈4블록
+		namespace friends_4blocks {
+			/*
+			"CCBDE"
+			"AAADE"
+			"AAABF"
+			"CCBBF"
+
+			"   DE"
+			"   DE"
+			"CCBBF"
+			"CCBBF"
+
+			"    E"
+			"    E"
+			"   DF"
+			"   DF"
+
+			///
+
+			"TTTANT"
+			"RRFACC"
+			"RRRFCC"
+			"TRRRAA"
+			"TTMMMF"
+			"TMMTTJ"
+
+			"   A  "
+			"   A  "
+			"T TFNT"
+			"TTFRAA"
+			"TTMMMF"
+			"TMMTTJ"
+
+			"   A  "
+			"   A  "
+			"T TFNT"
+			"  FRAA"
+			"  MMMF"
+			"TMMTTJ"
+
+
+			*/
+
+			// 기존, 동, 동남, 남 방향으로 체크
+			int dr[4] = { 0, 0, 1, 1 };
+			int dc[4] = { 0, 1, 1, 0 };
+			char erasedChar = '@';
+
+			void checkErased(int curR, int curC, const vector<string>& board, vector<vector<bool>>& outToBeErased, int& outEraseCount)
+			{
+				char curCharacter = board[curR][curC];
+
+				// 만약 지워진 문자가 들어오면 아무것도 하지 않는다.
+				if (curCharacter == erasedChar)
+				{
+					return;
+				}
+
+				// 3 방향을 체크해서 현재 문자와 같으면
+				if (curCharacter == board[curR + dr[1]][curC + dc[1]] &&
+					curCharacter == board[curR + dr[2]][curC + dc[2]] &&
+					curCharacter == board[curR + dr[3]][curC + dc[3]]
+					)
+				{
+					// 4개의 영역을 앞으로 지워질 영역으로 표시, 지워질 갯수 증가
+					for (int i = 0; i < 4; i++) {
+						if (outToBeErased[curR + dr[i]][curC + dc[i]] == false) {
+							outToBeErased[curR + dr[i]][curC + dc[i]] = true;
+							outEraseCount++;
+						}
+					}
+				}
+			}
+
+			bool checkAndMoveDown(int curR, int curC, vector<string>& board, int m)
+			{
+				int targetR = curR + dr[3];
+				int toBeMovedR = curR;
+
+				while (true)
+				{
+					if (targetR <= m - 1 && board[targetR][curC] == erasedChar)
+					{
+						toBeMovedR = targetR;
+						targetR += dr[3];
+					}
+					else {
+						break;
+					}
+
+
+				}
+
+				// 이동하게 돼었다면 움직인다.
+				if (toBeMovedR != curR)
+				{
+					swap(board[curR][curC], board[toBeMovedR][curC]);
+					return true;
+				}
+				else {
+					return false;
+				}
+			}
+
+			int solution(int m, int n, vector<string> board)
+			{
+				int answer = 0;
+
+				while (true)
+				{
+					// 안에서 지워질 것들을 다 체크, 지워질 것이 체크가 안되면 거기서 종료
+					// 지워질 것들을 지운다. 지워진 갯수를 answer 에 더한다.
+					// 문자 배열을 당긴다.
+
+					int toBeErasedCnt = 0;
+					vector<vector<bool>> toBeErased(m, vector<bool>(n, false));
+
+					for (int r = 0; r < m - 1; r++)
+					{
+						for (int c = 0; c < n - 1; c++)
+						{
+							checkErased(r, c, board, toBeErased, toBeErasedCnt);
+						}
+					}
+
+					if (toBeErasedCnt == 0)
+					{
+						break;
+					}
+
+					answer += toBeErasedCnt;
+
+					// 지울 거 지우고
+					for (int r = 0; r < m; r++)
+					{
+						for (int c = 0; c < n; c++)
+						{
+							if (toBeErased[r][c])
+							{
+								board[r][c] = erasedChar;
+							}
+						}
+					}
+
+					// board 를 당긴다.
+					for (int r = m - 1; r >= 0; r--)
+					{
+						for (int c = n - 1; c >= 0; c--)
+						{
+							checkAndMoveDown(r, c, board, m);
+						}
+					}
+
+				}
+				return answer;
+			}
+		}
+
+		// 셔틀버스
+		namespace shuttle_bus {
+
+			// 셔틀이 도착했을 때에 도착한 사람도 태운다.
+			// 셔틀은 09:00 부터 n 회 t 분 간격으로 운행
+			// 셔틀 운행 횟수 1 <= n <= 10
+			// 셔틀 운행 간격 1 <= t <= 60
+			// 셔틀 최대 인원 수 1 <= m <= 45
+			// 23:59 에는 모두 집에 돌아가기에, 다음날 셔틀을 타는 일은 없음. 최대 늦은 시간에 타도 23:59임
+			// 콘은 무조건 자기가 도착한 시간대에서 맨 마지막에 선다.
+
+			string makeFormatString(int hour, int minute) {
+				char temp[6] = "";
+				sprintf(temp, "%02d:%02d", hour, minute);
+				return string(temp);
+			}
+
+			string oneMinuteBeforeTime(string time) {
+				int hour = atoi(time.substr(0, 2).c_str());
+				int minute = atoi(time.substr(3, 2).c_str());
+
+				minute--;
+				if (minute < 0) {
+					hour--;
+					minute = 59;
+				}
+
+				return makeFormatString(hour, minute);
+			}
+
+			string solution(int n, int t, int m, vector<string> timetable) {
+				sort(timetable.begin(), timetable.end());
+
+				int hour = 9;
+				int minute = 0;
+
+				vector<string> busArrivedTimes;
+				int totalCrewCnt = timetable.size();
+
+				busArrivedTimes.push_back(makeFormatString(hour, minute));
+				for (int i = 1; i < n; i++) {
+					minute += t;
+					hour += (minute / 60);
+					minute = minute % 60;
+
+					busArrivedTimes.push_back(makeFormatString(hour, minute));
+				}
+
+				int lastRidingCrewIdx = -1;
+				int firstWaitingCrewIdx = 0;
+				int lastRidedBusIdx = -1;
+				bool isLastBusAvailable = true;
+				int lastBusIdx = busArrivedTimes.size() - 1;
+
+				for (int i = 0; i < busArrivedTimes.size(); i++) {
+					isLastBusAvailable = true;
+					for (int j = 0; j < m; j++) {
+						if (timetable[firstWaitingCrewIdx] <= busArrivedTimes[i]) {
+							// 버스 도착 시간보다 적으면 계속 탑승
+							lastRidingCrewIdx++;
+							firstWaitingCrewIdx++;
+
+							// 도착한 버스에 사람이 더 이상 못탄다고 체크
+							if (j == m - 1) {
+								isLastBusAvailable = false;
+							}
+
+							// 마지막으로 탑승한 버스 탑승 시간 기록
+							lastRidedBusIdx = i;
+
+							// 태우던 도중에 전체 인원들 다 태웠다면 중단한다.
+							if (lastRidingCrewIdx == totalCrewCnt - 1) {
+								break;
+							}
+						} // if
+					} // for
+				} // for
+
+				// 아래 부분 나중에 보게 되면 한 번 더 잘 기억해두자.
+				// 마지막 버스가 꽉 찬 상황이 아니라면 마지막 버스가 온 시간에 타는 것이 가장 늦게 출근하는 시간인 것이다.
+
+				// 마지막 버스가 꽉 찼다면
+				if (lastRidedBusIdx == lastBusIdx && !isLastBusAvailable) {
+					return oneMinuteBeforeTime(timetable[lastRidingCrewIdx]);
+				}
+				else {
+					return busArrivedTimes[lastBusIdx];
+				}
+			}
+		}
+
+		// 추석 트래픽
+		namespace chuseok_traffic {
+			// TODO: 어려움, 다른 코테 볼 일 있으면 한 번 더 확인 필요
+			int toMilliSeconds(int hours, int minutes, int seconds, int milliseconds) {
+				return
+					hours * 3600 * 1000 +
+					minutes * 60 * 1000 +
+					seconds * 1000 +
+					milliseconds;
+			}
+
+			int solution(vector<string> lines) {
+				vector<pair<int, int>> v;
+				int answer = 0;
+
+				// 각 라인별로 파싱해서 밀리 세컨드로 만들어서 start 와 end 를 구한다.
+				for (auto& line : lines) {
+					int hours = 0;
+					int minutes = 0;
+					int seconds = 0;
+					int milliSeconds = 0;
+					int intervalSeconds = 0;
+					int intervalMilliSeconds = 0;
+
+					stringstream ss(line.substr(11));
+
+					ss >> hours;
+					ss.get();
+					ss >> minutes;
+					ss.get();
+					ss >> seconds;
+					ss.get();
+					ss >> milliSeconds;
+
+					ss >> intervalSeconds;
+					if (ss.get() == '.') {
+						ss >> intervalMilliSeconds;
+					}
+
+					int startMilliSeconds = toMilliSeconds(hours, minutes, seconds - intervalSeconds, milliSeconds - intervalMilliSeconds);
+					int endMilliSeconds = toMilliSeconds(hours, minutes, seconds, milliSeconds);
+
+					// 작업 시간이 최소 1밀리초 이므로, 1초까지는 무조건 로그 구간에 포함된다.
+					v.push_back({ startMilliSeconds + 1, 1 });
+
+					// 이 문제가 헷갈리는게 딱 끝점에 걸치면 처리 중인 작업으로 치지 않는다.
+					v.push_back({ endMilliSeconds + 1000, 0 });
+				}
+
+				sort(v.begin(), v.end());
+
+				int temp = 0;
+				for (auto& [time, isStart] : v) {
+					if (isStart == 1) {
+						temp++;
+					}
+					else {
+						temp--;
+					}
+
+					answer = max(temp, answer);
+				}
+
+				return answer;
+			}
 		}
 	}
 
+	namespace blind_2019 {
+		// 실패율
+		namespace failure_rate {
+			// 실패율 = 스테이지 도달 and 클리어 못한 플레이어 수 / 스테이지 도달한 플레이어 수
+			// 스테이지 수 N, 1 <= N <= 500
+			// 1 <= stages.size() <= 200000
+			// stages 에는 1이상 N + 1 이하 자연수 들어 있다. N 은 N 번째 스테이지 도전 중, N + 1은 전부 다 클리어한 것을 의미.
+			// 스테이지에 도달한 유저가 없는 경우, 해당 스테이지 실패율은 0
+			// 실패율이 높은 스테이지부터 내림 차순으로 스테이지 번호 담겨 있는 배열 리턴
+
+			struct sf {
+				int stage;
+				double failureRate;
+			};
+
+			vector<int> solution(int N, vector<int> stages) {
+				vector<int> answer;
+
+				// 해당 스테이지에 도전 중인 명수를 체크
+				map<int, int> m;
+				int wholePlayersCnt = stages.size();
+
+				// 스테이지 별 대기자 0으로 세팅, 이거 안해두면 stages 없는 스테이지에 대한 확률 처리가 누락된다.
+				for (int i = 1; i <= N; i++) {
+					m[i] = 0;
+				}
+
+				for (auto stage : stages) {
+					m[stage]++;
+				}
+
+				auto myComp = [](sf& a, sf& b) {
+					if (a.failureRate == b.failureRate) {
+						return a.stage > b.stage;
+					}
+
+					return a.failureRate < b.failureRate;
+				};
+
+				priority_queue < sf, vector<sf>, decltype(myComp)> pq(myComp);
+
+				for (auto [stage, playersCnt] : m) {
+					if (stage != N + 1) {
+						if (wholePlayersCnt != 0) {
+							pq.push({ stage, ((double)playersCnt / wholePlayersCnt) });
+						}
+						else {
+							// wholePlayersCnt 가 0이 되는 경우는 확률 0 처리
+							pq.push({ stage , 0 });
+						}
+						wholePlayersCnt -= playersCnt;
+					}
+				}
+
+				while (!pq.empty()) {
+					answer.push_back(pq.top().stage);
+					pq.pop();
+				}
+
+				return answer;
+			}
+		}
+
+		// 오픈채팅방
+		namespace open_chatroom {
+			string makeString(const string& command, const string& nickName) {
+				string temp = nickName + "님이 ";
+
+				if (command == "Enter")
+					temp += "들어왔습니다.";
+				else {
+					temp += "나갔습니다.";
+				}
+
+				return temp;
+			}
+
+			// record 를 파싱해서 명령어를 뽑아서 저장한다. 뽑으면서 명령어에 맞게 uid 별 nickname 을 저장한다.
+			// uid 별 nickname 이 다 정해졌으면 위에서 저장했던 파싱했던 문자열들 돌면서 답 만들어서 리턴한다.
+			vector<string> solution(vector<string> record) {
+				vector<vector<string>> parsedStringVectors;
+				unordered_map<string, string> uidNickDict;
+
+				for (auto& input : record) {
+					stringstream ss(input);
+					vector<string> tv;
+					string command;
+					string uid;
+					string nickName;
+
+					ss >> command;
+					tv.push_back(command);
+
+					ss >> uid;
+					tv.push_back(uid);
+
+					ss >> nickName;
+
+					if (command != "Leave") {
+						uidNickDict[uid] = nickName;
+					}
+
+					parsedStringVectors.push_back(tv);
+				}
+
+				vector<string> answer;
+				for (auto& v : parsedStringVectors) {
+					if (v[0] != "Change") {
+						answer.push_back(makeString(v[0], uidNickDict[v[1]]));
+					}
+				}
+
+				return answer;
+			}
+		}
+
+		// 후보키
+		namespace candidate_key {
+			void getMaxCandidateKey(int depth, int& maxKey, const vector<vector<string>>& relation, vector<bool>& chosen) {
+				if (depth >= chosen.size()) {
+					// chosen 배열이 다 선택되었으므로, 해당 index 가 유일한 key 를 갖는지 확인한다.
+					unordered_map<string, int> um;
+
+					for (auto& relationVector : relation) {
+						string tempKey = "";
+						for (int i = 0; i < chosen.size(); i++) {
+							if (chosen[i]) {
+								tempKey += relationVector[i];
+							}
+						}
+
+						if (um.find(tempKey) == um.end()) {
+							um[tempKey]++;
+						}
+						else {
+							// 만약 유일한 키가 못된다면 바로 함수 종료
+							return;
+						}
+					}
+
+					// 여기까지 왔다는 것은 유일한 키라는 뜻이므로, maxKey 1 증가시킨 후 리턴
+					maxKey++;
+					return;
+				}
+
+				for (int i = 0; i < chosen.size(); i++) {
+					chosen[i] = true;
+					getMaxCandidateKey(i + 1, maxKey, relation, chosen);
+					chosen[i] = false;
+				}
+			}
+			// relation 에 들어 있는 모든 튜플은 유일하게 식별이 가능
+			int solution(vector<vector<string>> relation) {
+
+				int rowSize = relation.size();
+				int columnSize = relation[0].size();
+
+				vector<bool> chosen(columnSize, false);
+
+				int answer = 0;
+				return answer;
+			}
+		}
+
+	}
 }
+
+
+
+
 #pragma endregion
+
 
 int main()
 {
-	cout << kko::blind_2018::decode(5, 9) << endl;
 	return 0;
 }
+
