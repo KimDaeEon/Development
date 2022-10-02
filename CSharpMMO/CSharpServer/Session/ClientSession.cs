@@ -9,6 +9,8 @@ namespace CSharpServer
 {
     class ClientSession : PacketSession
     {
+        public int SessionId { get; set; }
+        public GameRoom Room { get; set; }
         class Packet
         {
             public ushort size;
@@ -17,18 +19,7 @@ namespace CSharpServer
         public override void OnConnected(EndPoint endPoint)
         {
             Console.WriteLine($"OnConnected : {endPoint}");
-
-            ArraySegment<byte> openSegment = SendBufferHelper.Open(4096);
-            byte[] buffer = Encoding.UTF8.GetBytes("Hello Client");
-            Array.Copy(buffer, 0, openSegment.Array, openSegment.Offset, buffer.Length);
-            ArraySegment<byte> sendBuff = SendBufferHelper.Close(buffer.Length);
-
-            // TODO: 아래 send 부분 멀티 스레드에서 문제 없나 한 번 더 생각해보기.
-            // ThreadLocal로 해결이 된 거라고 생각이 되는데, 그게 없어도 된다는 식으로 설명해주셔서..
-            //Send(sendBuff);
-
-            Thread.Sleep(50000);
-            Disconnect();
+            Program._room.Enter(this);
         }
 
         public override void OnRecvPacket(ArraySegment<byte> buffer)
@@ -39,6 +30,12 @@ namespace CSharpServer
         public override void OnDisconnected(EndPoint endPoint)
         {
             Console.WriteLine($"OnDisconnected : {endPoint}");
+            SessionManager.Instance.Remove(this);
+            if (Room != null)
+            {
+                Room.Leave(this);
+                Room = null;
+            }
         }
 
         public override void OnSend(int numOfBytes)

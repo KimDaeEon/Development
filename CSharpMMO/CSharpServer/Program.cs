@@ -8,11 +8,10 @@ namespace CSharpServer
     class Program
     {
         static Listener _listener = new Listener();
+        public static GameRoom _room = new GameRoom();
 
         static void Main(string[] args)
         {
-            PacketManager.Instance.Register();
-
             // DNS 활용
             string host = Dns.GetHostName();
             IPHostEntry ipHost = Dns.GetHostEntry(host);
@@ -21,7 +20,7 @@ namespace CSharpServer
 
             try
             {
-                _listener.Init(endPoint, () => { return new ClientSession(); });
+                _listener.Init(endPoint, () => { return SessionManager.Instance.Generate(); });
                 Console.WriteLine("Listening...");
                 while (true)
                 {

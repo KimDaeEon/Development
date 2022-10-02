@@ -77,7 +77,7 @@ namespace PacketGenerator
             generatedPackets += string.Format(PacketFormat.packetFormat, packetName, tuple.Item1, tuple.Item2, tuple.Item3);
             packetEnums += string.Format(PacketFormat.packetEnumFormat, packetName, ++packetId) + Environment.NewLine + "\t";
 
-            if(packetName.StartsWith("S_") || packetName.StartsWith("s_"))
+            if(packetName.StartsWith("C_") || packetName.StartsWith("c_"))
             {
                 registeredHandlersForServer += string.Format(PacketFormat.registeredHandlerFormat, packetName) + Environment.NewLine;
             }

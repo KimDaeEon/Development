@@ -5,7 +5,7 @@ using ServerCore;
 
 namespace DummyClient
 {
-   
+
 
     class Program
     {
@@ -16,20 +16,23 @@ namespace DummyClient
             IPHostEntry ipHost = Dns.GetHostEntry(host);
             IPAddress ipAddr = ipHost.AddressList[0];
             IPEndPoint endPoint = new IPEndPoint(ipAddr, 8888); // 포트는 8888번으로 설정
-
             Connector connector = new Connector();
-            connector.Connect(endPoint, () => { return new ServerSession(); });
-             
+
+            int sessionCount = 1;
+            connector.Connect(endPoint, () => { return SessionManager.Instance.Generate(); });
+
             while (true)
             {
                 try
                 {
+                    SessionManager.Instance.SendForEach();
                 }
                 catch (Exception e)
                 {
                     Console.WriteLine(e);
                 }
 
+                // 이동 패킷을 보통 1초에 4번 보낸다고 한다.
                 Thread.Sleep(100);
             }
         }

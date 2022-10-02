@@ -1,4 +1,5 @@
-﻿using ServerCore;
+﻿using CSharpServer;
+using ServerCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,10 +9,16 @@ using System.Threading.Tasks;
 
 class PacketHandler
 {
-    public static void S_PlayerInfoReqHandler(PacketSession session, IPacket ipacket)
+    public static void C_ChatHandler(PacketSession session, IPacket ipacket)
     {
-        S_PlayerInfoReq packet = ipacket as S_PlayerInfoReq;
+        C_Chat packet = ipacket as C_Chat;
+        ClientSession clientSession = session as ClientSession;
 
-        Console.WriteLine($"PlayerInfoReq: name:{packet.name}, playerId:{packet.playerId}");
+        if(clientSession.Room == null)
+        {
+            return;
+        }
+
+        clientSession.Room.Broadcast(clientSession, packet.chatMessage);
     }
 }
