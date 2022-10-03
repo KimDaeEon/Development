@@ -1,32 +1,44 @@
-﻿using System;
+﻿using ServerCore;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace CSharpServer
 {
-    class GameRoom
+    class GameRoom : IJobQueue
     {
         List<ClientSession> _sessions = new List<ClientSession>();
-        object _lock = new object();
+        JobQueue _jobQueue = new JobQueue();
+        List<ArraySegment<byte>> _pendingList = new List<ArraySegment<byte>>();
+
+        public void Push(Action job)
+        {
+            _jobQueue.Push(job);
+        }
 
         public void Enter(ClientSession session)
         {
-            lock (_lock)
-            {
-                _sessions.Add(session);
-                session.Room = this;
-            }
+            _sessions.Add(session);
+            session.Room = this;
         }
 
         public void Leave(ClientSession session)
         {
-            lock (_lock)
+            _sessions.Remove(session);
+        }
+
+        public void Flush()
+        {
+            foreach (ClientSession tempSession in _sessions)
             {
-                _sessions.Remove(session);
-                Console.WriteLine($"_lock ={_lock.GetHashCode()} room = {this.GetHashCode()}, leave session id : {session.SessionId}, sessions count : {_sessions.Count}");
+                tempSession.Send(_pendingList);
             }
+
+            Console.WriteLine($"Flushed {_pendingList.Count}");
+            _pendingList.Clear();
         }
 
         public void Broadcast(ClientSession session, string chatMessage)
@@ -36,18 +48,12 @@ namespace CSharpServer
             packet.chatMessage = chatMessage;
             ArraySegment<byte> segment = packet.Write();
 
-            lock (_lock)
-            {
-                Console.WriteLine($"_lock ={_lock.GetHashCode()}, room = {this.GetHashCode()}, Broadcast start, sessions count : {_sessions.Count}");
+            _pendingList.Add(segment);
 
-                foreach (ClientSession tempSession in _sessions)
-                {
-                    tempSession.Send(segment);
-                    Console.WriteLine($"Sent message to {tempSession.SessionId}, sessions count : {_sessions.Count}");
-                }
-
-                Console.WriteLine($"room = {this.GetHashCode()}, Broadcast end, sessions count : {_sessions.Count}");
-            }
+            //foreach (ClientSession tempSession in _sessions)
+            //{
+            //    tempSession.Send(segment);
+            //}
         }
     }
 }

@@ -16,6 +16,7 @@ namespace ServerCore
         public sealed override int OnRecv(ArraySegment<byte> buffer)
         {
             int processedLen = 0;
+            int processedPacketCount = 0;
 
             while (true)
             {
@@ -35,12 +36,17 @@ namespace ServerCore
                 // 받은 패킷에 대한 처리(조립)
                 // 중요한 것은 ArraySegment 는 struct stack 에 할당된다. 그래서 new 도 상관없음.
                 OnRecvPacket(new ArraySegment<byte>(buffer.Array, buffer.Offset, dataSize));
+                processedPacketCount++;
 
                 // 버퍼에서 처리된 것만큼 Offset 뒤로 밀어주고, Count 를 줄여준다.
                 processedLen += dataSize;
                 buffer = new ArraySegment<byte>(buffer.Array, buffer.Offset + dataSize, buffer.Count - dataSize);
             }
 
+            if(processedPacketCount > 1)
+            {
+                Console.WriteLine($"Processed packet count : {processedPacketCount}");
+            }
             return processedLen;
         }
 
@@ -51,7 +57,8 @@ namespace ServerCore
         Socket _socket;
         int _disconnected = 0;
 
-        RecvBuffer _recvBuffer = new RecvBuffer(1024);
+        // 이게 너무 작으면 패킷을 묶어서 보낼 경우에 받지 못한다.
+        RecvBuffer _recvBuffer = new RecvBuffer(65535);
 
         SocketAsyncEventArgs _recvArgs = new SocketAsyncEventArgs();
         SocketAsyncEventArgs _sendArgs = new SocketAsyncEventArgs(); // 보낼 때마다 생성하기 보다는 맴버로 갖도록
@@ -81,16 +88,13 @@ namespace ServerCore
             // 수신 콜백 설정
             _recvArgs.Completed += new EventHandler<SocketAsyncEventArgs>(OnRecvCompleted);
 
-            // Buffer 시작점이 2번째 인자로 들어가는데, 엄청나게 큰 버퍼를 만들어놓고,
-            // 그것을 Session 마다 쪼개 쓰는 경우도 있어서 시작점이 2번째 인자로 들어간다.
-            _recvArgs.SetBuffer(new byte[1024], 0, 1024);
-
             // 송신 콜백 설정
             _sendArgs.Completed += new EventHandler<SocketAsyncEventArgs>(OnSendCompleted);
 
             RegisterRecv();
         }
 
+        // 작업을 1개씩 보내는 경우
         public void Send(ArraySegment<byte> sendBuff)
         {
             lock (_lock)
@@ -100,9 +104,27 @@ namespace ServerCore
                 {
                     RegisterSend();
                 }
-                else
-                {
+            }
+        }
 
+        // 작업을 뭉쳐서 보내는 경우
+        public void Send(List<ArraySegment<byte>> sendBuffList)
+        {
+            if(sendBuffList.Count == 0)
+            {
+                return;
+            }
+
+            lock (_lock)
+            {
+                foreach (ArraySegment<byte> sendBuff in sendBuffList)
+                {
+                    _sendQueue.Enqueue(sendBuff);
+                }
+
+                if (_pendingList.Count == 0)
+                {
+                    RegisterSend();
                 }
             }
         }
@@ -194,6 +216,7 @@ namespace ServerCore
                 return;
             }
 
+            _recvBuffer.Clean(); // 이 부분이 없으면 OnRecvCompleted 에서 args.BytesTransferred 가 0 이 나온다.
             ArraySegment<byte> segment = _recvBuffer.WriteSegment;
             _recvArgs.SetBuffer(segment.Array, segment.Offset, segment.Count);
 
@@ -251,6 +274,8 @@ namespace ServerCore
             }
             else
             {
+                // RecvBuffer 를 Clean() 해주지 않아서 받을 공간이 부족할 경우, SocketError 는 Success가 뜨고,
+                // args.BytesTransferred 는 0이 들어와서 여기로 들어온다.
                 Disconnect();
             }
         }

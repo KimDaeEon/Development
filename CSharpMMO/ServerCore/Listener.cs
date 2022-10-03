@@ -13,7 +13,7 @@ namespace ServerCore
         Socket _listenSocket;
         Func<Session> _sessionFactory;
 
-        public void Init(IPEndPoint endPoint, Func<Session> sessionFactory)
+        public void Init(IPEndPoint endPoint, Func<Session> sessionFactory, int registerLimit = 16 /*한 번에 accept 하는 숫자*/, int backLog = 200)
         {
             _listenSocket = new Socket(endPoint.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
             _sessionFactory += sessionFactory;
@@ -22,15 +22,18 @@ namespace ServerCore
             _listenSocket.Bind(endPoint);
 
             // Listen 시작
-            // 접속 대기열 숫자를 10으로 설정, backlog 라고 쓰여있는데 '밀린 일'이라는 뜻이다.
-            _listenSocket.Listen(10);
+            // 접속 대기열 숫자를 100으로 설정, backlog 라고 쓰여있는데 '밀린 일'이라는 뜻이다.
+            _listenSocket.Listen(backLog);
 
-            SocketAsyncEventArgs args = new SocketAsyncEventArgs();
+            for (int i = 0; i < registerLimit; i++)
+            {
+                SocketAsyncEventArgs args = new SocketAsyncEventArgs();
 
-            // 이렇게 해두면, 아래에서 AcceptAsync 가 true 가 떨어졌을 때에, 자동으로 OnAcceptCompleted 가 호출된다.
-            // OnAcceptCompleted 는 새로운 스레드에서 실행이 된다.
-            args.Completed += new EventHandler<SocketAsyncEventArgs>(OnAcceptCompleted);
-            RegisterAccept(args);
+                // 이렇게 해두면, 아래에서 AcceptAsync 가 true 가 떨어졌을 때에, 자동으로 OnAcceptCompleted 가 호출된다.
+                // OnAcceptCompleted 는 새로운 스레드에서 실행이 된다.
+                args.Completed += new EventHandler<SocketAsyncEventArgs>(OnAcceptCompleted);
+                RegisterAccept(args);
+            }
         }
 
         void RegisterAccept(SocketAsyncEventArgs args)
@@ -42,7 +45,7 @@ namespace ServerCore
             bool pending = _listenSocket.AcceptAsync(args);
 
             // 현재 처리 중인 작업이 없어서 바로 Accept 성공이 된 경우
-            if(pending == false)
+            if (pending == false)
             {
                 OnAcceptCompleted(null, args);
             }

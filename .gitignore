@@ -17248,3 +17248,5 @@ CSharpMMO/PacketGenerator/obj/Debug/PacketGenerator.dll
 CSharpMMO/ServerCore/bin/Debug/net5.0/ServerCore.dll
 CSharpMMO/ServerCore/obj/Debug/net5.0/ServerCore.csproj.AssemblyReference.cache
 CSharpMMO/ServerCore/obj/Debug/net5.0/ServerCore.dll
+*.cache
+*.dll

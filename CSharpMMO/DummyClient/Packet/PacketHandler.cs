@@ -13,7 +13,7 @@ class PacketHandler
         S_Chat chatPacket = packet as S_Chat;
         ServerSession serverSesion = session as ServerSession;
 
-        Console.WriteLine(chatPacket.playerId + ":" + chatPacket.chatMessage);
+        //Console.WriteLine(chatPacket.playerId + ":" + chatPacket.chatMessage);
     }
 }
 
