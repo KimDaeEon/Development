@@ -17250,3 +17250,5 @@ CSharpMMO/ServerCore/obj/Debug/net5.0/ServerCore.csproj.AssemblyReference.cache
 CSharpMMO/ServerCore/obj/Debug/net5.0/ServerCore.dll
 *.cache
 *.dll
+UnityMMOWithMyServer/UnityProj/MMOwithMyServer/Library/
+UnityMMOWithMyServer/UnityProj/MMOwithMyServer/Temp/
