@@ -29,3 +29,4 @@ C:\git_portfolio\CSharpMMO\PacketGenerator\obj\Debug\PacketGenerator.dll
 C:\git_portfolio\CSharpMMO\PacketGenerator\obj\Debug\ref\PacketGenerator.dll
 C:\git_portfolio\CSharpMMO\PacketGenerator\obj\Debug\PacketGenerator.pdb
 C:\git_portfolio\CSharpMMO\PacketGenerator\obj\Debug\PacketGenerator.genruntimeconfig.cache
+C:\git_portfolio\CSharpMMO\PacketGenerator\obj\Debug\PacketGenerator.csproj.AssemblyReference.cache

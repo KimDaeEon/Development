@@ -5,6 +5,7 @@ using System.Net;
 using System.Net.Sockets;
 using System.Text;
 using System.Threading.Tasks;
+using UnityEngine;
 
 namespace ServerCore
 {
@@ -55,6 +56,7 @@ namespace ServerCore
             }
             else
             {
+                Debug.Log($"Connect Fail! reason:{args.SocketError}");
                 //Console.WriteLine($"Connect Fail! reason:{args.SocketError}");
             }
         }

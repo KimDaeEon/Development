@@ -7,6 +7,7 @@ using System.Reflection;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using UnityEngine;
 
 namespace ServerCore
 {
@@ -45,7 +46,8 @@ namespace ServerCore
 
             if(processedPacketCount > 1)
             {
-                Console.WriteLine($"Processed packet count : {processedPacketCount}");
+                Debug.Log($"Processed packet count : {processedPacketCount}");
+                //Console.WriteLine($"Processed packet count : {processedPacketCount}");
             }
             return processedLen;
         }
@@ -174,7 +176,8 @@ namespace ServerCore
             }
             catch (Exception e)
             {
-                Console.WriteLine($"{MethodBase.GetCurrentMethod().Name} Failed {e}");
+                Debug.Log($"{MethodBase.GetCurrentMethod().Name} Failed {e}");
+                //Console.WriteLine($"{MethodBase.GetCurrentMethod().Name} Failed {e}");
             }
         }
 
@@ -199,7 +202,8 @@ namespace ServerCore
                     }
                     catch (Exception e)
                     {
-                        Console.WriteLine($"{MethodBase.GetCurrentMethod().Name} Failed {e}");
+                        Debug.Log($"{MethodBase.GetCurrentMethod().Name} Failed {e}");
+                        //Console.WriteLine($"{MethodBase.GetCurrentMethod().Name} Failed {e}");
                     }
                 }
                 else
@@ -230,7 +234,8 @@ namespace ServerCore
             }
             catch (Exception e)
             {
-                Console.WriteLine($"{MethodBase.GetCurrentMethod().Name} Failed {e}");
+                Debug.Log($"{MethodBase.GetCurrentMethod().Name} Failed {e}");
+                //Console.WriteLine($"{MethodBase.GetCurrentMethod().Name} Failed {e}");
             }
 
         }
@@ -268,9 +273,9 @@ namespace ServerCore
                 }
                 catch (Exception e)
                 {
-                    // TODO: 방어 코드를 더 추가한 뒤에 여기로 넘어오면 Disconnect() 하는 것이 좋을 것 같다.
-                    Console.WriteLine($"{MethodBase.GetCurrentMethod().Name} Failed {e}");
-                    Disconnect();
+                    // 방어 코드를 더 추가한 뒤에 여기로 넘어오면 Disconnect() 하는 것이 좋을 것 같다.
+                    Debug.Log($"{MethodBase.GetCurrentMethod().Name} Failed {e}");
+                    //Console.WriteLine($"{MethodBase.GetCurrentMethod().Name} Failed {e}");
                 }
             }
             else

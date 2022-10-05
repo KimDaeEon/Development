@@ -15,7 +15,7 @@ namespace PacketGenerator
 using System;
 using System.Collections.Generic;
 
-class PacketManager
+public class PacketManager
 {{
     #region Singleton
     static PacketManager _instance = new PacketManager();
@@ -36,14 +36,14 @@ class PacketManager
     {{
         Register();
     }}
+    Dictionary<ushort, Func<PacketSession, ArraySegment<byte>, IPacket>> _funcMap = new Dictionary<ushort, Func<PacketSession, ArraySegment<byte>, IPacket>>();
+    Dictionary<ushort, Action<PacketSession, IPacket>> _handlerMap = new Dictionary<ushort, Action<PacketSession, IPacket>>();
 
-    Dictionary<ushort, Action<PacketSession, ArraySegment<byte>>> _onRecv = new Dictionary<ushort, Action<PacketSession, ArraySegment<byte>>>();
-    Dictionary<ushort, Action<PacketSession, IPacket>> _handler = new Dictionary<ushort, Action<PacketSession, IPacket>>();
     public void Register()
     {{
 {0}
     }}
-    public void OnRecvPacket(PacketSession session, ArraySegment<byte> buffer)
+    public void OnRecvPacket(PacketSession session, ArraySegment<byte> buffer, Action<PacketSession, IPacket> onRecvCallback = null)
     {{
         ushort count = 0;
 
@@ -53,23 +53,39 @@ class PacketManager
         ushort packetId = BitConverter.ToUInt16(buffer.Array, buffer.Offset + count);
         count += 2;
 
-        Action<PacketSession, ArraySegment<byte>> action = null;
-        if(_onRecv.TryGetValue(packetId, out action))
+        Func<PacketSession, ArraySegment<byte>, IPacket> func = null;
+        if(_funcMap.TryGetValue(packetId, out func))
         {{
-            // 패킷 조립 및 처리 함수 실행
-            action.Invoke(session, buffer);
+            // 패킷 조립 함수 실행
+            IPacket packet = func.Invoke(session, buffer);
+
+            // 정해진 패킷 핸들러 말고 다른 콜백함수를 실행하고 싶을 때에 onRecvCallback 을 사용한다.
+            // 여기서는 유니티가 메인 스레드에서만 GameObject 관련 상호작용이 되기에, 패킷을 메인스레드에서 처리하기 위한 함수를 넣었다.
+            if(onRecvCallback != null)
+            {{
+                onRecvCallback.Invoke(session, packet);
+            }}
+            else
+            {{
+                HandlePacket(session, packet);
+            }}
         }}
     }}
 
-    void MakePacket<T>(PacketSession session, ArraySegment<byte> buffer) where T: IPacket, new()
+    T MakePacket<T>(PacketSession session, ArraySegment<byte> buffer) where T: IPacket, new()
     {{
         // 패킷 조립
         T packet = new T();
         packet.Read(buffer);
 
+        return packet;
+    }}
+
+    public void HandlePacket(PacketSession session, IPacket packet)
+    {{
         // 패킷 처리
         Action<PacketSession, IPacket> action = null;
-        if (_handler.TryGetValue(packet.Protocol, out action))
+        if (_handlerMap.TryGetValue(packet.Protocol, out action))
         {{
             action.Invoke(session, packet);
         }}
@@ -78,8 +94,8 @@ class PacketManager
 ";
         // {0} 패킷 이름
         public static string registeredHandlerFormat =
-@"        _onRecv.Add((ushort)PacketID.{0}, MakePacket<{0}>);
-        _handler.Add((ushort)PacketID.{0}, PacketHandler.{0}Handler);";
+@"        _funcMap.Add((ushort)PacketID.{0}, MakePacket<{0}>);
+        _handlerMap.Add((ushort)PacketID.{0}, PacketHandler.{0}Handler);";
 
         // {0} 패킷 enum 정보
         // {1} 패킷 정보
@@ -96,7 +112,7 @@ public enum PacketID
     {0}
 }}
 
-interface IPacket
+public interface IPacket
 {{
 	ushort Protocol {{ get; }} // PacketID인데, 같은 이름을 쓰면 enum 과 충돌로 에러가 난다.
 	void Read(ArraySegment<byte> segment);
@@ -116,7 +132,7 @@ interface IPacket
         // {3} 멤버 변수 Write
         public static string packetFormat =
 @" 
-class {0} : IPacket
+public class {0} : IPacket
 {{
     public ushort size;
     public ushort id;
@@ -151,7 +167,7 @@ class {0} : IPacket
 
     public ArraySegment<byte> Write()
     {{
-        ArraySegment<byte> seg = SendBufferHelper.Open(4096);
+        ArraySegment<byte> seg = SendBufferHelper.Open(65535);
 
         bool success = true;
         ushort writeCount = 0;

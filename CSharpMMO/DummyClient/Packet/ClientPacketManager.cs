@@ -2,7 +2,7 @@ using ServerCore;
 using System;
 using System.Collections.Generic;
 
-class PacketManager
+public class PacketManager
 {
     #region Singleton
     static PacketManager _instance = new PacketManager();
@@ -23,16 +23,22 @@ class PacketManager
     {
         Register();
     }
+    Dictionary<ushort, Func<PacketSession, ArraySegment<byte>, IPacket>> _funcMap = new Dictionary<ushort, Func<PacketSession, ArraySegment<byte>, IPacket>>();
+    Dictionary<ushort, Action<PacketSession, IPacket>> _handlerMap = new Dictionary<ushort, Action<PacketSession, IPacket>>();
 
-    Dictionary<ushort, Action<PacketSession, ArraySegment<byte>>> _onRecv = new Dictionary<ushort, Action<PacketSession, ArraySegment<byte>>>();
-    Dictionary<ushort, Action<PacketSession, IPacket>> _handler = new Dictionary<ushort, Action<PacketSession, IPacket>>();
     public void Register()
     {
-        _onRecv.Add((ushort)PacketID.S_Chat, MakePacket<S_Chat>);
-        _handler.Add((ushort)PacketID.S_Chat, PacketHandler.S_ChatHandler);
+        _funcMap.Add((ushort)PacketID.S_BroadcastEnterGame, MakePacket<S_BroadcastEnterGame>);
+        _handlerMap.Add((ushort)PacketID.S_BroadcastEnterGame, PacketHandler.S_BroadcastEnterGameHandler);
+        _funcMap.Add((ushort)PacketID.S_BroadcastLeaveGame, MakePacket<S_BroadcastLeaveGame>);
+        _handlerMap.Add((ushort)PacketID.S_BroadcastLeaveGame, PacketHandler.S_BroadcastLeaveGameHandler);
+        _funcMap.Add((ushort)PacketID.S_PlayerList, MakePacket<S_PlayerList>);
+        _handlerMap.Add((ushort)PacketID.S_PlayerList, PacketHandler.S_PlayerListHandler);
+        _funcMap.Add((ushort)PacketID.S_BroadcastMove, MakePacket<S_BroadcastMove>);
+        _handlerMap.Add((ushort)PacketID.S_BroadcastMove, PacketHandler.S_BroadcastMoveHandler);
 
     }
-    public void OnRecvPacket(PacketSession session, ArraySegment<byte> buffer)
+    public void OnRecvPacket(PacketSession session, ArraySegment<byte> buffer, Action<PacketSession, IPacket> onRecvCallback = null)
     {
         ushort count = 0;
 
@@ -42,23 +48,39 @@ class PacketManager
         ushort packetId = BitConverter.ToUInt16(buffer.Array, buffer.Offset + count);
         count += 2;
 
-        Action<PacketSession, ArraySegment<byte>> action = null;
-        if(_onRecv.TryGetValue(packetId, out action))
+        Func<PacketSession, ArraySegment<byte>, IPacket> func = null;
+        if(_funcMap.TryGetValue(packetId, out func))
         {
-            // 패킷 조립 및 처리 함수 실행
-            action.Invoke(session, buffer);
+            // 패킷 조립 함수 실행
+            IPacket packet = func.Invoke(session, buffer);
+
+            // 정해진 패킷 핸들러 말고 다른 콜백함수를 실행하고 싶을 때에 onRecvCallback 을 사용한다.
+            // 여기서는 유니티가 메인 스레드에서만 GameObject 관련 상호작용이 되기에, 패킷을 메인스레드에서 처리하기 위한 함수를 넣었다.
+            if(onRecvCallback != null)
+            {
+                onRecvCallback.Invoke(session, packet);
+            }
+            else
+            {
+                HandlePacket(session, packet);
+            }
         }
     }
 
-    void MakePacket<T>(PacketSession session, ArraySegment<byte> buffer) where T: IPacket, new()
+    T MakePacket<T>(PacketSession session, ArraySegment<byte> buffer) where T: IPacket, new()
     {
         // 패킷 조립
         T packet = new T();
         packet.Read(buffer);
 
+        return packet;
+    }
+
+    public void HandlePacket(PacketSession session, IPacket packet)
+    {
         // 패킷 처리
         Action<PacketSession, IPacket> action = null;
-        if (_handler.TryGetValue(packet.Protocol, out action))
+        if (_handlerMap.TryGetValue(packet.Protocol, out action))
         {
             action.Invoke(session, packet);
         }
