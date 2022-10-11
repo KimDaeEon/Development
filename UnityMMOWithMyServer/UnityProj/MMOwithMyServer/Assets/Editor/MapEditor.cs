@@ -21,14 +21,10 @@ public class MapEditor
 
         foreach (GameObject gameObject in gameObjects)
         {
-            if (gameObject == null)
-            {
-                Debug.Log("[Error] Map object is null!");
-                return;
-            }
+            Tilemap tileMapBase = Util.FindChild<Tilemap>(gameObject, "Tilemap_Base", true);
+            Tilemap tileMapCollision = Util.FindChild<Tilemap>(gameObject, "Tilemap_Collision", true);
 
-            Tilemap tileMap = Util.FindChild<Tilemap>(gameObject, "Tilemap_Collision", true);
-            if (tileMap == null)
+            if (tileMapCollision == null)
             {
                 Debug.Log("[Error] tileMap is null!");
                 return;
@@ -36,17 +32,17 @@ public class MapEditor
 
             using (var writer = File.CreateText($"Assets/Resources/Map/{gameObject.name}.txt"))
             {
-                writer.WriteLine(tileMap.cellBounds.xMin);
-                writer.WriteLine(tileMap.cellBounds.xMax);
-                writer.WriteLine(tileMap.cellBounds.yMin);
-                writer.WriteLine(tileMap.cellBounds.yMax);
+                writer.WriteLine(tileMapBase.cellBounds.xMin);
+                writer.WriteLine(tileMapBase.cellBounds.xMax);
+                writer.WriteLine(tileMapBase.cellBounds.yMin);
+                writer.WriteLine(tileMapBase.cellBounds.yMax);
 
                 // 장애물이 있으면 1, 없으면 0을 표시 서버에서 해당 정보를 통해 이동로직을 작동시킨다.
                 // 예를 들면 아래와 같은 형식으로 길찾기용 파일과 같이 적힌다.
-                //-11
-                //9
-                //-4
-                //5
+                //-11 (xMin)
+                //9 (xMax)
+                //-4 (yMin)
+                //5 (yMax)
                 //000000000000000000000
                 //000011111100000000000
                 //000011111100000000000
@@ -58,11 +54,11 @@ public class MapEditor
                 //000000000000000000000
                 //000001000000000000010
 
-                for (int y = tileMap.cellBounds.yMax; y >= tileMap.cellBounds.yMin; y--)
+                for (int y = tileMapBase.cellBounds.yMax; y >= tileMapBase.cellBounds.yMin; y--)
                 {
-                    for (int x = tileMap.cellBounds.xMin; x <= tileMap.cellBounds.xMax; x++)
+                    for (int x = tileMapBase.cellBounds.xMin; x <= tileMapBase.cellBounds.xMax; x++)
                     {
-                        TileBase tile = tileMap.GetTile(new Vector3Int(x, y, 0));
+                        TileBase tile = tileMapCollision.GetTile(new Vector3Int(x, y, 0));
                         if (tile != null)
                         {
                             writer.Write("1");

@@ -9,21 +9,32 @@ public class GameScene : BaseScene
         base.Init();
 
         SceneType = Define.Scene.Game;
-        //Managers.UI.ShowSceneUI<UI_Inven>();
-        //Dictionary<int, Data.Stat> dict = Managers.Data.StatDict;
-        //gameObject.GetOrAddComponent<CursorController>();
 
-        //GameObject player = Managers.Game.Spawn(Define.WorldObject.Player, "UnityChan");
-        //Camera.main.gameObject.GetOrAddComponent<CameraController>().SetPlayer(player);
+        Managers.MapManager.LoadMap(1);
 
-        ////Managers.Game.Spawn(Define.WorldObject.Monster, "Knight");
-        //GameObject go = new GameObject { name = "SpawningPool" };
-        //SpawningPool pool = go.GetOrAddComponent<SpawningPool>();
-        //pool.SetKeepMonsterCount(2);
+        GameObject player = Managers.Resource.Instantiate("Actor/Player");
+        player.name = "Player";
+        Managers.ObjectManager.Add(player);
+
+        for (int i = 0; i < 8; i++)
+        {
+            GameObject monster = Managers.Resource.Instantiate("Actor/Monster");
+            monster.name = "Monster" + i;
+            Managers.ObjectManager.Add(monster);
+
+            Vector3Int pos = new Vector3Int()
+            {
+                x = Random.Range(-10, 10),
+                y = Random.Range(-10, 10)
+            };
+
+            MonsterController controller = monster.GetComponent<MonsterController>();
+            controller.CellPos = pos;
+        }
     }
 
     public override void Clear()
     {
-        
+
     }
 }
