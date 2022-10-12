@@ -36,3 +36,4 @@ C:\git_portfolio\CSharpMMO\CSharpServer\obj\Debug\net5.0\CSharpServer.dll
 C:\git_portfolio\CSharpMMO\CSharpServer\obj\Debug\net5.0\ref\CSharpServer.dll
 C:\git_portfolio\CSharpMMO\CSharpServer\obj\Debug\net5.0\CSharpServer.pdb
 C:\git_portfolio\CSharpMMO\CSharpServer\obj\Debug\net5.0\CSharpServer.genruntimeconfig.cache
+C:\git_portfolio\CSharpMMO\CSharpServer\bin\Debug\net5.0\Google.Protobuf.dll

@@ -21,3 +21,4 @@ C:\git_portfolio\CSharpMMO\ServerCore\obj\Debug\net5.0\ServerCore.csproj.CoreCom
 C:\git_portfolio\CSharpMMO\ServerCore\obj\Debug\net5.0\ServerCore.dll
 C:\git_portfolio\CSharpMMO\ServerCore\obj\Debug\net5.0\ref\ServerCore.dll
 C:\git_portfolio\CSharpMMO\ServerCore\obj\Debug\net5.0\ServerCore.pdb
+C:\git_portfolio\CSharpMMO\ServerCore\obj\Debug\net5.0\ServerCore.csproj.AssemblyReference.cache

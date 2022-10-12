@@ -10,24 +10,27 @@ public class Managers : MonoBehaviour
     #region Contents
     MapManager _mapManager = new MapManager();
     ObjectManager _objManager = new ObjectManager();
+    NetworkManager _networkManager = new NetworkManager();
+
     public static MapManager MapManager { get { return Instance._mapManager; } }
     public static ObjectManager ObjectManager { get { return Instance._objManager; } }
-	#endregion
+    public static NetworkManager Network { get { return Instance._networkManager; } }
+    #endregion
 
-	#region Core
-	DataManager _data = new DataManager();
-    PoolManager _pool = new PoolManager();
-    ResourceManager _resource = new ResourceManager();
-    SceneManagerEx _scene = new SceneManagerEx();
-    SoundManager _sound = new SoundManager();
-    UIManager _ui = new UIManager();
+    #region Core
+    DataManager _dataManager = new DataManager();
+    PoolManager _poolManager = new PoolManager();
+    ResourceManager _resourceManager = new ResourceManager();
+    SceneManagerEx _sceneManager = new SceneManagerEx();
+    SoundManager _soundManager = new SoundManager();
+    UIManager _uiManager = new UIManager();
 
-    public static DataManager Data { get { return Instance._data; } }
-    public static PoolManager Pool { get { return Instance._pool; } }
-    public static ResourceManager Resource { get { return Instance._resource; } }
-    public static SceneManagerEx Scene { get { return Instance._scene; } }
-    public static SoundManager Sound { get { return Instance._sound; } }
-    public static UIManager UI { get { return Instance._ui; } }
+    public static DataManager Data { get { return Instance._dataManager; } }
+    public static PoolManager Pool { get { return Instance._poolManager; } }
+    public static ResourceManager Resource { get { return Instance._resourceManager; } }
+    public static SceneManagerEx Scene { get { return Instance._sceneManager; } }
+    public static SoundManager Sound { get { return Instance._soundManager; } }
+    public static UIManager UI { get { return Instance._uiManager; } }
 	#endregion
 
 	void Start()
@@ -54,9 +57,10 @@ public class Managers : MonoBehaviour
             DontDestroyOnLoad(go);
             s_instance = go.GetComponent<Managers>();
 
-            s_instance._data.Init();
-            s_instance._pool.Init();
-            s_instance._sound.Init();
+            s_instance._networkManager.Init();
+            s_instance._dataManager.Init();
+            s_instance._poolManager.Init();
+            s_instance._soundManager.Init();
         }		
 	}
 

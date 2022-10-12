@@ -1,8 +1,10 @@
 {
   "version": 2,
-  "dgSpecHash": "ne7KFj9cCYQtjSv6vQI0vGW3ydbNuaxdp/V8g47qiBvhFBsFwlAMffiSixLyZTS+HRf9dxI/W3e9lKjjT33UIQ==",
+  "dgSpecHash": "9snwql8vbmt/j/WcNfBtlIBJ00ZHXNtMbLAYqTlNNjXbphp3NYGdtPIGKsm3vCMbMz46ND1MMmsb3XtsTPKEHw==",
   "success": true,
   "projectFilePath": "C:\\git_portfolio\\CSharpMMO\\PacketGenerator\\PacketGenerator.csproj",
-  "expectedPackageFiles": [],
+  "expectedPackageFiles": [
+    "C:\\Users\\밥벌레\\.nuget\\packages\\google.protobuf\\3.21.7\\google.protobuf.3.21.7.nupkg.sha512"
+  ],
   "logs": []
 }

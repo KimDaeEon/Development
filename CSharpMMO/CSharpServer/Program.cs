@@ -1,7 +1,10 @@
 ﻿using System;
 using System.Net;
 using System.Threading;
+using Google.Protobuf;
+using Google.Protobuf.Protocol;
 using ServerCore;
+using static Google.Protobuf.Protocol.Person.Types;
 
 namespace CSharpServer
 {
@@ -9,15 +12,29 @@ namespace CSharpServer
     class Program
     {
         static Listener _listener = new Listener();
-        public static GameRoom _room = new GameRoom();
         static void FlushRoom()
         {
-            _room.Push(() => _room.Flush());
             JobTimer.Instance.Push(FlushRoom, 250);
         }
 
         static void Main(string[] args)
         {
+            Person person = new Person()
+            {
+                Name = "Daeeon",
+                Id = 123,
+                Email = "eo956578rr@gmail.com",
+                Phones = { new PhoneNumber { Number = "555-4321", Type = PhoneType.Home } }
+            };
+
+            int size = person.CalculateSize();
+            byte[] sendBuffer = person.ToByteArray();
+
+            Person person2 = new Person();
+            person2.MergeFrom(sendBuffer);
+
+
+
             // DNS 활용
             string host = Dns.GetHostName();
             IPHostEntry ipHost = Dns.GetHostEntry(host);
