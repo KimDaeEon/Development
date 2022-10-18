@@ -12,8 +12,8 @@ public class Managers : MonoBehaviour
     ObjectManager _objManager = new ObjectManager();
     NetworkManager _networkManager = new NetworkManager();
 
-    public static MapManager MapManager { get { return Instance._mapManager; } }
-    public static ObjectManager ObjectManager { get { return Instance._objManager; } }
+    public static MapManager Map { get { return Instance._mapManager; } }
+    public static ObjectManager Object { get { return Instance._objManager; } }
     public static NetworkManager Network { get { return Instance._networkManager; } }
     #endregion
 
@@ -40,7 +40,7 @@ public class Managers : MonoBehaviour
 
     void Update()
     {
-
+        _networkManager.Update();
     }
 
     static void Init()

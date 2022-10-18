@@ -1,10 +1,12 @@
 {
   "version": 2,
-  "dgSpecHash": "ShCY2b0J+WZpTa5jwVl564UBVMftDNyxqKrN8a+ZD/9iyW69wvDNW/eWNYWkmXxrnuoeGZMSwy55Np0EIS5taw==",
+  "dgSpecHash": "9b1d59/hiS2k0PCTD92MXiD2H+ZAATUVtOMla+qBSKNCUzsUKq227M2sO4ZnuhQULujDp42xJynMhOatNMF9Hw==",
   "success": true,
   "projectFilePath": "C:\\git_portfolio\\CSharpMMO\\CSharpServer\\CSharpServer.csproj",
   "expectedPackageFiles": [
-    "C:\\Users\\밥벌레\\.nuget\\packages\\google.protobuf\\3.21.7\\google.protobuf.3.21.7.nupkg.sha512"
+    "C:\\Users\\밥벌레\\.nuget\\packages\\google.protobuf\\3.21.7\\google.protobuf.3.21.7.nupkg.sha512",
+    "C:\\Users\\밥벌레\\.nuget\\packages\\newtonsoft.json\\12.0.1\\newtonsoft.json.12.0.1.nupkg.sha512",
+    "C:\\Users\\밥벌레\\.nuget\\packages\\newtonsoft.json.bson\\1.0.2\\newtonsoft.json.bson.1.0.2.nupkg.sha512"
   ],
   "logs": []
 }

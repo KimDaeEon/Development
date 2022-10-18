@@ -1,17 +1,12 @@
+using Google.Protobuf.Protocol;
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using static Define;
 
 public class PlayerController : ActorController
 {
-    Coroutine _coSkill;
-    bool _isRangeSkill = false;
-
-    private void LateUpdate()
-    {
-        Camera.main.transform.position = new Vector3(transform.position.x, transform.position.y, -10);
-    }
+    protected Coroutine _coSkill;
+    protected bool _isRangeSkill = false;
 
     protected override void Init()
     {
@@ -20,9 +15,14 @@ public class PlayerController : ActorController
 
     protected override void UpdateAnimation()
     {
-        if (_state == ActorState.Idle)
+        if(_animator == null || _spriteRenderer == null)
         {
-            switch (_lastDir)
+            return;
+        }
+
+        if (State == ActorState.Idle)
+        {
+            switch (Dir)
             {
                 case MoveDir.Up:
                     _animator.Play("IDLE_BACK");
@@ -45,9 +45,9 @@ public class PlayerController : ActorController
                     break;
             }
         }
-        else if (_state == ActorState.Moving)
+        else if (State == ActorState.Moving)
         {
-            switch (_dir)
+            switch (Dir)
             {
                 case MoveDir.Up:
                     _animator.Play("WALK_BACK");
@@ -68,14 +68,11 @@ public class PlayerController : ActorController
                     _animator.Play("WALK_RIGHT");
                     _spriteRenderer.flipX = false;
                     break;
-
-                case MoveDir.None:
-                    break;
             }
         }
-        else if (_state == ActorState.Skill)
+        else if (State == ActorState.Skill)
         {
-            switch (_lastDir)
+            switch (Dir)
             {
                 case MoveDir.Up:
                     _animator.Play(_isRangeSkill ? "ATTACK_WEAPON_BACK" : "ATTACK_BACK");
@@ -98,46 +95,11 @@ public class PlayerController : ActorController
                     break;
             }
         }
-        else
-        {
-
-        }
     }
 
     protected override void UpdateController()
     {
-        switch (State)
-        {
-            case ActorState.Idle:
-                GetDirectionInput();
-                break;
-
-            case ActorState.Moving:
-                GetDirectionInput();
-                break;
-        }
-
         base.UpdateController();
-    }
-
-    protected override void UpdateIdle()
-    {
-        if(Dir != MoveDir.None)
-        {
-            State = ActorState.Moving;
-            return;
-        }
-
-        if (Input.GetKey(KeyCode.K))
-        {
-            _coSkill = StartCoroutine("CoStartPunch");
-            State = ActorState.Skill;
-        }
-        else if (Input.GetKey(KeyCode.L))
-        {
-            _coSkill = StartCoroutine("CoStartShootArrow");
-            State = ActorState.Skill;
-        }
     }
 
     public override void OnDamaged()
@@ -145,61 +107,54 @@ public class PlayerController : ActorController
         Debug.Log("Player Hit !");
     }
 
-    void GetDirectionInput()
+    public override void UseSkill(int skillId)
     {
-        if (Input.GetKey(KeyCode.W))
+        // TODO: 데이터 시트로 빼야함, 임시로 skillId 1은 펀치로 가정
+
+        switch (skillId)
         {
-            Dir = MoveDir.Up;
+            case 1:
+                _coSkill = StartCoroutine("CoStartPunch");
+                break;
+
+            case 2:
+                _coSkill = StartCoroutine("CoStartShootArrow");
+                break;
+
+            default:
+                Debug.Log($"UnKnown Skill id {skillId}");
+                break;
         }
-        else if (Input.GetKey(KeyCode.S))
-        {
-            Dir = MoveDir.Down;
-        }
-        else if (Input.GetKey(KeyCode.A))
-        {
-            Dir = MoveDir.Left;
-        }
-        else if (Input.GetKey(KeyCode.D))
-        {
-            Dir = MoveDir.Right;
-        }
-        else
-        {
-            Dir = MoveDir.None;
-        }
+    }
+
+    // MyPlayerController 에서만 구현
+    protected virtual void SendMovePacketIfUpdated()
+    {
     }
 
     IEnumerator CoStartPunch()
     {
-        // 피격 판정
-        GameObject obj = Managers.ObjectManager.Find(GetFrontCellPos());
-        if(obj != null)
-        {
-            ActorController ac = obj.GetComponent<ActorController>();
-            if (ac != null)
-            {
-                ac.OnDamaged();
-            }
-        }
-        _isRangeSkill = false;
-
         // 대기 시작
+        _isRangeSkill = false;
+        State = ActorState.Skill;
         yield return new WaitForSeconds(0.5f);
         State = ActorState.Idle;
         _coSkill = null;
+
+        // TODO: 임시 코드. 후에 서버에서 스킬 관련 상태 바꾸는 것 하도록 변경 필요
+        SendMovePacketIfUpdated();
     }
 
     IEnumerator CoStartShootArrow()
     {
-        GameObject obj = Managers.Resource.Instantiate("Actor/Arrow");
-        ArrowController controller = obj.GetComponent<ArrowController>();
-        controller.Dir = _lastDir;
-        controller.CellPos = CellPos;
-        _isRangeSkill = true;
-
         // 대기 시작
+        _isRangeSkill = true;
+        State = ActorState.Skill;
         yield return new WaitForSeconds(0.3f);
         State = ActorState.Idle;
         _coSkill = null;
+
+        // TODO: 임시 코드. 후에 서버에서 스킬 관련 상태 바꾸는 것 하도록 변경 필요
+        SendMovePacketIfUpdated();
     }
 }

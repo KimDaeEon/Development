@@ -17,6 +17,12 @@ public class MapEditor
     [MenuItem("Tools/GenerateMap %q")]
     private static void GenerateMap()
     {
+        GenerateMapOnPath("Assets/Resources/Map"); // 클라이언트용
+        GenerateMapOnPath("../../../CSharpMMO/Common/MapData"); // 서버용
+    }
+
+    private static void GenerateMapOnPath(string pathPrefix)
+    {
         GameObject[] gameObjects = Resources.LoadAll<GameObject>("Prefabs/Map");
 
         foreach (GameObject gameObject in gameObjects)
@@ -30,7 +36,7 @@ public class MapEditor
                 return;
             }
 
-            using (var writer = File.CreateText($"Assets/Resources/Map/{gameObject.name}.txt"))
+            using (var writer = File.CreateText($"{pathPrefix}/{gameObject.name}.txt"))
             {
                 writer.WriteLine(tileMapBase.cellBounds.xMin);
                 writer.WriteLine(tileMapBase.cellBounds.xMax);

@@ -51,6 +51,10 @@
             "Google.Protobuf": {
               "target": "Package",
               "version": "[3.21.7, )"
+            },
+            "Newtonsoft.Json.Bson": {
+              "target": "Package",
+              "version": "[1.0.2, )"
             }
           },
           "imports": [

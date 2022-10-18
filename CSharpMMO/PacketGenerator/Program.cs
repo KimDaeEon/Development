@@ -74,9 +74,9 @@ namespace PacketGenerator
                 }
             }
 
-            string clientManagerText = string.Format(PacketFormat.managerFormat, registeredHandlersForClient);
+            string clientManagerText = string.Format(PacketFormat.managerFormat, registeredHandlersForClient, PacketFormat.packetLogFormat);
             File.WriteAllText("ClientPacketManager.cs", clientManagerText);
-            string serverManagerText = string.Format(PacketFormat.managerFormat, registeredHandlersForServer);
+            string serverManagerText = string.Format(PacketFormat.managerFormat, registeredHandlersForServer, PacketFormat.packetLogFormat);
             File.WriteAllText("ServerPacketManager.cs", serverManagerText);
         }
 

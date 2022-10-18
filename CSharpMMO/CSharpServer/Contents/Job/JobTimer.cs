@@ -5,12 +5,12 @@ using System.Text;
 using System.Threading.Tasks;
 using ServerCore;
 
-namespace CSharpServer
+namespace CSharpServer.Contents
 {
     struct JobTimerElement : IComparable<JobTimerElement>
     {
         public int toBeExecutedTick; // 실행이 될 시간
-        public Action action;
+        public IJob job;
 
         public int CompareTo(JobTimerElement other)
         {
@@ -19,27 +19,24 @@ namespace CSharpServer
             return other.toBeExecutedTick - this.toBeExecutedTick;
         }
     }
-    class JobTimer
+    public class JobTimer
     {
         PriorityQueue<JobTimerElement> _pq = new PriorityQueue<JobTimerElement>();
         object _lock = new object();
 
-        // property 초기화 문법으로 reference type 의 경우 아래처럼 초기화한다.
-        public static JobTimer Instance { get; } = new JobTimer(); 
-
-        public void Push(Action action, int tickAfter)
+        public void Push(IJob job, int tickAfter)
         {
-            JobTimerElement job;
+            JobTimerElement jobElement;
 
             // 시스템이 켜지고 나서 지난 milliseconds 이다. int 같은 경우 대략 20억이므로,
             // 23 일 정도의 시간까지는 안전한 값이다. 
             // 오래 지속되는 이벤트 같은 경우는 이 시간을 기준으로 하면 안될 것 같다.
-            job.toBeExecutedTick = System.Environment.TickCount + tickAfter;
-            job.action = action;
+            jobElement.toBeExecutedTick = System.Environment.TickCount + tickAfter;
+            jobElement.job = job;
 
             lock (_lock)
             {
-                _pq.Push(job);
+                _pq.Push(jobElement);
             }
         }
 
@@ -49,7 +46,7 @@ namespace CSharpServer
             {
                 int now = System.Environment.TickCount;
 
-                JobTimerElement job;
+                JobTimerElement jobElement;
 
                 lock (_lock)
                 {
@@ -58,9 +55,9 @@ namespace CSharpServer
                         break;
                     }
 
-                    job = _pq.Peek();
+                    jobElement = _pq.Peek();
 
-                    if(job.toBeExecutedTick > now)
+                    if(jobElement.toBeExecutedTick > now)
                     {
                         break;
                     }
@@ -68,7 +65,7 @@ namespace CSharpServer
                     _pq.Pop();
                 }
 
-                job.action.Invoke();
+                jobElement.job.Execute();
             }
         }
     }

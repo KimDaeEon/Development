@@ -143,8 +143,8 @@ public class MapManager
         // 가장 좋은 후보(F 작은 후보)를 바로 뽑아오기 위함
         PriorityQueue<PQNode> pq = new PriorityQueue<PQNode>();
 
-        Pos pos = Cell2Pos(startCellPos);
-        Pos dest = Cell2Pos(destCellPos);
+        Pos pos = CellPos2ArrayPos(startCellPos);
+        Pos dest = CellPos2ArrayPos(destCellPos);
 
         // 시작점을 Open 리스트에 추가
         open[pos.Y, pos.X] = CalcHeuristics(dest.Y, dest.X, pos.Y, pos.X);
@@ -180,7 +180,7 @@ public class MapManager
                 if (!ignoreDestCollision || next.Y != dest.Y || next.X != dest.X)
                 {
                     // 유효 범위 벗어났거나, 벽으로 막혀 있으면 스킵
-                    if (CanGo(Pos2Cell(next)) == false || Managers.ObjectManager.Find(Pos2Cell(next)) != null)
+                    if (CanGo(ArrayPos2CellPos(next)) == false || Managers.Object.FindActorByCellPos(ArrayPos2CellPos(next)) != null)
                     {
                         continue;
                     }
@@ -224,12 +224,12 @@ public class MapManager
         int x = dest.X;
         while (parent[y, x].Y != y || parent[y, x].X != x)
         {
-            cells.Add(Pos2Cell(new Pos(y, x)));
+            cells.Add(ArrayPos2CellPos(new Pos(y, x)));
             Pos pos = parent[y, x];
             y = pos.Y;
             x = pos.X;
         }
-        cells.Add(Pos2Cell(new Pos(y, x)));
+        cells.Add(ArrayPos2CellPos(new Pos(y, x)));
         cells.Reverse();
 
         return cells;
@@ -237,13 +237,13 @@ public class MapManager
 
     // Vector3Int 와 Pos 간의 좌표 표기 차이로 인해 존재.
     // x, y  좌표계 y 최대 좌표 = Pos y 좌표 0, x 최소 좌표 = Pos x 좌표 0
-    Pos Cell2Pos(Vector3Int cell)
+    Pos CellPos2ArrayPos(Vector3Int cell)
     {
         // CellPos -> ArrayPos
         return new Pos(MaxY - cell.y, cell.x - MinX);
     }
 
-    Vector3Int Pos2Cell(Pos pos)
+    Vector3Int ArrayPos2CellPos(Pos pos)
     {
         // ArrayPos -> CellPos
         return new Vector3Int(pos.X + MinX, MaxY - pos.Y, 0);

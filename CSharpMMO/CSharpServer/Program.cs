@@ -1,10 +1,12 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Net;
 using System.Threading;
+using CSharpServer.Contents;
+using CSharpServer.Data;
 using Google.Protobuf;
 using Google.Protobuf.Protocol;
 using ServerCore;
-using static Google.Protobuf.Protocol.Person.Types;
 
 namespace CSharpServer
 {
@@ -12,28 +14,29 @@ namespace CSharpServer
     class Program
     {
         static Listener _listener = new Listener();
-        static void FlushRoom()
+        static List<System.Timers.Timer> _timers = new List<System.Timers.Timer>();
+        static void TickRoom(Room room, int tick = 100)
         {
-            JobTimer.Instance.Push(FlushRoom, 250);
+            var timer = new System.Timers.Timer();
+            timer.Interval = tick;
+            timer.Elapsed += ((sender, elapsedEventArgs) => { room.Push(room.Update); });
+            timer.AutoReset = true;
+            timer.Enabled = true; // 이것을 하는 순간 timer 가 실행이 된다.
+
+            _timers.Add(timer);
         }
 
         static void Main(string[] args)
         {
-            Person person = new Person()
-            {
-                Name = "Daeeon",
-                Id = 123,
-                Email = "eo956578rr@gmail.com",
-                Phones = { new PhoneNumber { Number = "555-4321", Type = PhoneType.Home } }
-            };
+            // 데이터 로딩
+            ConfigManager.Init();
+            DataManager.Init();
 
-            int size = person.CalculateSize();
-            byte[] sendBuffer = person.ToByteArray();
-
-            Person person2 = new Person();
-            person2.MergeFrom(sendBuffer);
-
-
+            var d = DataManager.StatDict;
+            
+            // 서버 시작 후 초기화해줄 부분들
+            Room room = RoomManager.Instance.Add(1);
+            TickRoom(room, 50);
 
             // DNS 활용
             string host = Dns.GetHostName();
@@ -46,12 +49,9 @@ namespace CSharpServer
                 _listener.Init(endPoint, () => { return SessionManager.Instance.Generate(); });
                 Console.WriteLine("Listening...");
 
-                //FlushRoom(); // 아래처럼 하는 것이 더 직관적인 것 같다.
-                JobTimer.Instance.Push(FlushRoom, 250);
-
                 while (true)
                 {
-                    JobTimer.Instance.Flush();
+                    Thread.Sleep(100);
                 }
             }
             catch (Exception e)
