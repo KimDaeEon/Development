@@ -1,0 +1,44 @@
+﻿@using BlazorApp.Data;
+<p>
+    Users: @Users.Count()
+</p>
+
+<ul class="list-group">
+    @foreach (var user in Users)
+    {
+        <li @key="user" class="list-group-item">
+            <label style="color:@Color">@user.Name</label>
+            <button class="btn btn-primary" @onclick="(() => DeleteUser(user))">Delete</button>
+        </li>
+    }
+</ul>
+
+@code {
+    [CascadingParameter( Name = "ThemeColor")]
+    string Color { get; set; }
+
+    [Parameter]
+    public List<UserData> Users { get; set; }
+
+    [Parameter]
+    public EventCallback Callback { get; set; }
+
+    protected override void OnInitialized()
+    {
+        Users.Add(new UserData() { Name = "Daeeon" });
+        Users.Add(new UserData() { Name = "Daeeon1" });
+        Users.Add(new UserData() { Name = "Daeeon2" });
+    }
+
+    public void AddUser(UserData user)
+    {
+        Users.Add(user);
+    }
+
+    public void DeleteUser(UserData user)
+    {
+        Users.Remove(user);
+
+        Callback.InvokeAsync(null);
+    }
+}

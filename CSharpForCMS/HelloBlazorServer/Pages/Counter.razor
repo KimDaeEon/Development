@@ -1,0 +1,14 @@
+﻿@page "/counter"
+@inject HelloBlazorServer.Data.CounterState CounterState;
+<h1>Counter2</h1>
+
+<p>Current count: @CounterState.Count</p>
+
+<button class="btn btn-primary" @onclick="IncrementCount">Click me</button>
+<a class="btn btn-primary" href="FetchData"></a>
+@code {
+    private void IncrementCount()
+    {
+        CounterState.Count++;
+    }
+}

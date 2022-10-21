@@ -1,0 +1,52 @@
+﻿@page "/user"
+@using BlazorApp.Data;
+
+<h3>User</h3>
+<label>Theme Color</label>
+<select class="form-control" @bind="_selectedColor">
+    @foreach (var option in _options)
+    {
+        <option value="@option">
+            @option
+        </option>
+    }
+</select>
+
+<CascadingValue Name="ThemeColor" Value="_selectedColor">
+    <ShowUser Callback="Callback" Users="_users" @ref="_showUser"></ShowUser>
+</CascadingValue>
+<div class="container">
+    <div class="row">
+        <div class="col">
+            <input class="form-control" placeholder="Add User" @bind-value="_inputName" />
+        </div>
+        <div class="col">
+            <button class="form-control" type="button" @onclick="AddUser" disabled="@(_users.Count() >=5)">Add a User</button>
+        </div>
+    </div>
+</div>
+
+@code {
+    string _selectedColor = "Green";
+    List<string> _options = new List<string>() { "Green", "Red", "Blue" };
+    List<UserData> _users = new List<UserData>();
+    string _inputName;
+    ShowUser _showUser;
+
+    void AddUser()
+    {
+        _showUser.AddUser(new UserData() { Name = _inputName });
+        _inputName = "";
+    }
+
+    void Delete(UserData user)
+    {
+        _users.Remove(user);
+    }
+
+    void Callback()
+    {
+        _inputName = "Callback";
+        StateHasChanged();
+    }
+}

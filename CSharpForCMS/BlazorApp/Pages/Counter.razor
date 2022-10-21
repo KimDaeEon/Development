@@ -1,0 +1,31 @@
+﻿@page "/counter"
+@using System.Threading;
+
+<h1>Counter @Color</h1>
+
+<p>Current count: @currentCount</p>
+
+<button class="btn btn-primary" @onclick="IncrementCount">Click me</button>
+<button class="btn btn-secondary" @onclick="AutoIncrement">Auto Increment</button>
+
+@code {
+    [CascadingParameter(Name = "ThemeColor")]
+    string Color { get; set; }
+    private int currentCount = 0;
+
+    private void IncrementCount()
+    {
+        currentCount++;
+    }
+
+    private void AutoIncrement()
+    {
+        var timer = new Timer(x =>
+        InvokeAsync(() =>
+        {
+            IncrementCount();
+            StateHasChanged(); // 이거 안하면 변경된 사항이 그때 그때 Html 에 반영이 안된다.
+        })
+        , null, 1000, 1000);
+    }
+}
