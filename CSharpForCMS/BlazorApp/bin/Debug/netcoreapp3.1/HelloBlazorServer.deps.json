@@ -29,9 +29,8 @@
   },
   "targets": {
     ".NETCoreApp,Version=v3.1": {
-      "BlazorApp/1.0.0": {
+      "HelloBlazorServer/1.0.0": {
         "dependencies": {
-          "HelloBlazorServer": "1.0.0",
           "Microsoft.AspNetCore.Antiforgery": "3.1.0.0",
           "Microsoft.AspNetCore.Authentication.Abstractions": "3.1.0.0",
           "Microsoft.AspNetCore.Authentication.Cookies": "3.1.0.0",
@@ -315,14 +314,6 @@
           "System.Xml.XPath.XDocument": "4.1.2.0",
           "WindowsBase": "4.0.0.0"
         },
-        "runtime": {
-          "BlazorApp.dll": {}
-        },
-        "compile": {
-          "BlazorApp.dll": {}
-        }
-      },
-      "HelloBlazorServer/1.0.0": {
         "runtime": {
           "HelloBlazorServer.dll": {}
         },
@@ -2025,11 +2016,6 @@
     }
   },
   "libraries": {
-    "BlazorApp/1.0.0": {
-      "type": "project",
-      "serviceable": false,
-      "sha512": ""
-    },
     "HelloBlazorServer/1.0.0": {
       "type": "project",
       "serviceable": false,

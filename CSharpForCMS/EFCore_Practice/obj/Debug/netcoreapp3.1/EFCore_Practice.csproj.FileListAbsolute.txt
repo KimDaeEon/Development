@@ -61,3 +61,5 @@ C:\git_portfolio\CSharpForCMS\EFCore_Practice\obj\Debug\netcoreapp3.1\EFCore_Pra
 C:\git_portfolio\CSharpForCMS\EFCore_Practice\obj\Debug\netcoreapp3.1\EFCore_Practice.dll
 C:\git_portfolio\CSharpForCMS\EFCore_Practice\obj\Debug\netcoreapp3.1\EFCore_Practice.pdb
 C:\git_portfolio\CSharpForCMS\EFCore_Practice\obj\Debug\netcoreapp3.1\EFCore_Practice.genruntimeconfig.cache
+C:\git_portfolio\CSharpForCMS\EFCore_Practice\bin\Debug\netcoreapp3.1\Humanizer.dll
+C:\git_portfolio\CSharpForCMS\EFCore_Practice\bin\Debug\netcoreapp3.1\Microsoft.EntityFrameworkCore.Design.dll

@@ -14,11 +14,7 @@ namespace EFCore_Practice
 
             Console.WriteLine("명령어를 입력하세요.");
             Console.WriteLine("[0] DB Reset");
-            Console.WriteLine("[1] Eager loading");
-            Console.WriteLine("[2] Explicit Loading");
-            Console.WriteLine("[3] Select Loading");
-
-
+            
             while (true)
             {
                 Console.Write(">> ");
@@ -31,15 +27,13 @@ namespace EFCore_Practice
                         break;
 
                     case "1":
-                        DbCommands.EagerLoading();
+                        DbCommands.SoftDeleteTest();
                         break;
 
                     case "2":
-                        DbCommands.ExplicitLoading();
                         break;
                     
                     case "3":
-                        DbCommands.SeletcLoading();
                         break;
                 }
             }

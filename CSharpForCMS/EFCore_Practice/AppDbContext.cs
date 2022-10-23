@@ -25,5 +25,22 @@ namespace EFCore_Practice
         {
             optionsBuilder.UseSqlServer(ConnectionString);
         }
+
+        // Fluent API 방식으로 모델 관련 설정을 하게해주는 함수이다.
+        // Convention 이나 Data Annotation 보다 자세하게 설정이 가능하지만, 그만큼 손이 많이 간다.
+        // Convention => Data Annotation => Fluent API 순으로 모델 관련 설정이 적용되기에, 다음 단계에서 앞단에서 한 설정을 덮어쓴다는 것 또한 알아두자.
+        protected override void OnModelCreating(ModelBuilder builder)
+        {
+            // 모델 차원에서 해당 Column 이 false 인 것만 가져온다.
+            // 아래 필터를 무시하려면 나중에 질의 C# 코드를 작성할 때에 IgnoreQueryFilters() 를 붙이면 된다.
+            builder.Entity<Item>().HasQueryFilter(i => i.IsDeleted == false);
+            builder.Entity<Player>().HasIndex(p => p.Name).IsUnique().HasDatabaseName("Index_Player_Name");
+
+            // 아래처럼 해야지 DB 단에서 Default 값이 세팅이 된다. Property 의 기본값만 입력해두면 DB 단의 기본값으로는 반영되지 않는다.
+            builder.Entity<Item>()
+                .Property("CreatedDate")
+                // 아래 같이 HasDefaultValueSql 를 사용하는 방식을 SQL Fragment 라고 한다.
+                .HasDefaultValueSql("GETUTCDATE()");
+        }
     }
 }
