@@ -75,14 +75,31 @@ namespace EFCore_Practice
                 GuildName = "C++",
                 Members = new List<Player>() { Bjarne, Jeffrey, daeeon },
             };
+            Console.WriteLine($"0번 상태 {db.Entry(guild).State}"); // Detached 아예 DB 와 연계되어서 존재를 모르는 객체이다.
+            db.Guilds.Attach(guild);
+            Console.WriteLine($"0번 상태 {db.Entry(guild).State}"); // Added, 해당 객체가 추적되고 있다고 강제로 설정해주는 것이다. 웬만하면 이렇게 쓰면 안된다.
 
             db.Items.AddRange(items);
             db.Guilds.Add(guild);
+            Console.WriteLine($"1번 상태 {db.Entry(daeeon).State}"); // Unchanged 다. Player 테이블은 바뀌는 것이 없기 때문이다.
             //Console.WriteLine(db.Entry(daeeon).State); // State = Added, Item 만 추가했는데도 State 바뀌는 것에 유의
 
             db.SaveChanges();
             //Console.WriteLine(daeeon.PlayerId); 
             //Console.WriteLine(db.Entry(daeeon).State); // Stat = Unchanged
+
+            // Add Test
+            {
+                Item item = new Item()
+                {
+                    TypeId = 500,
+                    Owner = daeeon,
+                };
+
+                db.Items.Add(item);
+                Console.WriteLine($"2번 상태{db.Entry(daeeon).State}");
+            }
+
         }
 
         public static void ReadAll()
@@ -302,6 +319,54 @@ namespace EFCore_Practice
 
                 player.Item.IsDeleted = true;
                 db.SaveChanges();
+            }
+        }
+
+        public static void DirectSqlTest()
+        {
+            using (AppDbContext db = new AppDbContext())
+            {
+                // FromSql
+                // Query SQL 용이다. (return 값이 있는 SQL, select)
+                {
+                    string name = "Daeeon";
+
+                    // 아래처럼 하면 쿼리 내용으로 테이블 내용 해킹당할 수 있다.
+                    // string nameForHacking = "'Anything' OR 1=1"; 
+                    // 이러한 시도를 막기 위해서 FromSqlRaw, FromSqlInterpolated 와 같은 함수가 존재하는 것이다.
+                    // 추가로 FromSql 방식으로는 Update 같은 것은 안된다는 것도 알아두자.
+                    var list = db.Players
+                        .FromSqlRaw("SELECT * from players where name = {0}", name).ToList();
+
+                    // 아래처럼 String Interpolation 을 쓸 거면 FromSqlInterpolated 로 호출해야 한다.
+                    //var list2 = db.Players
+                    //    .FromSqlInterpolated($"SELECT * from players where name = {name}").ToList();
+
+                    foreach (var p in list)
+                    {
+                        Console.WriteLine(p);
+                    }
+                }
+
+                // ExecuteSqlCommand
+                // Non-Query Sql(return 값이 없는 것으로 insert, update, delete 를 의미)용 함수
+                {
+                    db.Database.ExecuteSqlInterpolated($"update Players set Test = 332 where Name = 'daeeon'");
+                }
+
+                // Reload
+                // Tracked Entity 가 있는데, 2번에 의해 DB 정보가 변경되면 DB와 메모리 상의 Entity 가 상태가 불일치하게 된다.
+                // 이럴 때에 쓰는 것이 Reload 이다.
+                {
+                    Player p = db.Players.Single(p => p.Name == "Daeeon");
+
+                    Console.WriteLine(p);
+                    db.Database.ExecuteSqlInterpolated($"update Players set Test = 331 where Name = 'daeeon'");
+                    Console.WriteLine(p);
+
+                    db.Entry(p).Reload();
+                    Console.WriteLine(p); // 이 시점에 DB 데이터와 p 데이터가 일치하게 된다.
+                }
             }
         }
     }

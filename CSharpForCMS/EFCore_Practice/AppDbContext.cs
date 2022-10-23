@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -21,9 +22,17 @@ namespace EFCore_Practice
 
         public const string ConnectionString = 
             "Data Source=DESKTOP-9IA022F;Initial Catalog=test;User ID=sa;Password=1234;Connect Timeout=30;Encrypt=False;TrustServerCertificate=False;ApplicationIntent=ReadWrite;MultiSubnetFailover=False"; // DB 에 어떻게 연결할지 설정을 저장하는 문자열
+
+        // microsoft.Extensions.logging.console <- 요거 깔아야지 AddConsole() 이 가능하다.
+        public static readonly ILoggerFactory MyloggerFactory = LoggerFactory.Create(builder =>
+        {
+            builder.AddConsole();
+        });
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            optionsBuilder.UseSqlServer(ConnectionString);
+            optionsBuilder
+                .UseLoggerFactory(MyloggerFactory) // 이를 통해 EF Core 돌아가는 동안 생성되는 sql 을 볼 수 있다.
+                .UseSqlServer(ConnectionString);
         }
 
         // Fluent API 방식으로 모델 관련 설정을 하게해주는 함수이다.

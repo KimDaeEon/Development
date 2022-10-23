@@ -37,15 +37,15 @@ using System.Text;
 // 3. SQL-First Migration
 // SQL script 정보를 통해서 migration 적용, DB 간에 차이를 나타내는 script 는 어떻게 해서든 추출할 수 있다고 한다. 그것을 바탕으로 한 작업
 
+
+
+
 // 데이터 모델 State
 // 1) Detached (No Tracking 추적되지 않는 상태, 메모리에 DB 데이터가 올라오지 않았음. SaveChanges를 해도 변하지 않는다.)
 // 2) Unchanged (DB 에 데이터가 있는 상태이고, 메모리 데이터 수정 사항은 없었음, SaveChanges를 해도 변하지 않는다.)
 // 3) Deleted (DB에는 아직 있지만, 삭제되어야 함. SaveChanges를 하면 DB 데이터 삭제된다.)
 // 4) Modified (DB에는 있고, 변경은 완료되지 않음. SaveChanges를 하면 DB 데이터 변경된다.)
 // 5) Added (DB에는 해당 데이터가 없고, 적용되지 않음. SaveChanges를 하면 DB 에 데이터 추가된다.)
-
-
-
 
 // SaveChanges 호출하면 일어나는 것
 // 1) 객체들의 상태가 Unchanged 로 바뀐다. (변경 사항이 DB에 적용됨, 변경 사항은 Column 별로 추적되어서 변경되는 사항만 반영)
@@ -91,7 +91,7 @@ namespace EFCore_Practice
         public Guild Guild { get; set; }
         public override string ToString()
         {
-            string result = $"Player : {PlayerId}, Name: {Name}, Guild: {Guild}";
+            string result = $"Player : {PlayerId}, Name: {Name}, Guild: {Guild}, Test: {Test}";
 
             return result;
         }

@@ -27,7 +27,7 @@ namespace EFCore_Practice
                         break;
 
                     case "1":
-                        DbCommands.SoftDeleteTest();
+                        DbCommands.DirectSqlTest();
                         break;
 
                     case "2":
