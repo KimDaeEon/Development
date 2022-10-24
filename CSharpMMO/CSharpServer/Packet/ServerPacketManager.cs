@@ -33,6 +33,12 @@ public class PacketManager
 
     public void Register()
     {
+        _makePacketMap.Add((ushort)MsgId.CLogin, MakePacket<C_Login>);
+        _handlerMap.Add((ushort)MsgId.CLogin, PacketHandler.C_LoginHandler);
+        _makePacketMap.Add((ushort)MsgId.CEnterGame, MakePacket<C_EnterGame>);
+        _handlerMap.Add((ushort)MsgId.CEnterGame, PacketHandler.C_EnterGameHandler);
+        _makePacketMap.Add((ushort)MsgId.CCreatePlayer, MakePacket<C_CreatePlayer>);
+        _handlerMap.Add((ushort)MsgId.CCreatePlayer, PacketHandler.C_CreatePlayerHandler);
         _makePacketMap.Add((ushort)MsgId.CMove, MakePacket<C_Move>);
         _handlerMap.Add((ushort)MsgId.CMove, PacketHandler.C_MoveHandler);
         _makePacketMap.Add((ushort)MsgId.CSkill, MakePacket<C_Skill>);

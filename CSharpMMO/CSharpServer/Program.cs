@@ -4,13 +4,13 @@ using System.Net;
 using System.Threading;
 using CSharpServer.Contents;
 using CSharpServer.Data;
+using CSharpServer.DB;
 using Google.Protobuf;
 using Google.Protobuf.Protocol;
 using ServerCore;
 
 namespace CSharpServer
 {
-
     class Program
     {
         static Listener _listener = new Listener();
@@ -32,8 +32,6 @@ namespace CSharpServer
             ConfigManager.Init();
             DataManager.Init();
 
-            var d = DataManager.StatDict;
-            
             // 서버 시작 후 초기화해줄 부분들
             Room room = RoomManager.Instance.Add(1);
             TickRoom(room, 50);

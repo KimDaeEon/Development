@@ -5,6 +5,13 @@ package Protocol;
 option csharp_namespace = "Google.Protobuf.Protocol";
 
 // 아래부터 공용으로 사용될 패킷용 구조체
+
+enum PlayerServerState {
+	SERVER_STATE_LOGIN = 0;
+	SERVER_STATE_LOBBY = 1;
+	SERVER_STATE_GAME = 2;
+}
+
 enum ActorState {
     IDLE = 0;
     MOVING = 1;
@@ -30,6 +37,11 @@ enum MoveDir {
     Down = 1;
     Left = 2;
     Right = 3;
+}
+
+message LobbyPlayerInfo {
+	string name = 1;
+	StatInfo statInfo = 2; // 클라 입장에선 statInfo 필요 없지만, 서버에서는 있는 것이 좋기에..
 }
 
 message ActorInfo {
@@ -59,6 +71,10 @@ message StatInfo {
 	int32 totalExp = 6;
 }
 
+// 공용 구조체 정의 끝
+
+
+
 // 아래부터 패킷 정보
 // 패킷 형식
 // S_ 서버 -> 클라이언트로 주는 패킷 prefix
@@ -66,16 +82,51 @@ message StatInfo {
 // 그 다음은 예시와 같은 형식으로 MsgId Enum 과 패킷 이름을 맞춰야 한다. ex) Enum S_ENTER_GAME 에 대응되는 패킷은 S_EnterGame 이 되어야 함. 
 
 enum MsgId {
+// 0 ~ 99 로그인이나 서버 이동 관련 패킷
   S_ENTER_GAME = 0;
-  S_LEAVE_GAME = 1;
-  S_SPAWN = 2;
-  S_DESPAWN = 3;
-  C_MOVE = 4;
-  S_MOVE = 5;
-  C_SKILL = 6;
-  S_SKILL = 7;
-  S_CHANGE_HP = 8;
-  S_DEAD = 9;
+  S_CONNECTED = 1;
+  C_LOGIN = 2;
+  S_LOGIN = 3;
+  C_ENTER_GAME = 4;
+  C_CREATE_PLAYER = 5;
+  S_CREATE_PLAYER = 6;
+  S_LEAVE_GAME = 7;
+
+// 100 ~ 200 인게임 관련 공용 패킷
+  S_SPAWN = 100;
+  S_DESPAWN = 101;
+  C_MOVE = 102;
+  S_MOVE = 103;
+  C_SKILL = 104;
+  S_SKILL = 105;
+  S_CHANGE_HP = 106;
+  S_DEAD = 107;
+}
+
+
+// TODO: 추후에는 기획에 따라 클래스나 종족 같은 것을 선택하면 좋을 듯 하다.
+message C_CreatePlayer {
+	string name = 1;
+}
+
+message S_CreatePlayer {
+	LobbyPlayerInfo player = 1;
+}
+
+message S_Connected {
+}
+
+message C_Login {
+	string uniqueId = 1;
+}
+
+message S_Login {
+	bool loginOk = 1;
+	repeated LobbyPlayerInfo players = 2;
+}
+
+message C_EnterGame {
+	string name = 1;
 }
 
 // 자신이 게임에 접속했음을 의미
@@ -125,3 +176,4 @@ message S_Dead {
 	int32 actorId = 1; // 죽임당한 actor 의 id
 	int32 attackerActorId = 2;
 }
+

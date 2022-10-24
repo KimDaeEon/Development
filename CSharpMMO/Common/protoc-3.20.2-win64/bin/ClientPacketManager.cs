@@ -35,6 +35,12 @@ public class PacketManager
     {
         _makePacketMap.Add((ushort)MsgId.SEnterGame, MakePacket<S_EnterGame>);
         _handlerMap.Add((ushort)MsgId.SEnterGame, PacketHandler.S_EnterGameHandler);
+        _makePacketMap.Add((ushort)MsgId.SConnected, MakePacket<S_Connected>);
+        _handlerMap.Add((ushort)MsgId.SConnected, PacketHandler.S_ConnectedHandler);
+        _makePacketMap.Add((ushort)MsgId.SLogin, MakePacket<S_Login>);
+        _handlerMap.Add((ushort)MsgId.SLogin, PacketHandler.S_LoginHandler);
+        _makePacketMap.Add((ushort)MsgId.SCreatePlayer, MakePacket<S_CreatePlayer>);
+        _handlerMap.Add((ushort)MsgId.SCreatePlayer, PacketHandler.S_CreatePlayerHandler);
         _makePacketMap.Add((ushort)MsgId.SLeaveGame, MakePacket<S_LeaveGame>);
         _handlerMap.Add((ushort)MsgId.SLeaveGame, PacketHandler.S_LeaveGameHandler);
         _makePacketMap.Add((ushort)MsgId.SSpawn, MakePacket<S_Spawn>);

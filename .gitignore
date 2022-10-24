@@ -17253,3 +17253,8 @@ CSharpMMO/ServerCore/obj/Debug/net5.0/ServerCore.dll
 UnityMMOWithMyServer/UnityProj/MMOwithMyServer/Library/
 UnityMMOWithMyServer/UnityProj/MMOwithMyServer/Temp/
 UnityMMOWithMyServer/UnityProj/MMOwithMyServer/Builds/Win64/
+CSharpMMO/CSharpServer/obj/
+CSharpMMO/CSharpServer/bin/Debug/
+CSharpMMO/CSharpServer/Packet/Protocol.cs
+CSharpMMO/PacketGenerator/obj/
+CSharpMMO/ServerCore/obj/
