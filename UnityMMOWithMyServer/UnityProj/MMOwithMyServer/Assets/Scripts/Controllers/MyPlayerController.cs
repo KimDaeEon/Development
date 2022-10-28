@@ -11,9 +11,13 @@ using static Define;
 public class MyPlayerController : PlayerController
 {
     bool _moveKeyPressed = false;
+    public int WeaponDamage { get; private set; }
+    public int ArmorDefence { get; private set; }
+
     protected override void Init()
     {
         base.Init();
+        RefreshStat();
     }
     protected override void UpdateIdle()
     {
@@ -50,6 +54,8 @@ public class MyPlayerController : PlayerController
 
     protected override void UpdateController()
     {
+        GetUIKeyInput();
+
         switch (State)
         {
             case ActorState.Idle:
@@ -62,6 +68,41 @@ public class MyPlayerController : PlayerController
         }
 
         base.UpdateController();
+    }
+
+    void GetUIKeyInput()
+    {
+        if (Input.GetKeyDown(KeyCode.I))
+        {
+            UI_GameScene gameSceneUI = (UI_GameScene)Managers.UI.SceneUI;
+            UI_Inventory invenUI = gameSceneUI.InvenUI;
+
+            if (invenUI.gameObject.activeSelf)
+            {
+                invenUI.gameObject.SetActive(false);
+            }
+            else
+            {
+                invenUI.gameObject.SetActive(true);
+                invenUI.RefreshUI();
+            }
+        }
+
+        else if (Input.GetKeyDown(KeyCode.C))
+        {
+            UI_GameScene gameSceneUI = (UI_GameScene)Managers.UI.SceneUI;
+            UI_Stat statUI = gameSceneUI.StatUI;
+
+            if (statUI.gameObject.activeSelf)
+            {
+                statUI.gameObject.SetActive(false);
+            }
+            else
+            {
+                statUI.gameObject.SetActive(true);
+                statUI.RefreshUI();
+            }
+        }
     }
 
     void GetDirectionInput()
@@ -142,6 +183,31 @@ public class MyPlayerController : PlayerController
 
             Managers.Network.Send(movePacket);
             _updated = true;
+        }
+    }
+
+    public void RefreshStat()
+    {
+        WeaponDamage = 0;
+        ArmorDefence = 0;
+
+        foreach (Item item in Managers.ItemInventory.Items.Values)
+        {
+            if (item.Equipped == false)
+            {
+                continue;
+            }
+
+            switch (item.ItemType)
+            {
+                case ItemType.Weapon:
+                    WeaponDamage += ((WeaponItem)item).Damage;
+                    break;
+
+                case ItemType.Armor:
+                    ArmorDefence += ((ArmorItem)item).Defence;
+                    break;
+            }
         }
     }
 }

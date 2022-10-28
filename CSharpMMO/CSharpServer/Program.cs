@@ -2,28 +2,57 @@
 using System.Collections.Generic;
 using System.Net;
 using System.Threading;
-using CSharpServer.Contents;
+using CSharpServer.Game;
 using CSharpServer.Data;
 using CSharpServer.DB;
 using Google.Protobuf;
 using Google.Protobuf.Protocol;
 using ServerCore;
+using System.Linq;
+using CSharpServer.Utils;
+using System.Threading.Tasks;
 
 namespace CSharpServer
 {
+    // 스레드 구조
+    // 네트워크 패킷 Recv 처리 스레드 (N개)
+    // GameLogic 처리 스레드 (1개)
+    // DB 처리 스레드 (1개)
+    // 네트워크 패킷 Send 처리 스레드 (1개)
     class Program
     {
         static Listener _listener = new Listener();
-        static List<System.Timers.Timer> _timers = new List<System.Timers.Timer>();
-        static void TickRoom(Room room, int tick = 100)
+        static void GameLogicTask()
         {
-            var timer = new System.Timers.Timer();
-            timer.Interval = tick;
-            timer.Elapsed += ((sender, elapsedEventArgs) => { room.Push(room.Update); });
-            timer.AutoReset = true;
-            timer.Enabled = true; // 이것을 하는 순간 timer 가 실행이 된다.
+            while (true)
+            {
+                RoomManager.Instance.Update();
+                Thread.Sleep(0);
+            }
+        }
 
-            _timers.Add(timer);
+        static void DbTask()
+        {
+            while (true)
+            {
+                // TODO: 아래 부분도 분산을 하는 방식으로
+                DbJobQueue.Instance.Flush();
+                Thread.Sleep(0);
+            }
+        }
+
+        static void NetworkSendTask()
+        {
+            while (true)
+            {
+                List<ClientSession> sessions = SessionManager.Instance.GetSessions();
+                foreach(ClientSession session in sessions)
+                {
+                    session.FlushSend();
+                }
+
+                Thread.Sleep(0);
+            }
         }
 
         static void Main(string[] args)
@@ -32,9 +61,11 @@ namespace CSharpServer
             ConfigManager.Init();
             DataManager.Init();
 
-            // 서버 시작 후 초기화해줄 부분들
-            Room room = RoomManager.Instance.Add(1);
-            TickRoom(room, 50);
+            // 게임 룸 세팅
+            RoomManager.Instance.Push(() =>
+            {
+                RoomManager.Instance.Add(1);
+            });
 
             // DNS 활용
             string host = Dns.GetHostName();
@@ -46,16 +77,29 @@ namespace CSharpServer
             {
                 _listener.Init(endPoint, () => { return SessionManager.Instance.Generate(); });
                 Console.WriteLine("Listening...");
-
-                while (true)
-                {
-                    Thread.Sleep(100);
-                }
             }
             catch (Exception e)
             {
                 Console.WriteLine(e);
             }
+
+            // 네트워크 Send 스레드실행
+            {
+                Thread t = new Thread(NetworkSendTask);
+                t.Name = "Network Send";
+                t.Start();
+            }
+
+            // Db 작업 스레드 실행
+            {
+                Thread t = new Thread(DbTask);
+                t.Name = "DB";
+                t.Start();
+            }
+
+            // 게임 로직은 메인 스레드에서
+            Thread.CurrentThread.Name = "GameLogic";
+            GameLogicTask();
         }
     }
 }

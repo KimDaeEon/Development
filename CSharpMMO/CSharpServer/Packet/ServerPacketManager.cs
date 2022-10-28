@@ -33,6 +33,8 @@ public class PacketManager
 
     public void Register()
     {
+        _makePacketMap.Add((ushort)MsgId.CHeartBeat, MakePacket<C_HeartBeat>);
+        _handlerMap.Add((ushort)MsgId.CHeartBeat, PacketHandler.C_HeartBeatHandler);
         _makePacketMap.Add((ushort)MsgId.CLogin, MakePacket<C_Login>);
         _handlerMap.Add((ushort)MsgId.CLogin, PacketHandler.C_LoginHandler);
         _makePacketMap.Add((ushort)MsgId.CEnterGame, MakePacket<C_EnterGame>);
@@ -43,6 +45,8 @@ public class PacketManager
         _handlerMap.Add((ushort)MsgId.CMove, PacketHandler.C_MoveHandler);
         _makePacketMap.Add((ushort)MsgId.CSkill, MakePacket<C_Skill>);
         _handlerMap.Add((ushort)MsgId.CSkill, PacketHandler.C_SkillHandler);
+        _makePacketMap.Add((ushort)MsgId.CEquipItem, MakePacket<C_EquipItem>);
+        _handlerMap.Add((ushort)MsgId.CEquipItem, PacketHandler.C_EquipItemHandler);
 
     }
     public void OnRecvPacket(PacketSession session, ArraySegment<byte> buffer)

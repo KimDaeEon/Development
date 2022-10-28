@@ -55,5 +55,17 @@ namespace CSharpServer
                 _sessions.Remove(session.SessionId);
             }
         }
+
+        public List<ClientSession> GetSessions()
+        {
+            List<ClientSession> sessions = new List<ClientSession>();
+
+            lock (_lock)
+            {
+                sessions = _sessions.Values.ToList();
+            }
+
+            return sessions;
+        }
     }
 }

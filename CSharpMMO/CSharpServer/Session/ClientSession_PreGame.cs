@@ -1,6 +1,7 @@
-﻿using CSharpServer.Contents;
+﻿using CSharpServer.Game;
 using CSharpServer.Data;
 using CSharpServer.DB;
+using CSharpServer.Utils;
 using Google.Protobuf.Protocol;
 using Microsoft.EntityFrameworkCore;
 using ServerCore;
@@ -15,6 +16,8 @@ namespace CSharpServer
     public partial class ClientSession : PacketSession
     {
         public int AccountDbId { get; private set; }
+
+        // 아래 정보를 받아두지 않으면 해당 플레이어 외의 데이터를 참조해서 건드릴 수도 있게 된다.
         public List<LobbyPlayerInfo> LobbyPlayers { get; set; } = new List<LobbyPlayerInfo>();
         public void HandleLogin(C_Login loginPacket)
         {
@@ -44,6 +47,7 @@ namespace CSharpServer
                     {
                         LobbyPlayerInfo lobbyPlayer = new LobbyPlayerInfo()
                         {
+                            PlayerDbId = playerDb.PlayerDbId,
                             Name = playerDb.PlayerName,
                             StatInfo = new StatInfo()
                             {
@@ -74,7 +78,7 @@ namespace CSharpServer
                     // TODO: 단순히 하려고 이렇게 했는데, 후에는 계정 관리는 다른 방식으로 해야할 것 같다.
                     AccountDb newAccount = new AccountDb() { AccountName = loginPacket.UniqueId };
                     db.Accounts.Add(newAccount);
-                    db.SaveChanges();
+                    db.SaveChangesEx();
 
                     AccountDbId = newAccount.AccountDbId;
 
@@ -123,11 +127,12 @@ namespace CSharpServer
                     };
 
                     db.Players.Add(newPlayerDb);
-                    db.SaveChanges(); // TODO: SaveChanges 있는 부분은 다 Exception Handling 이 필요하다.
+                    db.SaveChangesEx(); 
 
                     // 위에서 새로 만들어진 정보를 메모리에서도 들고 있게 변경
                     LobbyPlayerInfo lobbyPlayer = new LobbyPlayerInfo()
                     {
+                        PlayerDbId = newPlayerDb.PlayerDbId,
                         Name = newPlayerDb.PlayerName,
                         StatInfo = new StatInfo()
                         {
@@ -167,8 +172,9 @@ namespace CSharpServer
             {
                 return;
             }
-
+            
             CurrentPlayer = ActorManager.Instance.Add<Player>();
+            CurrentPlayer.PlayerDbId = lobbyPlayerInfo.PlayerDbId;
             CurrentPlayer.Info.Name = lobbyPlayerInfo.Name;
             CurrentPlayer.Info.PosInfo.MoveDir = MoveDir.Down;
             CurrentPlayer.Info.PosInfo.PosX = 0;
@@ -178,15 +184,42 @@ namespace CSharpServer
 
             CurrentPlayer.Stat.MergeFrom(lobbyPlayerInfo.StatInfo); // Protobuf 는 MergeFrom 으로 값 복사 가능
 
+            S_ItemList itemListPacket = new S_ItemList();
+
+            // 아이템 목록 로딩, 게임 접속 전이므로 동기 방식도 상관은 없다.
+            using (AppDbContext db = new AppDbContext())
+            {
+                List<ItemDb> items = db.Items
+                    .Where(i => i.OwnerDbId == lobbyPlayerInfo.PlayerDbId)
+                    .ToList();
+
+                foreach (ItemDb itemDb in items)
+                {
+                    Item item = Item.MakeItem(itemDb);
+                    if(item != null)
+                    {
+                        CurrentPlayer.Inven.Add(item);
+                        ItemInfo info = new ItemInfo();
+                        info.MergeFrom(item.Info);
+                        itemListPacket.Items.Add(info);
+                    }
+                }
+            }
+
+            // 아이템 목록 전송
+            Send(itemListPacket);
+
             ServerState = PlayerServerState.ServerStateGame;
 
-            // TODO: 이 부분 나중에 Room 선택하는 방식으로
-            // TODO: 입장 요청 들어오면 Room 을 찾아서 입장하도록
-            Room room = RoomManager.Instance.Find(1);
-            if (room != null)
+            RoomManager.Instance.Push(() =>
             {
-                room.Push(room.EnterGame, CurrentPlayer);
-            }
+                // TODO: 후에 Room 선택하는 방식으로
+                Room room = RoomManager.Instance.Find(1);
+                if (room != null)
+                {
+                    room.Push(room.EnterGame, CurrentPlayer, true);
+                }
+            });
         }
     }
 }

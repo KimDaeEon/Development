@@ -33,6 +33,8 @@ public class PacketManager
 
     public void Register()
     {
+        _makePacketMap.Add((ushort)MsgId.SHeartBeat, MakePacket<S_HeartBeat>);
+        _handlerMap.Add((ushort)MsgId.SHeartBeat, PacketHandler.S_HeartBeatHandler);
         _makePacketMap.Add((ushort)MsgId.SEnterGame, MakePacket<S_EnterGame>);
         _handlerMap.Add((ushort)MsgId.SEnterGame, PacketHandler.S_EnterGameHandler);
         _makePacketMap.Add((ushort)MsgId.SConnected, MakePacket<S_Connected>);
@@ -55,6 +57,14 @@ public class PacketManager
         _handlerMap.Add((ushort)MsgId.SChangeHp, PacketHandler.S_ChangeHpHandler);
         _makePacketMap.Add((ushort)MsgId.SDead, MakePacket<S_Dead>);
         _handlerMap.Add((ushort)MsgId.SDead, PacketHandler.S_DeadHandler);
+        _makePacketMap.Add((ushort)MsgId.SItemList, MakePacket<S_ItemList>);
+        _handlerMap.Add((ushort)MsgId.SItemList, PacketHandler.S_ItemListHandler);
+        _makePacketMap.Add((ushort)MsgId.SAddItem, MakePacket<S_AddItem>);
+        _handlerMap.Add((ushort)MsgId.SAddItem, PacketHandler.S_AddItemHandler);
+        _makePacketMap.Add((ushort)MsgId.SEquipItem, MakePacket<S_EquipItem>);
+        _handlerMap.Add((ushort)MsgId.SEquipItem, PacketHandler.S_EquipItemHandler);
+        _makePacketMap.Add((ushort)MsgId.SChangeStat, MakePacket<S_ChangeStat>);
+        _handlerMap.Add((ushort)MsgId.SChangeStat, PacketHandler.S_ChangeStatHandler);
 
     }
     public void OnRecvPacket(PacketSession session, ArraySegment<byte> buffer)

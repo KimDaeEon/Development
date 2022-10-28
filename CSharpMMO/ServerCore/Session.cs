@@ -148,6 +148,7 @@ namespace ServerCore
         #region 통신관련 내부 메서드
         void RegisterSend()
         {
+            // 이 함소 호출하는 상위단에서 lock 을 잡아서 여기서는 lock 을 안잡는다.
             if (_disconnected == 1)
             {
                 return;
@@ -170,7 +171,6 @@ namespace ServerCore
                 {
                     OnSendCompleted(null, _sendArgs);
                 }
-
             }
             catch (Exception e)
             {

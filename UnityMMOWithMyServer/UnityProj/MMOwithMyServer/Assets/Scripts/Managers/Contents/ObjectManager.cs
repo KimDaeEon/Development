@@ -18,6 +18,17 @@ public class ObjectManager
     // TODO: 이런 식으로 다 따로 만들어서 추가하는게 맞나??
     public void Add(ActorInfo info, bool isMyPlayer = false)
     {
+        if(MyPlayer != null && MyPlayer.Id == info.ActorId)
+        {
+            return;
+        }
+
+        // 입장, 퇴장 패킷 중복 처리로 인한 크래시 방지용
+        if (_objects.ContainsKey(info.ActorId))
+        {
+            return;
+        }
+
         ActorType actorType = GetActorTypeById(info.ActorId);
         if (actorType == ActorType.Player)
         {
@@ -59,7 +70,7 @@ public class ObjectManager
             mc.PosInfo = info.PosInfo;
             mc.Stat = info.StatInfo;
 
-            mc .SyncPosInstantly();
+            mc.SyncPosInstantly();
         }
         else if(actorType == ActorType.Projectile)
         {
@@ -81,6 +92,17 @@ public class ObjectManager
 
     public bool Remove(int id)
     {
+        if (MyPlayer != null && MyPlayer.Id == id)
+        {
+            return false;
+        }
+
+        // 입장, 퇴장 패킷 중복 처리로 인한 크래시 방지용
+        if (_objects.ContainsKey(id) == false)
+        {
+            return false;
+        }
+
         GameObject obj = FindById(id);
         if (obj == null)
         {

@@ -39,9 +39,35 @@ enum MoveDir {
     Right = 3;
 }
 
+enum ItemType {
+	ITEM_TYPE_NONE = 0;
+	ITEM_TYPE_WEAPON = 1;
+	ITEM_TYPE_ARMOR = 2;
+	ITEM_TYPE_CONSUMABLE = 3;
+}
+
+enum WeaponType {
+	WEAPON_TYPE_NONE = 0;
+	WEAPON_TYPE_SWORD = 1;
+	WEAPON_TYPE_BOW = 2;
+}
+
+enum ArmorType {
+	ARMOR_TYPE_NONE = 0;
+	ARMOR_TYPE_HEAD = 1;
+	ARMOR_TYPE_CHEST = 2;
+	ARMOR_TYPE_FOOT = 3;
+}
+
+enum ConsumableType {
+	CONSUMABLE_TYPE_NONE = 0;
+	CONSUMABLE_TYPE_POTION = 1;
+}
+
 message LobbyPlayerInfo {
-	string name = 1;
-	StatInfo statInfo = 2; // 클라 입장에선 statInfo 필요 없지만, 서버에서는 있는 것이 좋기에..
+	int32 playerDbId = 1;
+	string name = 2;
+	StatInfo statInfo = 3; // 클라 입장에선 statInfo 필요 없지만, 서버에서는 있는 것이 좋기에..
 }
 
 message ActorInfo {
@@ -71,6 +97,14 @@ message StatInfo {
 	int32 totalExp = 6;
 }
 
+message ItemInfo {
+	int32 itemDbId = 1;
+	int32 templateId = 2;
+	int32 count = 3;
+	int32 slotNum = 4;
+	bool equipped = 5;
+}
+
 // 공용 구조체 정의 끝
 
 
@@ -82,17 +116,19 @@ message StatInfo {
 // 그 다음은 예시와 같은 형식으로 MsgId Enum 과 패킷 이름을 맞춰야 한다. ex) Enum S_ENTER_GAME 에 대응되는 패킷은 S_EnterGame 이 되어야 함. 
 
 enum MsgId {
-// 0 ~ 99 로그인이나 서버 이동 관련 패킷
-  S_ENTER_GAME = 0;
-  S_CONNECTED = 1;
-  C_LOGIN = 2;
-  S_LOGIN = 3;
-  C_ENTER_GAME = 4;
-  C_CREATE_PLAYER = 5;
-  S_CREATE_PLAYER = 6;
-  S_LEAVE_GAME = 7;
+// 0 ~ 99 로그인 및 로그아웃, 게임 입장, 서버 이동 관련 패킷
+  C_HEART_BEAT = 0; // 클라이언트 연결이 끊겼는지 체크
+  S_HEART_BEAT = 1;
+  S_ENTER_GAME = 2;
+  S_CONNECTED = 3;
+  C_LOGIN = 4;
+  S_LOGIN = 5;
+  C_ENTER_GAME = 6;
+  C_CREATE_PLAYER = 7;
+  S_CREATE_PLAYER = 8;
+  S_LEAVE_GAME = 9;
 
-// 100 ~ 200 인게임 관련 공용 패킷
+// 100 ~ 인게임 관련 패킷
   S_SPAWN = 100;
   S_DESPAWN = 101;
   C_MOVE = 102;
@@ -101,8 +137,20 @@ enum MsgId {
   S_SKILL = 105;
   S_CHANGE_HP = 106;
   S_DEAD = 107;
+  S_ITEM_LIST = 108;
+  S_ADD_ITEM = 109;
+  C_EQUIP_ITEM = 110;
+  S_EQUIP_ITEM = 111;
+  S_CHANGE_STAT = 112;
 }
 
+message C_HeartBeat {
+
+}
+
+message S_HeartBeat {
+
+}
 
 // TODO: 추후에는 기획에 따라 클래스나 종족 같은 것을 선택하면 좋을 듯 하다.
 message C_CreatePlayer {
@@ -177,3 +225,25 @@ message S_Dead {
 	int32 attackerActorId = 2;
 }
 
+message S_ItemList {
+	repeated ItemInfo items = 1;
+}
+
+// S_ItemList 는 아이템 리스트 전체 갱신, 아래 패킷은 추가용도이다.
+message S_AddItem {
+	repeated ItemInfo items = 1;
+}
+
+message C_EquipItem {
+	int32 itemDbId = 1;
+	bool equipped = 2; // 해당 무기를 장착했는지, 뺐는지를 의미
+}
+
+message S_EquipItem {
+	int32 itemDbId = 1;
+	bool equipped = 2;
+}
+
+message S_ChangeStat {
+	StatInfo statInfo = 1;
+}

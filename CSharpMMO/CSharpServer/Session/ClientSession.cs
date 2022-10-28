@@ -1,4 +1,4 @@
-﻿using CSharpServer.Contents;
+﻿using CSharpServer.Game;
 using CSharpServer.Data;
 using Google.Protobuf;
 using Google.Protobuf.Protocol;
@@ -16,8 +16,36 @@ namespace CSharpServer
         public PlayerServerState ServerState { get; private set; } = PlayerServerState.ServerStateLogin;
         public Player CurrentPlayer { get; set; }
         public int SessionId { get; set; }
+        List<ArraySegment<byte>> _reserveSendJobQueue = new List<ArraySegment<byte>>();
+        long _heartBeatTick = 0;
+
+        object _lock = new object();
 
         #region Network
+        public void HeartBeat()
+        {
+            if (_heartBeatTick > 0)
+            {
+                long delta = System.Environment.TickCount64 - _heartBeatTick;
+                if (delta > 30 * 1000)
+                {
+                    Console.WriteLine($"Disconnected by HeartBeat Check");
+                    Disconnect();
+                    return;
+                }
+            }
+
+            S_HeartBeat heartBeatPacket = new S_HeartBeat();
+            Send(heartBeatPacket);
+
+            RoomManager.Instance.PushFutureJob(5000, HeartBeat);
+        }
+        public void HandleHeartBeat()
+        {
+            _heartBeatTick = System.Environment.TickCount64;
+        }
+
+        // 메세지 예약만 하고 보내지는 않는다. 후에 다른 스레드에서 해당 작업을 꺼내서 Send 를 따로 처리한다.
         public void Send(IMessage packet)
         {
             // TODO: 이거 이렇게 안하고 패킷 일반화 시켜서 보낼 방법 없을까.. ProtoBuffer 에서 Enum 이름과 패킷(메세지) 이름이 같아지는 것을 막는다..
@@ -34,7 +62,22 @@ namespace CSharpServer
 #if DEBUG
             Console.WriteLine($"[Send] {packet.Descriptor.Name} {packet}");
 #endif
-            Send(new ArraySegment<byte>(sendBuffer));
+            lock (_lock)
+            {
+                _reserveSendJobQueue.Add(sendBuffer);
+            }
+            //Send(new ArraySegment<byte>(sendBuffer));
+        }
+
+        public void FlushSend()
+        {
+            List<ArraySegment<byte>> sendJobList = null;
+            lock (_lock)
+            {
+                sendJobList = _reserveSendJobQueue;
+                _reserveSendJobQueue = new List<ArraySegment<byte>>();
+            }
+            Send(sendJobList);
         }
 
         public override void OnConnected(EndPoint endPoint)
@@ -43,6 +86,9 @@ namespace CSharpServer
 
             S_Connected connectedPacket = new S_Connected();
             Send(connectedPacket);
+
+            // HeartBeat 세팅
+            RoomManager.Instance.Push(HeartBeat);
         }
 
         public override void OnRecvPacket(ArraySegment<byte> buffer)
@@ -52,15 +98,23 @@ namespace CSharpServer
 
         public override void OnDisconnected(EndPoint endPoint)
         {
-            // TODO: room 선택하도록 바꿔야 함
-            Room room = RoomManager.Instance.Find(1);
-            if (room != null)
+            RoomManager.Instance.Push(() =>
             {
-                room.Push(room.LeaveGame, CurrentPlayer.Info.ActorId);
-            }
+                // TODO: room 선택하도록 바꿔야 함
+                Room room = RoomManager.Instance.Find(1);
+                if (room != null)
+                {
+                    if(CurrentPlayer == null)
+                    {
+                        return;
+                    }
 
-            SessionManager.Instance.Remove(this);
-            Console.WriteLine($"OnDisconnected : {endPoint}");
+                    room.Push(room.LeaveGame, CurrentPlayer.Info.ActorId);
+                }
+
+                SessionManager.Instance.Remove(this);
+                Console.WriteLine($"OnDisconnected : {endPoint}");
+            });
         }
 
         public override void OnSend(int numOfBytes)

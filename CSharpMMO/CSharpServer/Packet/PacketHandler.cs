@@ -7,11 +7,17 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using CSharpServer.Contents;
+using CSharpServer.Game;
 using CSharpServer.DB;
 
 class PacketHandler
 {
+    public static void C_HeartBeatHandler(PacketSession session, IMessage packet)
+    {
+        ClientSession clientSession = (ClientSession)session;
+        clientSession.HandleHeartBeat();
+    }
+
     public static void C_MoveHandler(PacketSession session, IMessage packet)
     {
         C_Move movePacket = (C_Move)packet;
@@ -64,5 +70,20 @@ class PacketHandler
         ClientSession clientSession = (ClientSession)session;
 
         clientSession.HandleEnterGame(enterGamePacket);
+    }
+
+    public static void C_EquipItemHandler(PacketSession session, IMessage packet)
+    {
+        C_EquipItem equipItemPacket = (C_EquipItem)packet;
+        ClientSession clientSession = (ClientSession)session;
+
+        Player player = null;
+        Room room = null;
+        if (Player.IsInValidSessionAndPlayerAndRoom(clientSession, ref player, ref room))
+        {
+            return;
+        }
+
+        room.Push(room.HandleEquipItem, player, equipItemPacket);
     }
 }

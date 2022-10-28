@@ -28,6 +28,8 @@ namespace CSharpServer.DB
         public int AccountDbId { get; set; }
         public AccountDb Account { get; set; }
 
+        public ICollection<ItemDb> Items { get; set; }
+
         // Stat
         public int Level { get; set; }
         public int Hp { get; set; }
@@ -37,4 +39,18 @@ namespace CSharpServer.DB
         public int TotalExp { get; set; }
     }
 
+    // TODO: 당장은 아이템이 적어서 TemplateId 로 다 처리되지만, Type 같은 정보 추가해서 아이템 구조 어떻게 할 지 고민 필요
+    [Table("Item")]
+    public class ItemDb
+    {
+        public int ItemDbId { get; set; }
+        public int TemplateId { get; set; } // 아이템 시트 같은 곳에서 참조되는 Id
+        public int Count { get; set; }
+        public int SlotNum { get; set; }
+        public bool Equipped { get; set; } = false; // 아이템 장착 여부
+
+        [ForeignKey("Owner")]
+        public int? OwnerDbId { get; set; }
+        public PlayerDb Owner { get; set; }
+    }
 }
