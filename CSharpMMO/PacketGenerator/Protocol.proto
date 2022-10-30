@@ -121,12 +121,13 @@ enum MsgId {
   S_HEART_BEAT = 1;
   S_ENTER_GAME = 2;
   S_CONNECTED = 3;
-  C_LOGIN = 4;
-  S_LOGIN = 5;
-  C_ENTER_GAME = 6;
-  C_CREATE_PLAYER = 7;
-  S_CREATE_PLAYER = 8;
-  S_LEAVE_GAME = 9;
+  C_LOGIN_DUMMY = 4; // 더미 클라이언트 로그인용 패킷, 릴리즈에서는 작동되면 안된다.
+  C_LOGIN = 5; // 실제 로그인 패킷, 토큰 검증 절차가 있다.
+  S_LOGIN = 6;
+  C_ENTER_GAME = 7;
+  C_CREATE_PLAYER = 8;
+  S_CREATE_PLAYER = 9;
+  S_LEAVE_GAME = 10;
 
 // 100 ~ 인게임 관련 패킷
   S_SPAWN = 100;
@@ -164,8 +165,14 @@ message S_CreatePlayer {
 message S_Connected {
 }
 
+message C_LoginDummy {
+	string accountName = 1;
+}
+
 message C_Login {
-	string uniqueId = 1;
+	string accountName = 1;
+	int32 tokenDbId = 2;
+	int32 token = 3;
 }
 
 message S_Login {

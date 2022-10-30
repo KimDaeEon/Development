@@ -42,11 +42,7 @@ namespace ServerCore
                 processedLen += dataSize;
                 buffer = new ArraySegment<byte>(buffer.Array, buffer.Offset + dataSize, buffer.Count - dataSize);
             }
-
-            if(processedPacketCount > 1)
-            {
-                Console.WriteLine($"Processed packet count : {processedPacketCount}");
-            }
+            
             return processedLen;
         }
 

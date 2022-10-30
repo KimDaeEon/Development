@@ -15,7 +15,6 @@ namespace CSharpServer.Game
         public HashSet<Player> Players { get; set; } = new HashSet<Player>();
         public HashSet<Monster> Monsters { get; set; } = new HashSet<Monster>();
         public HashSet<Projectile> Projectiles { get; set; } = new HashSet<Projectile>();
-
         public Zone(int y, int x)
         {
             // 자신이 몇 번째 idx 의 zone 인지 기록해둔다.

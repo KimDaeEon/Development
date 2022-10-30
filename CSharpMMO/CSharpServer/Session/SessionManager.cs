@@ -21,6 +21,18 @@ namespace CSharpServer
             }
         }
 
+        // TODO: 아래도 데이터를 통해 처리해야한다.
+        public int GetCrowdedLevel()
+        {
+            int count = 0;
+            lock (_lock)
+            {
+                count = _sessions.Count;
+            }
+
+            return count / 100;
+        }
+
         public ClientSession Generate()
         {
             lock (_lock)
@@ -31,7 +43,7 @@ namespace CSharpServer
                 newSession.SessionId = newSessionId;
                 _sessions.Add(newSessionId, newSession);
 
-                Console.WriteLine($"Connected: {newSessionId}");
+                Console.WriteLine($"Connected Sessions Count: {_sessions.Count}");
 
                 return newSession;
             }
@@ -51,8 +63,8 @@ namespace CSharpServer
         {
             lock (_lock)
             {
-                Console.WriteLine($"DisConnected: {session.SessionId}");
                 _sessions.Remove(session.SessionId);
+                Console.WriteLine($"Connected Sessions Count: {_sessions.Count}");
             }
         }
 

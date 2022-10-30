@@ -12,7 +12,7 @@ namespace CSharpServer.Game
     public partial class Room : JobQueue
     {
         // TODO: 데이터나 config 로 빼자.
-        public const int VisionCells = 8;
+        public const int VisionCells = 5;
 
         public int RoomId { get; set; }
         Dictionary<int, Player> _players = new Dictionary<int, Player>();
@@ -48,7 +48,7 @@ namespace CSharpServer.Game
             }
 
             // TODO: 임시로 몬스터 생성, 후에는 데이터를 통해 어떤 몬스터를 생성할 지 정할 수 있어야 한다.
-            for (int i = 0; i < 2000; i++)
+            for (int i = 0; i < 1000; i++)
             {
                 Monster monster = ActorManager.Instance.Add<Monster>();
                 monster.Init(1);
@@ -77,7 +77,7 @@ namespace CSharpServer.Game
                     respawnPos.x = _rand.Next(Map.MinX, Map.MaxX + 1);
                     respawnPos.y = _rand.Next(Map.MinY, Map.MaxY + 1);
 
-                    if (Map.FindActorByCellPos(respawnPos) == null)
+                    if (Map.CanGo(respawnPos, checkActorCollision:true))
                     {
                         newActor.CellPos = respawnPos;
                         break;
@@ -235,15 +235,20 @@ namespace CSharpServer.Game
             return Zones[y, x];
         }
 
-        public List<Zone> GetAdjacentZones(Vector2Int cellPos, int cells = VisionCells/* 보이는 cell 범위*/)
+        public List<Zone> GetAdjacentZones(Vector2Int cellPos, int cellsRange = VisionCells/* 보이는 cell 범위*/)
         {
             HashSet<Zone> zones = new HashSet<Zone>();
-            int[] delta = new int[2] { -cells, +cells };
+            int[] delta = new int[3] { -cellsRange, 0, +cellsRange };
 
             foreach (int dy in delta)
             {
                 foreach (int dx in delta)
                 {
+                    if (dy == 0 && dx == 0)
+                    {
+                        continue;
+                    }
+
                     int y = cellPos.y + dy;
                     int x = cellPos.x + dx;
 
@@ -260,7 +265,43 @@ namespace CSharpServer.Game
             return zones.ToList();
         }
 
-        public Player FindPlayerByCondition(Func<Actor, bool> condition)
+        // 좀 무거운 함수다.
+        // 해당 위치에서 범위에 있는 사용자 중 가장 가까운 플레이어를 찾는다.
+        public Player FindClosestPlayer(Vector2Int pos, int cellRange)
+        {
+            List<Player> players = GetAdjacentPlayers(pos, cellRange);
+
+            // 거리 순으로 플레이어 정렬
+            players.Sort((lhs, rhs) =>
+            {
+                int leftScore = Map.CalcHeuristics(lhs.CellPos, pos);
+                int rhsScore = Map.CalcHeuristics(rhs.CellPos, pos);
+
+                return leftScore - rhsScore;
+            });
+
+            // 일단 가는 경로가 있으면 해당 플레이어를 추적
+            foreach (Player player in players)
+            {
+                List<Vector2Int> path = Map.FindPath(pos, player.CellPos, checkActorCollision: true, cellRange);
+                if(path.Count < 2 || path.Count > cellRange)
+                {
+                    continue;
+                }
+
+                return player;
+            }
+
+            return null;
+        }
+
+        public List<Player> GetAdjacentPlayers(Vector2Int pos, int cellRange)
+        {
+            List<Zone> zones = GetAdjacentZones(pos, cellRange);
+            return zones.SelectMany(z => z.Players).ToList();
+        }
+
+        Player FindPlayerByCondition(Func<Actor, bool> condition)
         {
             foreach (var player in _players.Values)
             {

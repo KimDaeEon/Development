@@ -8,19 +8,21 @@ using UnityEngine;
 
 public class NetworkManager
 {
+    public string AccountName { get; set; }
+    public int TokenDbId { get; set; }
+    public int Token { get; set; }
+
     ServerSession _session = new ServerSession();
     public void Send(IMessage packet)
     {
         _session.Send(packet);
     }
 
-    public void Init()
+    public void ConnectToGameServer(ServerInfo info)
     {
         // DNS 활용
-        string host = Dns.GetHostName();
-        IPHostEntry ipHost = Dns.GetHostEntry(host);
-        IPAddress ipAddr = ipHost.AddressList[0];
-        IPEndPoint endPoint = new IPEndPoint(ipAddr, 8888); // 포트는 8888번으로 설정
+        IPAddress ipAddr = IPAddress.Parse(info.IpAddress);
+        IPEndPoint endPoint = new IPEndPoint(ipAddr, info.Port); // 포트는 8888번으로 설정
         Connector connector = new Connector();
 
         connector.Connect(endPoint,

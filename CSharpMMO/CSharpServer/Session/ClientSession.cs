@@ -19,9 +19,18 @@ namespace CSharpServer
         List<ArraySegment<byte>> _reserveSendJobQueue = new List<ArraySegment<byte>>();
         long _heartBeatTick = 0;
 
+#if GatherPacketForSend
+        // 패킷 모아 보내기
+        static readonly long minimumRequiredSize = 10000; // 최소 채워야 하는 바이트 수
+        static readonly int sendTickInterval = 100;
+        long _reservedSendBytes = 0;
+        long _lastSendTick = 0;
+#endif
+
+
         object _lock = new object();
 
-        #region Network
+#region Network
         public void HeartBeat()
         {
             if (_heartBeatTick > 0)
@@ -65,6 +74,9 @@ namespace CSharpServer
             lock (_lock)
             {
                 _reserveSendJobQueue.Add(sendBuffer);
+#if GatherPacketForSend
+                _reservedSendBytes += sendBuffer.Length;
+#endif
             }
             //Send(new ArraySegment<byte>(sendBuffer));
         }
@@ -74,6 +86,23 @@ namespace CSharpServer
             List<ArraySegment<byte>> sendJobList = null;
             lock (_lock)
             {
+#if GatherPacketForSend
+                long delta = System.Environment.TickCount64 - _lastSendTick;
+                if (delta < sendTickInterval && _reservedSendBytes < minimumRequiredSize)
+                {
+                    return;
+                }
+
+                if (_reservedSendBytes > minimumRequiredSize)
+                {
+                    Console.WriteLine("해당 바이트 넘어서 패킷 보내는 중");
+                }
+
+                // 패킷 모아보낸 후 관련 사항 초기화
+                _reservedSendBytes = 0;
+                _lastSendTick = System.Environment.TickCount64;
+#endif
+
                 sendJobList = _reserveSendJobQueue;
                 _reserveSendJobQueue = new List<ArraySegment<byte>>();
             }
@@ -82,7 +111,7 @@ namespace CSharpServer
 
         public override void OnConnected(EndPoint endPoint)
         {
-            Console.WriteLine($"OnConnected : {endPoint}");
+            //Console.WriteLine($"OnConnected : {endPoint}");
 
             S_Connected connectedPacket = new S_Connected();
             Send(connectedPacket);
@@ -98,6 +127,9 @@ namespace CSharpServer
 
         public override void OnDisconnected(EndPoint endPoint)
         {
+            // TODO: 이 부분도 DB 작업이 다 처리가 안되었으면 Session 잡아두고 재로그인 불가능하게 하는 조치를 추가해야한다.
+            SessionManager.Instance.Remove(this);
+
             RoomManager.Instance.Push(() =>
             {
                 // TODO: room 선택하도록 바꿔야 함
@@ -111,9 +143,6 @@ namespace CSharpServer
 
                     room.Push(room.LeaveGame, CurrentPlayer.Info.ActorId);
                 }
-
-                SessionManager.Instance.Remove(this);
-                Console.WriteLine($"OnDisconnected : {endPoint}");
             });
         }
 
@@ -121,6 +150,6 @@ namespace CSharpServer
         {
             //Console.WriteLine($"Transferred bytes: {numOfBytes}");
         }
-        #endregion
+#endregion
     }
 }

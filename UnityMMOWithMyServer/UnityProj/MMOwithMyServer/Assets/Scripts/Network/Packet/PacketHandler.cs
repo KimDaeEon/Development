@@ -46,7 +46,7 @@ class PacketHandler
         if (loginPacket.Players == null || loginPacket.Players.Count == 0)
         {
             C_CreatePlayer createPacket = new C_CreatePlayer();
-            createPacket.Name = $"Player_{Random.Range(0, 10000).ToString("0000")}";
+            createPacket.Name = $"Player_{Managers.Network.AccountName}";
             Managers.Network.Send(createPacket);
         }
         else
@@ -65,7 +65,9 @@ class PacketHandler
         C_Login loginPacket = new C_Login();
 
         // TODO: 이 부분도 로그인 개선이 필요
-        loginPacket.UniqueId = Application.dataPath.GetHashCode().ToString();
+        loginPacket.AccountName = Managers.Network.AccountName;
+        loginPacket.TokenDbId = Managers.Network.TokenDbId;
+        loginPacket.Token = Managers.Network.Token;
 
         Managers.Network.Send(loginPacket);
     }
@@ -238,8 +240,6 @@ class PacketHandler
     public static void S_ChangeStatHandler(PacketSession session, IMessage packet)
     {
         S_ChangeStat changeStatPacket = (S_ChangeStat)packet;
-
     }
-
 }
 

@@ -73,11 +73,7 @@ namespace CSharpServer.Game
 
             _nextSearchTick = Environment.TickCount64 + 1000;
 
-            Player target = CurrentRoom.FindPlayerByCondition(player =>
-           {
-               Vector2Int dir = player.CellPos - CellPos;
-               return dir.CellDistFromZero <= _searchCellDistLimit;
-           });
+            Player target = CurrentRoom.FindClosestPlayer(CellPos, _searchCellDistLimit);
 
             if (target == null)
             {

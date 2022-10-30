@@ -40,7 +40,9 @@ namespace CSharpServer.DB
                     {
                         room.Push(() =>
                         {
+#if DEBUG
                             Console.WriteLine($"Hp Saved {playerDb}");
+#endif
                         });
                     }
 

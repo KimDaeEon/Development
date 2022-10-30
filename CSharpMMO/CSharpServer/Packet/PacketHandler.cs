@@ -9,6 +9,7 @@ using System.Text;
 using System.Threading.Tasks;
 using CSharpServer.Game;
 using CSharpServer.DB;
+using CSharpServer.Data;
 
 class PacketHandler
 {
@@ -50,10 +51,36 @@ class PacketHandler
 
     public static void C_LoginHandler(PacketSession session, IMessage packet)
     {
-        C_Login loginPacket = (C_Login)packet;
+        if (ConfigManager.Config.isDummyClientLoginPossible)
+        {
+            C_Login loginPacket = (C_Login)packet;
+            ClientSession clientSession = (ClientSession)session;
+
+            clientSession.HandleLogin(loginPacket);
+        }
+        else
+        {
+            // TODO: 이 부분 로그도 파일로 찍고 로그 레벨 및 포맷을 설정하도록 하자.
+            Console.WriteLine("Hacking Detected!");
+            session.Disconnect();
+        }
+    }
+
+    public static void C_LoginDummyHandler(PacketSession session, IMessage packet)
+    {
+        C_LoginDummy loginPacket = (C_LoginDummy)packet;
         ClientSession clientSession = (ClientSession)session;
 
-        clientSession.HandleLogin(loginPacket);
+        if (ConfigManager.Config.isDummyClientLoginPossible)
+        {
+            clientSession.HandleDummyClientLogin(loginPacket);
+        }
+        else
+        {
+            // TODO: 이 부분 로그도 파일로 찍고 로그 레벨 및 포맷을 설정하도록 하자.
+            Console.WriteLine("Hacking Detected!");
+            clientSession.Disconnect();
+        }
     }
 
     public static void C_CreatePlayerHandler(PacketSession session, IMessage packet)

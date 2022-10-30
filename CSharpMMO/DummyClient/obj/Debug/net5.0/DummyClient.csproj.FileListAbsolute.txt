@@ -36,3 +36,4 @@ C:\git_portfolio\CSharpMMO\DummyClient\obj\Debug\net5.0\DummyClient.dll
 C:\git_portfolio\CSharpMMO\DummyClient\obj\Debug\net5.0\ref\DummyClient.dll
 C:\git_portfolio\CSharpMMO\DummyClient\obj\Debug\net5.0\DummyClient.pdb
 C:\git_portfolio\CSharpMMO\DummyClient\obj\Debug\net5.0\DummyClient.genruntimeconfig.cache
+C:\git_portfolio\CSharpMMO\DummyClient\bin\Debug\net5.0\Google.Protobuf.dll

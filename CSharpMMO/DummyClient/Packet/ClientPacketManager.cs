@@ -1,3 +1,5 @@
+using Google.Protobuf;
+using Google.Protobuf.Protocol;
 using ServerCore;
 using System;
 using System.Collections.Generic;
@@ -23,22 +25,49 @@ public class PacketManager
     {
         Register();
     }
-    Dictionary<ushort, Func<PacketSession, ArraySegment<byte>, IPacket>> _funcMap = new Dictionary<ushort, Func<PacketSession, ArraySegment<byte>, IPacket>>();
-    Dictionary<ushort, Action<PacketSession, IPacket>> _handlerMap = new Dictionary<ushort, Action<PacketSession, IPacket>>();
+
+    Dictionary<ushort, Action<PacketSession, ArraySegment<byte>, ushort>> _makePacketMap = new Dictionary<ushort, Action<PacketSession, ArraySegment<byte>, ushort>>();
+    Dictionary<ushort, Action<PacketSession, IMessage>> _handlerMap = new Dictionary<ushort, Action<PacketSession, IMessage>>();
+
+    public Action<PacketSession, IMessage, ushort> CustomHandler { get; set; }
 
     public void Register()
     {
-        _funcMap.Add((ushort)PacketID.S_BroadcastEnterGame, MakePacket<S_BroadcastEnterGame>);
-        _handlerMap.Add((ushort)PacketID.S_BroadcastEnterGame, PacketHandler.S_BroadcastEnterGameHandler);
-        _funcMap.Add((ushort)PacketID.S_BroadcastLeaveGame, MakePacket<S_BroadcastLeaveGame>);
-        _handlerMap.Add((ushort)PacketID.S_BroadcastLeaveGame, PacketHandler.S_BroadcastLeaveGameHandler);
-        _funcMap.Add((ushort)PacketID.S_PlayerList, MakePacket<S_PlayerList>);
-        _handlerMap.Add((ushort)PacketID.S_PlayerList, PacketHandler.S_PlayerListHandler);
-        _funcMap.Add((ushort)PacketID.S_BroadcastMove, MakePacket<S_BroadcastMove>);
-        _handlerMap.Add((ushort)PacketID.S_BroadcastMove, PacketHandler.S_BroadcastMoveHandler);
+        _makePacketMap.Add((ushort)MsgId.SHeartBeat, MakePacket<S_HeartBeat>);
+        _handlerMap.Add((ushort)MsgId.SHeartBeat, PacketHandler.S_HeartBeatHandler);
+        _makePacketMap.Add((ushort)MsgId.SEnterGame, MakePacket<S_EnterGame>);
+        _handlerMap.Add((ushort)MsgId.SEnterGame, PacketHandler.S_EnterGameHandler);
+        _makePacketMap.Add((ushort)MsgId.SConnected, MakePacket<S_Connected>);
+        _handlerMap.Add((ushort)MsgId.SConnected, PacketHandler.S_ConnectedHandler);
+        _makePacketMap.Add((ushort)MsgId.SLogin, MakePacket<S_Login>);
+        _handlerMap.Add((ushort)MsgId.SLogin, PacketHandler.S_LoginHandler);
+        _makePacketMap.Add((ushort)MsgId.SCreatePlayer, MakePacket<S_CreatePlayer>);
+        _handlerMap.Add((ushort)MsgId.SCreatePlayer, PacketHandler.S_CreatePlayerHandler);
+        _makePacketMap.Add((ushort)MsgId.SLeaveGame, MakePacket<S_LeaveGame>);
+        _handlerMap.Add((ushort)MsgId.SLeaveGame, PacketHandler.S_LeaveGameHandler);
+        _makePacketMap.Add((ushort)MsgId.SSpawn, MakePacket<S_Spawn>);
+        _handlerMap.Add((ushort)MsgId.SSpawn, PacketHandler.S_SpawnHandler);
+        _makePacketMap.Add((ushort)MsgId.SDespawn, MakePacket<S_Despawn>);
+        _handlerMap.Add((ushort)MsgId.SDespawn, PacketHandler.S_DespawnHandler);
+        _makePacketMap.Add((ushort)MsgId.SMove, MakePacket<S_Move>);
+        _handlerMap.Add((ushort)MsgId.SMove, PacketHandler.S_MoveHandler);
+        _makePacketMap.Add((ushort)MsgId.SSkill, MakePacket<S_Skill>);
+        _handlerMap.Add((ushort)MsgId.SSkill, PacketHandler.S_SkillHandler);
+        _makePacketMap.Add((ushort)MsgId.SChangeHp, MakePacket<S_ChangeHp>);
+        _handlerMap.Add((ushort)MsgId.SChangeHp, PacketHandler.S_ChangeHpHandler);
+        _makePacketMap.Add((ushort)MsgId.SDead, MakePacket<S_Dead>);
+        _handlerMap.Add((ushort)MsgId.SDead, PacketHandler.S_DeadHandler);
+        _makePacketMap.Add((ushort)MsgId.SItemList, MakePacket<S_ItemList>);
+        _handlerMap.Add((ushort)MsgId.SItemList, PacketHandler.S_ItemListHandler);
+        _makePacketMap.Add((ushort)MsgId.SAddItem, MakePacket<S_AddItem>);
+        _handlerMap.Add((ushort)MsgId.SAddItem, PacketHandler.S_AddItemHandler);
+        _makePacketMap.Add((ushort)MsgId.SEquipItem, MakePacket<S_EquipItem>);
+        _handlerMap.Add((ushort)MsgId.SEquipItem, PacketHandler.S_EquipItemHandler);
+        _makePacketMap.Add((ushort)MsgId.SChangeStat, MakePacket<S_ChangeStat>);
+        _handlerMap.Add((ushort)MsgId.SChangeStat, PacketHandler.S_ChangeStatHandler);
 
     }
-    public void OnRecvPacket(PacketSession session, ArraySegment<byte> buffer, Action<PacketSession, IPacket> onRecvCallback = null)
+    public void OnRecvPacket(PacketSession session, ArraySegment<byte> buffer)
     {
         ushort count = 0;
 
@@ -47,42 +76,45 @@ public class PacketManager
 
         ushort packetId = BitConverter.ToUInt16(buffer.Array, buffer.Offset + count);
         count += 2;
-
-        Func<PacketSession, ArraySegment<byte>, IPacket> func = null;
-        if(_funcMap.TryGetValue(packetId, out func))
+        
+        Action<PacketSession, ArraySegment<byte>, ushort> action = null;
+        if (_makePacketMap.TryGetValue(packetId, out action))
         {
-            // 패킷 조립 함수 실행
-            IPacket packet = func.Invoke(session, buffer);
-
-            // 정해진 패킷 핸들러 말고 다른 콜백함수를 실행하고 싶을 때에 onRecvCallback 을 사용한다.
-            // 여기서는 유니티가 메인 스레드에서만 GameObject 관련 상호작용이 되기에, 패킷을 메인스레드에서 처리하기 위한 함수를 넣었다.
-            if(onRecvCallback != null)
-            {
-                onRecvCallback.Invoke(session, packet);
-            }
-            else
-            {
-                HandlePacket(session, packet);
-            }
+            action.Invoke(session, buffer, packetId);
         }
     }
 
-    T MakePacket<T>(PacketSession session, ArraySegment<byte> buffer) where T: IPacket, new()
+    void MakePacket<T>(PacketSession session, ArraySegment<byte> buffer, ushort packetId) where T: IMessage, new()
     {
         // 패킷 조립
         T packet = new T();
-        packet.Read(buffer);
+        packet.MergeFrom(buffer.Array, buffer.Offset + 4, buffer.Count - 4);
 
-        return packet;
+        if (CustomHandler != null)
+        {
+            CustomHandler.Invoke(session, packet, packetId);
+        }
+        else
+        {
+            Action<PacketSession, IMessage> action = null;
+            if (_handlerMap.TryGetValue(packetId, out action))
+            {
+                #if DEBUG && !UNITY_EDITOR
+                Console.WriteLine("[Received] " + packet.Descriptor.Name + " " +  packet);
+                #endif
+                action.Invoke(session, packet);
+            }
+        }
     }
 
-    public void HandlePacket(PacketSession session, IPacket packet)
+    public Action<PacketSession, IMessage> GetPacketHandler(ushort packetId)
     {
-        // 패킷 처리
-        Action<PacketSession, IPacket> action = null;
-        if (_handlerMap.TryGetValue(packet.Protocol, out action))
+        Action<PacketSession, IMessage> action = null;
+        if (_handlerMap.TryGetValue(packetId, out action))
         {
-            action.Invoke(session, packet);
+            return action;
         }
+        
+        return null;
     }
 }

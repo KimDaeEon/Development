@@ -397,9 +397,13 @@ namespace CSharpServer.Game
             return CalcCellPathFromParent(parent, dest);
         }
 
-        int CalcHeuristics(int destY, int destX, int curY, int curX)
+        public int CalcHeuristics(int destY, int destX, int curY, int curX)
         {
             return 10 * ((destY - curY) * (destY - curY) + (destX - curX) * (destX - curX));
+        }
+        public int CalcHeuristics(Vector2Int destCellPos, Vector2Int curCellPos)
+        {
+            return CalcHeuristics(destCellPos.y, destCellPos.x, curCellPos.y, curCellPos.x);
         }
 
         // 부모 노드를 역으로 추적해서 갈 수 있는 길을 찾는다.

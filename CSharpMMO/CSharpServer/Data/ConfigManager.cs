@@ -12,6 +12,7 @@ namespace CSharpServer.Data
     {
         public string dataPath;
         public string connectionString;
+        public bool isDummyClientLoginPossible = false;
     }
     public class ConfigManager
     {

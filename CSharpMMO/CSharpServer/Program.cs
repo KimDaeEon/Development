@@ -11,6 +11,8 @@ using ServerCore;
 using System.Linq;
 using CSharpServer.Utils;
 using System.Threading.Tasks;
+using SharedDB;
+using System.Timers;
 
 namespace CSharpServer
 {
@@ -54,6 +56,53 @@ namespace CSharpServer
                 Thread.Sleep(0);
             }
         }
+        
+        static void ServerInfoTask(object sender, ElapsedEventArgs e)
+        {
+            using (SharedDbContext shared = new SharedDbContext())
+            {
+                ServerDb serverDb = shared.Servers.Where(s => s.Name == Name).FirstOrDefault();
+                // 없는 경우 서버 정보 생성
+                if (serverDb != null)
+                {
+                    serverDb.IpAddress = IpAddress;
+                    serverDb.Port = Port;
+                    serverDb.CrowdedLevel = SessionManager.Instance.GetCrowdedLevel();
+                    shared.SaveChangesEx();
+                }
+                else
+                {
+                    serverDb = new ServerDb()
+                    {
+                        Name = Program.Name,
+                        IpAddress = Program.IpAddress,
+                        Port = Program.Port,
+                        CrowdedLevel = SessionManager.Instance.GetCrowdedLevel()
+                    };
+
+                    shared.Servers.Add(serverDb);
+                    shared.SaveChangesEx();
+                }
+            }
+        }
+        static void StartServerInfoTask()
+        {
+            // 일단 바로 시작할 때에 한 번 해준다. timer 에 바로 시작하고 Elapsed 도는 기능이 없는 것 같다..
+            // https://www.appsloveworld.com/csharp/100/13/how-to-fire-timer-elapsed-event-immediately
+            ServerInfoTask(null, null); 
+
+            var timer = new System.Timers.Timer(10);
+            timer.Elapsed += new System.Timers.ElapsedEventHandler(ServerInfoTask);
+
+            timer.AutoReset = true;
+            timer.Interval = 10 * 1000; // 10초마다 1번씩
+            timer.Start();
+        }
+
+        // TODO: 아래 서버 정보도 Config 로 빼야한다.
+        public static string Name { get; } = "아시아2222";
+        public static int Port { get; } = 8888;
+        public static string IpAddress { get; set; }
 
         static void Main(string[] args)
         {
@@ -70,8 +119,9 @@ namespace CSharpServer
             // DNS 활용
             string host = Dns.GetHostName();
             IPHostEntry ipHost = Dns.GetHostEntry(host);
-            IPAddress ipAddr = ipHost.AddressList[0];
+            IPAddress ipAddr = ipHost.AddressList[1];
             IPEndPoint endPoint = new IPEndPoint(ipAddr, 8888); // 포트는 8888번으로 설정
+            IpAddress = ipAddr.ToString();
 
             try
             {
@@ -82,6 +132,9 @@ namespace CSharpServer
             {
                 Console.WriteLine(e);
             }
+
+            // 서버 정보 업데이트
+            StartServerInfoTask();
 
             // 네트워크 Send 스레드실행
             {
@@ -100,6 +153,7 @@ namespace CSharpServer
             // 게임 로직은 메인 스레드에서
             Thread.CurrentThread.Name = "GameLogic";
             GameLogicTask();
+
         }
     }
 }

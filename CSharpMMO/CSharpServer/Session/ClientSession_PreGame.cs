@@ -10,6 +10,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using SharedDB;
 
 namespace CSharpServer
 {
@@ -19,24 +20,15 @@ namespace CSharpServer
 
         // 아래 정보를 받아두지 않으면 해당 플레이어 외의 데이터를 참조해서 건드릴 수도 있게 된다.
         public List<LobbyPlayerInfo> LobbyPlayers { get; set; } = new List<LobbyPlayerInfo>();
-        public void HandleLogin(C_Login loginPacket)
+        public void ProcessLogin(string accountName)
         {
-            Console.WriteLine($"{loginPacket}");
-
-            // TODO: 보안 체크
-            if (ServerState != PlayerServerState.ServerStateLogin)
-            {
-                return;
-            }
-
             LobbyPlayers.Clear();
 
-            // TODO: 비동기로 빼야함..
             using (AppDbContext db = new AppDbContext())
             {
                 AccountDb foundAccount = db.Accounts
                     .Include(a => a.Players)
-                    .Where(a => a.AccountName == loginPacket.UniqueId).FirstOrDefault();
+                    .Where(a => a.AccountName == accountName).FirstOrDefault();
 
                 if (foundAccount != null)
                 {
@@ -58,7 +50,6 @@ namespace CSharpServer
                                 TotalExp = playerDb.TotalExp,
                                 Speed = playerDb.Speed,
                             }
-
                         };
 
                         // 로비 관련 정보 패킷에 추가
@@ -69,14 +60,14 @@ namespace CSharpServer
                     }
 
                     Send(resLoginPacket);
-                    
+
                     // 로비로 이동
                     ServerState = PlayerServerState.ServerStateLobby;
                 }
                 else
                 {
                     // TODO: 단순히 하려고 이렇게 했는데, 후에는 계정 관리는 다른 방식으로 해야할 것 같다.
-                    AccountDb newAccount = new AccountDb() { AccountName = loginPacket.UniqueId };
+                    AccountDb newAccount = new AccountDb() { AccountName = accountName };
                     db.Accounts.Add(newAccount);
                     db.SaveChangesEx();
 
@@ -89,6 +80,39 @@ namespace CSharpServer
                     ServerState = PlayerServerState.ServerStateLobby;
                 }
             }
+        }
+
+        public void HandleLogin(C_Login loginPacket)
+        {
+            // 보안 체크
+            using (AppDbContext db = new AppDbContext())
+            {
+                // 토큰 정보 불일치하였거나 만료되었다면 실패
+                using (SharedDbContext sharedDb = new SharedDbContext())
+                {
+                    TokenDb tokenDb = sharedDb.Tokens.Where(t => t.TokenDbId == loginPacket.TokenDbId).FirstOrDefault();
+
+                    // TODO: 토큰 기한 체크도 데이터로 빼서 공통으로 들고있게 해야한다.
+                    if (tokenDb == null || tokenDb.Token != loginPacket.Token || tokenDb.ExpiredDatetime < DateTime.UtcNow)
+                    {
+                        S_Login resLoginPacket = new S_Login() { LoginOk = true };
+                        Send(resLoginPacket);
+                        return;
+                    }
+                }
+            }
+
+            if (ServerState != PlayerServerState.ServerStateLogin)
+            {
+                return;
+            }
+
+            // 여기까지 문제없다면 로그인 과정을 처리한다.
+            ProcessLogin(loginPacket.AccountName);
+        }
+        public void HandleDummyClientLogin(C_LoginDummy loginDummyPacket)
+        {
+            ProcessLogin(loginDummyPacket.AccountName);
         }
 
         public void HandleCreatePlayer(C_CreatePlayer createPlayerPacket)
@@ -104,7 +128,7 @@ namespace CSharpServer
                     .Where(p => p.PlayerName == createPlayerPacket.Name)
                     .FirstOrDefault();
 
-                if(foundPlayer != null)
+                if (foundPlayer != null)
                 {
                     Send(new S_CreatePlayer());
                 }
@@ -121,13 +145,13 @@ namespace CSharpServer
                         Hp = stat.Hp,
                         MaxHp = stat.MaxHp,
                         Attack = stat.Attack,
-                        Speed = stat.Speed, 
+                        Speed = stat.Speed,
                         TotalExp = 0,
                         AccountDbId = AccountDbId,
                     };
 
                     db.Players.Add(newPlayerDb);
-                    db.SaveChangesEx(); 
+                    db.SaveChangesEx();
 
                     // 위에서 새로 만들어진 정보를 메모리에서도 들고 있게 변경
                     LobbyPlayerInfo lobbyPlayer = new LobbyPlayerInfo()
@@ -168,11 +192,11 @@ namespace CSharpServer
 
             LobbyPlayerInfo lobbyPlayerInfo = LobbyPlayers.Find(p => p.Name == enterGamePacket.Name);
 
-            if(lobbyPlayerInfo == null)
+            if (lobbyPlayerInfo == null)
             {
                 return;
             }
-            
+
             CurrentPlayer = ActorManager.Instance.Add<Player>();
             CurrentPlayer.PlayerDbId = lobbyPlayerInfo.PlayerDbId;
             CurrentPlayer.Info.Name = lobbyPlayerInfo.Name;
@@ -196,7 +220,7 @@ namespace CSharpServer
                 foreach (ItemDb itemDb in items)
                 {
                     Item item = Item.MakeItem(itemDb);
-                    if(item != null)
+                    if (item != null)
                     {
                         CurrentPlayer.Inven.Add(item);
                         ItemInfo info = new ItemInfo();

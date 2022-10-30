@@ -4,6 +4,7 @@ using System.Linq;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace ServerCore
@@ -23,6 +24,8 @@ namespace ServerCore
             args.RemoteEndPoint = endPoint;
             args.UserToken = socket; // 소켓을 args 내부에 저장, 연결 별로 독립적인 socket 사용을 위한 것
 
+            // 더미 클라이언트 테스트 시에 동시에 1000개의 접속 요청을 보내면 접속이 누락되는데 그러한 상황을 막기 위한 것
+            Thread.Sleep(3);
             RegisterConnect(args);
         }
 

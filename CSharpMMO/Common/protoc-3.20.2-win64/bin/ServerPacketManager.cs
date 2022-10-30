@@ -35,6 +35,8 @@ public class PacketManager
     {
         _makePacketMap.Add((ushort)MsgId.CHeartBeat, MakePacket<C_HeartBeat>);
         _handlerMap.Add((ushort)MsgId.CHeartBeat, PacketHandler.C_HeartBeatHandler);
+        _makePacketMap.Add((ushort)MsgId.CLoginDummy, MakePacket<C_LoginDummy>);
+        _handlerMap.Add((ushort)MsgId.CLoginDummy, PacketHandler.C_LoginDummyHandler);
         _makePacketMap.Add((ushort)MsgId.CLogin, MakePacket<C_Login>);
         _handlerMap.Add((ushort)MsgId.CLogin, PacketHandler.C_LoginHandler);
         _makePacketMap.Add((ushort)MsgId.CEnterGame, MakePacket<C_EnterGame>);
