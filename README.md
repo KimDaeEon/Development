@@ -3,7 +3,7 @@
 ### 아래에는 포트폴리오 관련 설명을 적어두었으니 참고해주시면 감사하겠습니다.
 
 * Unity 게임 엔진 관련 폴더
-  * UniyMMOWithMyServer: 직접 만든 C# MMORPG 서버(CSharpMMO 폴더)에 대응되는 Unity 프로젝트입니다.
+  * UniyMMOWithMyServer: 직접 만든 C# MMORPG 서버(CSharpMMO 폴더)에 대응되는 Unity Client 프로젝트입니다.
   * FPS: Unity 네트워크 라이브러리를 활용하여 제작하였던 FPS 게임 코드가 들어있는 폴더입니다.
   
 * C# 게임 서버 관련 폴더
