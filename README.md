@@ -5,8 +5,6 @@
 * Unity를 활용하여 제작하였던 게임 관련 폴더
   * UniyMMOWithMyServer: 직접 만든 C# MMORPG 서버(CSharpMMO 폴더)에 대응되는 Unity 프로젝트입니다.
   * FPS: Unity 네트워크 라이브러리를 활용하여 제작하였던 FPS 게임 코드가 들어있는 폴더입니다.
-  * Temp 2D RPG: 간단히 만들어 본 2D RPG 게임 코드가 들어있는 폴더입니다.
-  * Temp SpaceMario: 간단히 만들어 본 2D 캐주얼 게임 코드가 들어있는 폴더입니다.
   
 * C# 게임 서버 관련 폴더
   * CSharpMMO: C# MMORPG TCP 서버, C# 웹 서버, 더미 클라이언트, Packet Generator 프로그램의 코드가 들어있는 폴더입니다.
