@@ -3,7 +3,6 @@ C:\git_portfolio\CSharpMMO\SharedDB\bin\Release\netcoreapp3.1\SharedDB.runtimeco
 C:\git_portfolio\CSharpMMO\SharedDB\bin\Release\netcoreapp3.1\SharedDB.runtimeconfig.dev.json
 C:\git_portfolio\CSharpMMO\SharedDB\bin\Release\netcoreapp3.1\SharedDB.dll
 C:\git_portfolio\CSharpMMO\SharedDB\bin\Release\netcoreapp3.1\SharedDB.pdb
-C:\git_portfolio\CSharpMMO\SharedDB\obj\Release\netcoreapp3.1\SharedDB.csproj.AssemblyReference.cache
 C:\git_portfolio\CSharpMMO\SharedDB\obj\Release\netcoreapp3.1\SharedDB.GeneratedMSBuildEditorConfig.editorconfig
 C:\git_portfolio\CSharpMMO\SharedDB\obj\Release\netcoreapp3.1\SharedDB.AssemblyInfoInputs.cache
 C:\git_portfolio\CSharpMMO\SharedDB\obj\Release\netcoreapp3.1\SharedDB.AssemblyInfo.cs

@@ -1,4 +1,5 @@
 ﻿using AccountServer.DB;
+using AccountServer.Utils;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -42,7 +43,7 @@ namespace AccountServer.Controllers
                 _context.Accounts.Add(new AccountDb()
                 {
                     AccountName = reqPacket.AccountName,
-                    Password = reqPacket.Password
+                    Password = EncryptionHelper.EncryptionSHA256(reqPacket.Password)
                 });
 
                 bool result = _context.SaveChangesEx();
@@ -61,10 +62,11 @@ namespace AccountServer.Controllers
         public ResLoginAccount LoginAccount([FromBody] ReqLoginAccount reqPacket)
         {
             ResLoginAccount resPacket = new ResLoginAccount();
+            string encryptedPassword = EncryptionHelper.EncryptionSHA256(reqPacket.Password);
 
             AccountDb account = _context.Accounts
                                 .AsNoTracking()
-                                .Where(account => account.AccountName == reqPacket.AccountName && account.Password == reqPacket.Password)
+                                .Where(account => account.AccountName == reqPacket.AccountName && account.Password == encryptedPassword)
                                 .FirstOrDefault();
 
             if (account == null)
