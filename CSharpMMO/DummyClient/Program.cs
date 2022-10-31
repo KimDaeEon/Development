@@ -12,6 +12,19 @@ namespace DummyClient
         static void Main(string[] args)
         {
             Thread.Sleep(2000);
+
+            while (true)
+            {
+                Console.Clear();
+                Console.WriteLine("더미 클라이언트를 시작하시려면 s 키를 눌러주세요.");
+                ConsoleKeyInfo ckey = Console.ReadKey();
+
+                if(ckey.Key == ConsoleKey.S)
+                {
+                    break;
+                }
+            }
+
             // DNS 활용
             string host = Dns.GetHostName();
             IPHostEntry ipHost = Dns.GetHostEntry(host);
