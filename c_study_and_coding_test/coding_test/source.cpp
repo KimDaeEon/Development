@@ -11,6 +11,7 @@
 #include <sstream>
 #include <unordered_map>
 #include <unordered_set>
+//#include <regex>
 using namespace std;
 
 // 기본적 참고 사항 사항
@@ -1827,14 +1828,510 @@ namespace kko {
 	}
 }
 
+#pragma endregion
+
+#pragma region KKO_Intern
+namespace kko_tech
+{
+	namespace intern_2021 {
+		namespace one {
+			string strArr[] = { "zero", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine" };
+			string intArr[] = { "0", "1","2","3","4","5","6","7","8","9" };
+			int solution(string s) {
+
+				while (true) {
+					bool isChanged = false;
+					for (int i = 0; i < 10; i++) {
+						auto pos = s.find(strArr[i]);
+						if (pos != std::string::npos) {
+							isChanged = true;
+							s.replace(s.find(strArr[i]), strArr[i].length(), intArr[i]);
+						}
+					}
+
+					if (isChanged == false) {
+						break;
+					}
+				}
+				return stoi(s);
+			}
+		}
+
+		namespace two {
+			const char person = 'P';
+			const char emptyTable = 'O'; // 이것도 들어오면 주위에 사람이 있는지 보아야 한다.
+			const char partition = 'X';
+
+			// 동, 남, 서, 북
+			int dr[] = { 0,  1,  0, -1 };
+			int dc[] = { 1,  0, -1,  0 };
+
+			bool isValidPos(int r, int c) {
+				return r >= 0 && r <= 4 && c >= 0 && c <= 4;
+			}
+
+			struct node {
+				int r;
+				int c;
+				int mDistance = 0;
+			};
 
 
+			bool isDistance(int curR, int curC, vector<string>& place) {
+				queue<node> q;
+				bool visited[5][5]{ false };
 
+				q.push({ curR, curC, 0 });
+
+				while (!q.empty()) {
+					const node& n = q.front();
+					q.pop();
+
+					// 거리가 3이상이면 탐색할 필요가 없다.
+					if (n.mDistance >= 3) {
+						continue;
+					}
+
+					// 이전에 방문해서 처리한 적 있으면 패스
+					if (visited[n.r][n.c]) {
+						continue;
+					}
+
+					for (int i = 0; i < 4; i++) {
+						int nextR = n.r + dr[i];
+						int nextC = n.c + dc[i];
+						int nextDistance = n.mDistance + 1;
+
+						// 이상한 범위의 좌표면 패스
+						if (isValidPos(nextR, nextC) == false) {
+							continue;
+						}
+
+						// 현재 위치에 사람이 있을 경우, 옆에 사람이 있다면 false
+						if (place[n.r][n.c] == person) {
+							if (place[nextR][nextC] == person) {
+								return false;
+							}
+						}
+
+						// 현재 위치에 빈 테이블이 있을 경우, 테이블의 상하좌우에 2명 이상 사람이 있다면 false
+						if (place[n.r][n.c] == emptyTable) {
+							int adjacentPersonCnt = 0;
+							for (int j = 0; j < 4; j++) {
+								int nextR2 = n.r + dr[j];
+								int nextC2 = n.c + dc[j];
+
+								// 이상한 범위의 좌표면 패스
+								if (isValidPos(nextR2, nextC2) == false) {
+									continue;
+								}
+
+								if (place[nextR2][nextC2] == person) {
+									adjacentPersonCnt++;
+								}
+							}
+
+							if (adjacentPersonCnt >= 2) {
+								return false;
+							}
+						}
+
+						if (place[nextR][nextC] == person || place[nextR][nextC] == emptyTable) {
+							q.push({ nextR, nextC, nextDistance });
+						}
+					}
+				}
+
+				return true;
+			}
+
+			vector<int> solution(vector<vector<string>> places) {
+				vector<int> answer(5, 1);
+				// 대기실 번호
+				for (int i = 0; i < places.size(); i++) {
+					auto& place = places[i];
+					bool isDitanceGood = true;
+
+					for (int r = 0; r < 5 && isDitanceGood; r++) {
+						for (int c = 0; c < 5; c++) {
+							if (!isDistance(r, c, place)) {
+								answer[i] = 0;
+								isDitanceGood = false;
+								break;
+							}
+						}
+					}
+				}
+
+				return answer;
+			}
+		}
+	}
+
+	namespace intern_2022
+	{
+		namespace one
+		{
+			char criteria[4][2] = { { 'R', 'T' }, { 'C', 'F' }, { 'J', 'M' }, { 'A', 'N' } };
+			const int offset = 4;
+
+			string solution(vector<string> survey, vector<int> choices) {
+				// survey[i] 에는 두 문자가 들어있고, 5이상이 나오면 왼쪽꺼, 3이하가 나오면 오른쪽꺼, 4가 나오면 사전순
+				// 5이상부터 왼쪽거 1점 해서 7점에서 survey[i] 첫번째 문자에 대해 최고 3점 가산, 3이하부터 1점으로 해서 1일 때에 3점 가산
+
+				// survey 와 choices 를 돌면서 정보를 dict 에 기록
+				// 1번 지표부터 4번 지표까지 순서대로 돌면서 
+
+				unordered_map<char, int> um;
+
+				for (int i = 0; i < 4; i++) {
+					for (int j = 0; j < 2; j++) {
+						um[criteria[i][j]] = 0;
+					}
+				}
+
+				for (int i = 0; i < choices.size(); i++) {
+					int realScore = choices[i] - offset;
+					if (realScore < 0) {
+						um[survey[i][0]] += -realScore;
+					}
+					else if (realScore > 0) {
+						um[survey[i][1]] += realScore;
+					}
+				}
+
+				string answer = "";
+				for (int i = 0; i < 4; i++) {
+					int gap = um[criteria[i][0]] - um[criteria[i][1]];
+					if (gap >= 0) {
+						answer += criteria[i][0];
+					}
+					else {
+						answer += criteria[i][1];
+					}
+				}
+
+				return answer;
+			}
+		}
+
+		namespace two {
+
+			int solution(vector<int> queue1, vector<int> queue2) {
+				// q1 과 q2의 합을 구하고 2로 나눈 값을 m 이라한다.
+				// q1과 q2의 구성요소를 통해 middle 이 될 수 있는지 확인한다.
+
+				// 어려운 점.. 중간값이 되는 것이 불가능한지 알아내는 것과 가능한지 알아내도 
+				int answer = 0;
+
+				long long middle = 0;
+
+				long long q1Sum = 0;
+				long long q2Sum = 0;
+				int size = queue1.size() + queue2.size();
+
+				queue<int> realQueue1;
+				queue<int> realQueue2;
+
+
+				for (const auto& i : queue1) {
+					q1Sum += i;
+					realQueue1.push(i);
+				}
+
+				for (const auto& i : queue2) {
+					q2Sum += i;
+					realQueue2.push(i);
+				}
+
+				// 홀수면 반반씩 값을 나눌 수 없다.
+				if ((q1Sum + q2Sum) % 2 == 1) {
+					return -1;
+				}
+
+				middle = (q1Sum + q2Sum) / 2;
+
+				while (answer <= 2 * size) {
+					if (q1Sum == middle) {
+						return answer;
+					}
+
+					if (q1Sum > q2Sum) {
+						realQueue2.push(realQueue1.front());
+						q2Sum += realQueue1.front();
+						q1Sum -= realQueue1.front();
+						realQueue1.pop();
+					}
+					else if (q1Sum < q2Sum) {
+						realQueue1.push(realQueue2.front());
+						q1Sum += realQueue2.front();
+						q2Sum -= realQueue2.front();
+						realQueue2.pop();
+					}
+
+					answer++;
+				}
+
+				return -1;
+			}
+		}
+
+		namespace three {
+			// 1시간 공부로 alp 1 오름
+			// 1시간 공부로 cop 1 오름
+			// problem 은 alp_req, cop_req, alp_rwd, cop_rwd, cost 5가지 변수로 이루어짐
+
+			const int MAX = 181;
+			int cache[MAX][MAX];
+			const int inf = 2000000000;
+			int targetAlp = -1;
+			int targetCop = -1;
+
+			int solution(int alp, int cop, vector<vector<int>> problems) {
+				// problems 를 alp_req + cop_req -> alp_rwd + cop_rwd 
+				int answer = 0;
+
+				// 목표치 alp, cop 설정
+
+				for (const auto& problem : problems) {
+					if (targetAlp < problem[0]) {
+						targetAlp = problem[0];
+					}
+
+					if (targetCop < problem[1]) {
+						targetCop = problem[1];
+					}
+				}
+
+				targetAlp = max(alp, targetAlp);
+				targetCop = max(cop, targetCop);
+
+				for (int i = 0; i < MAX; i++) {
+					for (int j = 0; j < MAX; j++) {
+						cache[i][j] = inf;
+					}
+				}
+
+				cache[alp][cop] = 0;
+
+				// cache[a][c] = min( f(a-1,c) + 1, f(a,c-1) + 1, f(a-rwdA, c-rwdC) + reqA + reqC);
+
+				for (int a = alp; a <= targetAlp; a++) {
+					for (int c = cop; c <= targetCop; c++) {
+						for (const auto& problem : problems) {
+							int reqAlp = problem[0];
+							int reqCop = problem[1];
+							int rwdAlp = problem[2];
+							int rwdCop = problem[3];
+							int cost = problem[4];
+
+							if (a >= reqAlp && c >= reqCop) {
+								int adjustA = min(a + rwdAlp, targetAlp);
+								int adjustC = min(c + rwdCop, targetCop);
+								cache[adjustA][adjustC] = min(cache[adjustA][adjustC], cache[a][c] + cost);
+							}
+
+							{
+								int adjustA = min(a + 1, targetAlp);
+								int adjustC = min(c + 1, targetCop);
+								cache[a][adjustC] = min(cache[a][adjustC], cache[a][c] + 1);
+								cache[adjustA][c] = min(cache[adjustA][c], cache[a][c] + 1);
+							}
+						}
+					}
+				}
+
+				return cache[targetAlp][targetCop];
+			}
+		}
+	}
+
+	namespace intern_2023 {
+		namespace one {
+			int solution(int x, int y, int z) {
+				return 1;
+			}
+		}
+
+		namespace two {
+			constexpr int limit = 1e9 + 7;
+			constexpr int cacheLimit = 1e5 + 1;
+
+			// 2의 0승, 1승 ... 을 limit 로 나눈 나머지
+			long long cache[cacheLimit] = { 1, 2 };
+
+			void calcCache(int exponentLimit) {
+				for (int i = 1; i < exponentLimit; i++) {
+					cache[i + 1] = (cache[i] * 2) % limit;
+				}
+			}
+
+			int solution(vector<int> cost, int x) {
+				long long answer = 0;
+				calcCache(cost.size());
+
+				for (int i = cost.size() - 1; i >= 0; i--) {
+					if (x >= cost[i]) {
+						x = x - cost[i];
+						answer = (answer + cache[i]);
+					}
+				}
+				return (int)(answer % limit);
+			}
+		}
+
+		namespace three {
+			int solution(vector<int> box) {
+				if (box.size() == 1) {
+					return box[0];
+				}
+
+				long long dept = 0;
+				long long sum = 0;
+				long long average = 0;
+				vector<int> dif(box.size());
+				vector<int> tempBox(box.begin(), box.end());
+				long long tempSize = tempBox.size();
+
+				sort(tempBox.begin(), tempBox.end());
+
+				int medium = tempBox[tempBox.size() / 2];
+				for (int i = 0; i < tempBox.size(); i++) {
+					tempBox[i] = tempBox[i] - medium;
+					sum += tempBox[i];
+				}
+
+				// 올림해서 평균을 구한다.
+				average = (sum / tempSize) + ((sum % tempSize) == 0 ? 0 : 1) + medium;
+
+				for (int i = 0; i < dif.size(); i++) {
+					dif[i] = box[i] - average;
+				}
+
+				// 거꾸로 순회하면서 dept 를 계산
+				for (int i = dif.size() - 1; i >= 0; i--) {
+					dept += dif[i];
+					if (dept < 0) {
+						dept = 0;
+					}
+				}
+
+				return average + dept;
+			}
+		}
+
+		namespace four {
+
+		}
+
+		namespace five {
+
+		}
+	}
+}
 #pragma endregion
 
 
+#pragma region Baekjoon
+namespace BJ {
+	namespace DP {
+		// 피보나치2
+		namespace fibonacci2 {
+			long long fib[91]{ 0, 1 };
+
+			long long f(int n) {
+				if (n == 0) {
+					return fib[0];
+				}
+
+				if (n == 1) {
+					return fib[1];
+				}
+
+				if (fib[n - 1] != 0) {
+					return fib[n - 1];
+				}
+				else {
+					return fib[n - 1] = f(n - 1) + f(n - 2);
+				}
+			}
+
+			int main(void) {
+				int n;
+				cin >> n;
+
+				cout << f(n);
+
+				return 0;
+			}
+		}
+
+		// 1로 만들기
+		namespace makeOne {
+			const int MAX = 1e6;
+			const int INF = 1e9;
+			int target;
+			int cache[MAX + 1]; // 
+
+			int main(void) {
+				for (int i = 0; i <= MAX; i++) {
+					cache[i] = INF;
+				}
+				cache[0] = 0;
+				cache[1] = 0;
+				cache[2] = 1;
+				cache[3] = 1;
+
+				cin >> target;
+
+				for (int i = 1; i <= MAX; i++) {
+					if (3 * i <= MAX) {
+						cache[3 * i] = min(cache[3 * i], cache[i] + 1);
+					}
+
+					if (2 * i <= MAX) {
+						cache[2 * i] = min(cache[2 * i], cache[i] + 1);
+					}
+
+					if (i + 1 <= MAX) {
+						cache[i + 1] = min(cache[i + 1], cache[i] + 1);
+					}
+				}
+
+				cout << cache[target];
+
+				return 0;
+			}
+		}
+	}
+}
+#pragma endregion
+
+template<typename c>
+void show(const c& container) {
+	auto it = begin(container);
+	auto endIt = end(container);
+
+	while (it != endIt) {
+		cout << *it;
+		it++;
+	}
+}
 int main()
 {
+	//cout << kko_tech::intern_2022::one::solution({ "TR", "RT", "TR" }, { 7,1,3 }) << endl;
+	//cout << kko_tech::intern_2022::two::solution({ 1,1 }, { 1,5 });
+	//cout << kko_tech::intern_2022::three::solution(0, 0, { {0, 0, 2, 1, 2}, {4, 5, 3, 1, 2}, {4, 11, 4, 0, 2}, {10, 4, 0, 4, 2} });
+	//BJ::DP::makeOne::main();
+	//vector<int> answer = kko_tech::intern_2021::two::solution({ {"POOOP", "OXXOX", "OPXPX", "OOXOX", "POXXP"}, {"POOPX", "OXPXP", "PXXXO", "OXXXO", "OOOPP"}, {"PXOPX", "OXOXP", "OXPOX", "OXXOP", "PXPOX"}, {"OOOXX", "XOOOX", "OOOXX", "OXOOX", "OOOOO"}, {"PXPXP", "XPXPX", "PXPXP", "XPXPX", "PXPXP"} });
+	//string  a = "asd";
+	//a = regex_replace(a, regex("asd"), "bcd");
+
+	//show(kko_tech::intern_2023::one::solution({1, 3, 4, 5, 8, 2, 1, 4, 5, 9, 5}, "right"));
+
+	cout << kko_tech::intern_2023::two_temp::solution({ 19, 78, 27, 18, 20 }, 25);
+
+	//cout << kko_tech::intern_2023::three::solution({ 3, 8, 11, 7 });
 	return 0;
 }
 
