@@ -13,11 +13,12 @@ namespace CSharpServer
 {
     public partial class ClientSession : PacketSession
     {
+        const int DisconnectedTicks = 30 * 1000;
         public PlayerServerState ServerState { get; private set; } = PlayerServerState.ServerStateLogin;
         public Player CurrentPlayer { get; set; }
         public int SessionId { get; set; }
         List<ArraySegment<byte>> _reserveSendJobQueue = new List<ArraySegment<byte>>();
-        long _heartBeatTick = 0;
+        long _heartBeatTick = System.Environment.TickCount64;
 
 #if GatherPacketForSend
         // 패킷 모아 보내기
@@ -36,7 +37,7 @@ namespace CSharpServer
             if (_heartBeatTick > 0)
             {
                 long delta = System.Environment.TickCount64 - _heartBeatTick;
-                if (delta > 30 * 1000)
+                if (delta > DisconnectedTicks)
                 {
                     Console.WriteLine($"Disconnected by HeartBeat Check");
                     Disconnect();

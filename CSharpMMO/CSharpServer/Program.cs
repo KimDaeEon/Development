@@ -126,7 +126,7 @@ namespace CSharpServer
             try
             {
                 _listener.Init(endPoint, () => { return SessionManager.Instance.Generate(); });
-                Console.WriteLine("Listening...");
+                Console.WriteLine($"{endPoint} Listening...");
             }
             catch (Exception e)
             {
