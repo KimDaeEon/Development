@@ -2329,7 +2329,7 @@ int main()
 
 	//show(kko_tech::intern_2023::one::solution({1, 3, 4, 5, 8, 2, 1, 4, 5, 9, 5}, "right"));
 
-	cout << kko_tech::intern_2023::two_temp::solution({ 19, 78, 27, 18, 20 }, 25);
+	//cout << kko_tech::intern_2023::two_temp::solution({ 19, 78, 27, 18, 20 }, 25);
 
 	//cout << kko_tech::intern_2023::three::solution({ 3, 8, 11, 7 });
 	return 0;
