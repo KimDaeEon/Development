@@ -1,0 +1,16 @@
+C:\git_portfolio\CSharpStudy\obj\Release\net5.0\CSharpStudy.GeneratedMSBuildEditorConfig.editorconfig
+C:\git_portfolio\CSharpStudy\obj\Release\net5.0\CSharpStudy.AssemblyInfoInputs.cache
+C:\git_portfolio\CSharpStudy\obj\Release\net5.0\CSharpStudy.AssemblyInfo.cs
+C:\git_portfolio\CSharpStudy\obj\Release\net5.0\CSharpStudy.csproj.CoreCompileInputs.cache
+C:\git_portfolio\CSharpStudy\bin\Release\net5.0\CSharpStudy.exe
+C:\git_portfolio\CSharpStudy\bin\Release\net5.0\CSharpStudy.deps.json
+C:\git_portfolio\CSharpStudy\bin\Release\net5.0\CSharpStudy.runtimeconfig.json
+C:\git_portfolio\CSharpStudy\bin\Release\net5.0\CSharpStudy.runtimeconfig.dev.json
+C:\git_portfolio\CSharpStudy\bin\Release\net5.0\CSharpStudy.dll
+C:\git_portfolio\CSharpStudy\bin\Release\net5.0\ref\CSharpStudy.dll
+C:\git_portfolio\CSharpStudy\bin\Release\net5.0\CSharpStudy.pdb
+C:\git_portfolio\CSharpStudy\obj\Release\net5.0\CSharpStudy.dll
+C:\git_portfolio\CSharpStudy\obj\Release\net5.0\ref\CSharpStudy.dll
+C:\git_portfolio\CSharpStudy\obj\Release\net5.0\CSharpStudy.pdb
+C:\git_portfolio\CSharpStudy\obj\Release\net5.0\CSharpStudy.genruntimeconfig.cache
+C:\git_portfolio\CSharpStudy\obj\Release\net5.0\CSharpStudy.csproj.AssemblyReference.cache
