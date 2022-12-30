@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -56,4 +57,170 @@ namespace Generic
         }
     }
 
-}
+    // 타입 매개변수가 IDisposable을 구현한 경우를 대비
+    namespace PrepareIDisposableType
+    {
+        public interface IEngine
+        {
+            void DoWork();
+        }
+
+        public class EngineDriver1<T> where T : IEngine, new()
+        {
+            public void GetThingsDone()
+            {
+                T driver = new T();
+
+                // Generic 사용 시에 T 타입이 IDisposable을 구현했는지를 고려해야한다.
+                // 아래처럼 using문을 사용하면 IDisposable이 구현되었으면 Dispose()를 호출하고,
+                // 구현되지 않았으면 아래의 driver.DoWork(); 부분만 실행이 된다.
+                using (driver as IDisposable)
+                {
+                    driver.DoWork();
+                }
+            }
+        }
+
+        // 타입 매개변수가 IDisposable을 구현할 것을 가정할 경우, 아래처럼 위에보다 처리가 더 복잡하다.
+        // sealed가 안붙으면 ResourceManagement에 나온 내용대로 표준 IDisposable 구현 방식을 따라야 한다. (protected Dispose(), Finalizer() ..)
+        public sealed class EngineDriver2<T> : IDisposable where T : IEngine, new()
+        {
+            // 아래와 같이 T타입을 만들어주는 Func<T> 를 넣어야 한다. 후에 Value 속성이 호출되면 그 때에 초기화되어 사용된다.
+            // 생성 작업이 오래 걸릴 경우 이런 식으로 지연된 초기화를 사용한다.
+            private Lazy<T> driver = new Lazy<T>(() => new T());
+
+            public void GetThingsDone() => driver.Value.DoWork();
+
+            public void Dispose()
+            {
+                if (driver.IsValueCreated) // driver.Value가 호출되어 초기화가 되었다면 해당 플래그가 1로 설정이 된다.
+                {
+                    var resource = driver.Value as IDisposable;
+                    resource?.Dispose();
+                }
+            }
+        }
+
+        // T에서 Dispose 관련 내용을 알아서 처리하도록 한 방식
+        public sealed class EngineDriver3<T> where T : IEngine
+        {
+            private T driver; // null로 초기화된다.
+
+            // IEngine을 구현한 타입 T가 DoWork()에석 Dispose를 책임지도록 한다.
+            // 그러면 EngineDriver2<T>처럼 복잡하게 구현하지 않아도 된다.
+            public EngineDriver3(T driver)
+            {
+                this.driver = driver;
+            }
+
+            public void GetTHingsDone()
+            {
+                driver.DoWork();
+            }
+        }
+    }
+
+    // 타입 매개변수에 대해 메서드 제약조건을 설정할 때에는 델리게이트를 활용
+    namespace UseDelegatesToDefineMethodConstraintsOnTypeParameters
+    {
+        public static class Example
+        {
+            // Func<T, T, T>를 써서 T타입에 대한 Add함수 구현을 외부에서 하도록 강제하였다.
+            // 이렇게 한다면 T에 대해 인터페이스 기반 제약조건을 설정하지 않아도 된다.
+            public static T Add<T>(T left, T right, Func<T, T, T> AddFunc) => AddFunc(left, right);
+        }
+
+        public class Point
+        {
+            public double X { get; }
+            public double Y { get; }
+
+            // 실수를 받는 생성자
+            public Point(double x, double y)
+            {
+                this.X = x;
+                this.Y = y;
+            }
+
+
+
+            // 아래와 같이 사용하면 interface를 만들어서 T에 대한 제약조건을 주지 않아도, 특정 인자를 반환하는 조건을 강제할 수 있다.
+            // 파일 입출력을 처리하는 생성자
+            public Point(System.IO.TextReader reader)
+            {
+                string line = reader.ReadLine();
+                string[] fields = line.Split(',');
+
+                if (fields.Length != 2)
+                {
+                    throw new InvalidOperationException("Input format incorrect");
+                }
+
+                double value;
+                if (!double.TryParse(fields[0], out value))
+                {
+                    throw new InvalidOperationException("Could not parse X value");
+                }
+                else
+                {
+                    X = value;
+                }
+
+                if (!double.TryParse(fields[1], out value))
+                {
+                    throw new InvalidOperationException("Could not parse Y value");
+                }
+                else
+                {
+                    Y = value;
+                }
+            }
+        } // class Point
+
+        public class Utilities
+        {
+            public static IEnumerable<TOutput> Zip<T1, T2, TOutput>(
+                IEnumerable<T1> left, IEnumerable<T2> right,
+                Func<T1, T2, TOutput> generator
+                )
+            {
+                IEnumerator<T1> leftSequence = left.GetEnumerator();
+                IEnumerator<T2> rightSequence = right.GetEnumerator();
+
+                while (leftSequence.MoveNext() && rightSequence.MoveNext())
+                {
+                    yield return generator(leftSequence.Current, rightSequence.Current);
+                }
+
+                leftSequence.Dispose();
+                rightSequence.Dispose();
+            }
+        } // class Utilities
+    } 
+
+    namespace DoNotCreateGenericSpecializationOnBaseClassesOrInterfaces
+    {
+        public class MyBase
+        {
+
+
+        }
+
+        public interface IMessageWriter
+        {
+            void WriteMessage();
+        }
+
+        public class MyDerived : MyBase, IMessageWriter
+        {
+            void IMessageWriter.WriteMessage() =>
+                Console.WriteLine("MyDerived.WriteMessage");
+        }
+
+        public class AnotherType : IMessageWriter
+        {
+            public void WriteMessage() =>
+                Console.WriteLine("AnotherType.WriteMessage");
+        }
+    }
+} // namespace Generic

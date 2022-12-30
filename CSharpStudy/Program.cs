@@ -1,4 +1,6 @@
-﻿using Generic.IComparableStandard;
+﻿using Generic.DoNotCreateGenericSpecializationOnBaseClassesOrInterfaces;
+using Generic.IComparableStandard;
+using Generic.UseDelegatesToDefineMethodConstraintsOnTypeParameters;
 using ResourceManagement;
 using System;
 using System.Collections.Generic;
@@ -6,25 +8,93 @@ using System.Threading;
 
 namespace CSharpStudy
 {
-    public class temp
-    {
-        public int a;
-        public int b;
-    }
-
     class Program
     {
+        #region Do Not Create Generic Specialization on Base Classes Or Interfaces
+        // 이 타입이 있다고 해서 아래에서 MyDerived 인스턴스에 대해 이 함수가 호출되지 않고, 아래의 Generic이 호출된다.
+        // C++ 템플릿 특수화와 달라서 헷갈렸는데, 여기에서는 이렇게 일반함수 형태로 Generic을 덮어쓰는 것을 'Specialization'이라고 하는 것 같다.
+        // https://social.msdn.microsoft.com/Forums/en-US/f7e35e9e-7622-4154-bc8d-ed6af180c669/can-a-generic-method-be-specialized?forum=csharplanguage
+        // 아래와 같이 해두면 MyBase를 상속받은 클래스는 다 여기서 불릴 것 같지만.. 결과는 그렇지 않다.
+        //public static void WriteMessage(MyBase b)
+        //{
+        //    Console.WriteLine("WriteMessage(MyBase)");
+        //}
 
+        //// WriteMessage(MyDerived)가 없다면 Generic으로 코드가 정확하게 MyDerived를 매개변수로 받는 WriteMessage가 생성되어서 이 함수가 호출된다.
+        //public static void WriteMessage<T>(T obj)
+        //{
+        //    Console.WriteLine("WriteMessage<T>(T)");
+        //    Console.WriteLine(obj.ToString());
+
+        //    // 쓰고 싶으면 체크해야할 타입이 적은 경우 아래와 같이 구현해서 어떤 함수를 호출할 지 정할 수 있다.
+        //    //if (obj is MyBase)
+        //    //{
+        //    //    WriteMessage(obj as MyBase);
+        //    //}
+        //    //else if (obj is IMessageWriter)
+        //    //{
+        //    //    WriteMessage((IMessageWriter)obj);
+        //    //}
+        //    //else
+        //    //{
+        //    //    Console.WriteLine(obj.ToString());
+        //    //}
+        //}
+
+        //// 아래도 위의 void WriteMessage(MyBase b)와 마찬가지로 하지 말아야할 방식이다.
+        //public static void WriteMessage(IMessageWriter obj)
+        //{
+        //    Console.WriteLine("WriteMessage(IMessageWriter obj)");
+        //    obj.WriteMessage();
+        //}
+        #endregion
+
+        static void foo(int i)
+        {
+            string a = new string("asd");
+
+            Console.WriteLine(a.ToString());
+        }
+
+        static void foo(double i)
+        {
+            string a = new string("asd");
+
+            Console.WriteLine(a.ToString());
+        }
         static void Main(string[] args)
         {
-            Action<object> b = (a) =>
-            {
-                Console.WriteLine(a);
-                Console.WriteLine(a is string);
-            };
-            Action<string> a = b;
 
-            
+            foo(1);
+            foo(1.0d);
+            Console.WriteLine("a");
+            foo(2);
+            foo(2.0d);
+            #region Do Not Create Generic Specialization on Base Classes Or Interfaces
+            //MyDerived d = new MyDerived();
+            //WriteMessage(d);
+            //Console.WriteLine();
+
+            //WriteMessage((IMessageWriter)d);
+            //Console.WriteLine();
+
+            //WriteMessage((MyBase)d);
+            //Console.WriteLine();
+
+            //AnotherType another = new AnotherType();
+            //WriteMessage(another);
+            //Console.WriteLine();
+
+            //WriteMessage((IMessageWriter)another);
+            #endregion
+
+            #region Use Delegates to Define Method Constraints on Type Parameters
+            //double[] xValues = { 1, 2, 3, 4 };
+            //double[] yValues = { 1, 2, 3, 4 };
+
+            //// Point가 defualt 생성자가 없으므로 Zip 함수와 Func를 이용해서 Point를 생성한다.
+            //List<Point> values = new List<Point>(Utilities.Zip(xValues, yValues, (x, y) => new Point(x, y)));
+            #endregion
 
             #region DisposeTest
             //TestResourceBag();
