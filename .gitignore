@@ -17264,3 +17264,8 @@ CSharpStudy/obj/Debug/net5.0/CSharpStudy.csproj.CopyComplete
 c_study_and_coding_test/c_study/x64/Debug/c_study.ilk
 c_study_and_coding_test/c_study/x64/Debug/vc142.idb
 CSharpStudy/obj/Release/net5.0/CSharpStudy.csproj.CopyComplete
+*.ilk
+*.idb
+*.lib
+*.enc
+*.pch
