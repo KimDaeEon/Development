@@ -1,18 +1,27 @@
 ﻿using Generic.DoNotCreateGenericSpecializationOnBaseClassesOrInterfaces;
 using Generic.IComparableStandard;
 using Generic.UseDelegatesToDefineMethodConstraintsOnTypeParameters;
+using Generic.AugmentMinimalInterfaceContractsWithExtensionMethods;
 using ResourceManagement;
 using System;
 using System.Collections.Generic;
 using System.Threading;
+using System.Collections;
+using System.Linq;
+using LINQ.PreferIteratorMethodsToReturningCollections;
+using System.Diagnostics;
 
 namespace CSharpStudy
 {
+    public class temp
+    {
+        int a;
+        int b;
+    }
     class Program
     {
         #region Do Not Create Generic Specialization on Base Classes Or Interfaces
         // 이 타입이 있다고 해서 아래에서 MyDerived 인스턴스에 대해 이 함수가 호출되지 않고, 아래의 Generic이 호출된다.
-        // C++ 템플릿 특수화와 달라서 헷갈렸는데, 여기에서는 이렇게 일반함수 형태로 Generic을 덮어쓰는 것을 'Specialization'이라고 하는 것 같다.
         // https://social.msdn.microsoft.com/Forums/en-US/f7e35e9e-7622-4154-bc8d-ed6af180c669/can-a-generic-method-be-specialized?forum=csharplanguage
         // 아래와 같이 해두면 MyBase를 상속받은 클래스는 다 여기서 불릴 것 같지만.. 결과는 그렇지 않다.
         //public static void WriteMessage(MyBase b)
@@ -21,6 +30,7 @@ namespace CSharpStudy
         //}
 
         //// WriteMessage(MyDerived)가 없다면 Generic으로 코드가 정확하게 MyDerived를 매개변수로 받는 WriteMessage가 생성되어서 이 함수가 호출된다.
+        //// MyBase라는 기반클래스로 Generic이 특화되지 않는다는 점에 주목하자.
         //public static void WriteMessage<T>(T obj)
         //{
         //    Console.WriteLine("WriteMessage<T>(T)");
@@ -49,27 +59,37 @@ namespace CSharpStudy
         //}
         #endregion
 
-        static void foo(int i)
-        {
-            string a = new string("asd");
-
-            Console.WriteLine(a.ToString());
-        }
-
-        static void foo(double i)
-        {
-            string a = new string("asd");
-
-            Console.WriteLine(a.ToString());
-        }
         static void Main(string[] args)
         {
 
-            foo(1);
-            foo(1.0d);
-            Console.WriteLine("a");
-            foo(2);
-            foo(2.0d);
+
+            temp a = new temp();
+            int c = 10;
+            c = 0;
+
+            a = null;
+
+
+
+            #region Prefer Iterator Methods to Returning Collections
+            ////var it = Iterator3.GenerateAlphabetSubset('1', 'b'); // 실행 전 에러 출력
+            //var it = Iterator3.GenerateAlphabetSubset('a', 'b');
+
+            //foreach(var item in it)
+            //{
+            //    Console.WriteLine(item);
+            //}
+
+            #endregion
+
+            #region Augment Minimal Interface Contracts with Extension Methods
+            //MyType a = new MyType();
+            //a.Foo();
+            //a.ExtendedFunction(); // 해당 타입의 ExtendedFunction이 호출, 이런 식으로 구현하면 안된다.
+            //a.ExtendedFunction<MyType>();
+            //((IFoo)a).ExtendedFunction(); // 위와 같은 확장 메서드 호출
+            #endregion
+
             #region Do Not Create Generic Specialization on Base Classes Or Interfaces
             //MyDerived d = new MyDerived();
             //WriteMessage(d);

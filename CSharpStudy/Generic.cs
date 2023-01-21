@@ -196,14 +196,12 @@ namespace Generic
                 rightSequence.Dispose();
             }
         } // class Utilities
-    } 
+    }
 
     namespace DoNotCreateGenericSpecializationOnBaseClassesOrInterfaces
     {
         public class MyBase
         {
-
-
         }
 
         public interface IMessageWriter
@@ -223,4 +221,58 @@ namespace Generic
                 Console.WriteLine("AnotherType.WriteMessage");
         }
     }
+
+    // 인터페이스는 간략히 정의하고 기능의 확장은 확장 메서드를 사용하라
+    namespace AugmentMinimalInterfaceContractsWithExtensionMethods
+    {
+        public interface IFoo
+        {
+            public void Foo();
+        }
+
+        public class MyType : IFoo
+        {
+            public void Foo()
+            {
+                Console.WriteLine("MyType.Foo()");
+            }
+
+            // 아래와 같이 구현하면 안된다. Extension 함수와 겹치게 되면 예상치 못한 동작을 할 수 있다.
+            public void ExtendedFunction()
+            {
+                Console.WriteLine("MyType.ExtendedFunction()");
+            }
+        }
+
+        // IFoo를 상속받은 클래스의 기존 기능을 조합해서 새로운 기능을 만들 수 있다면,
+        // IFoo에 구현해야할 함수를 추가하지말고 확장 메서드를 통해 기능을 추가하는 것이 낫다.
+        public static class FooExtension
+        {
+            public static void ExtendedFunction<T>(this T input) where T : IFoo
+            {
+                Console.WriteLine("FooExtension.ExtendedFunction()");
+            }
+        }
+    }
+
+    // 확장 메서드를 이용하여 구체화된 제네릭 타입을 개선하라
+    namespace ConsiderEnhancingConstructedTypesWithExtensionMethods
+    {
+        public static class Enumerable
+        {
+            // 이런 식으로 IEnumerable<int>라는 구체화된 제네릭 타입에 '평균' 기능을 추가할 수 있는 것이다.
+            // 이렇게 하면 상속받으면서 이것저것 따로 구현할 필요도 없고, LINQ 사용 시에도 일관성있게 IEnumerable<int> 형태로 사용할 수 있다.
+            public static int Average(this IEnumerable<int> sequence)
+            {
+                int sum = 0;
+                foreach (int i in sequence)
+                {
+                    sum += i;
+                }
+
+                return sum / sequence.Count();
+            }
+        }
+    }
+
 } // namespace Generic

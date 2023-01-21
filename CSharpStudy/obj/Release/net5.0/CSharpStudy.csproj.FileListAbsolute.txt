@@ -14,3 +14,6 @@ C:\git_portfolio\CSharpStudy\obj\Release\net5.0\ref\CSharpStudy.dll
 C:\git_portfolio\CSharpStudy\obj\Release\net5.0\CSharpStudy.pdb
 C:\git_portfolio\CSharpStudy\obj\Release\net5.0\CSharpStudy.genruntimeconfig.cache
 C:\git_portfolio\CSharpStudy\obj\Release\net5.0\CSharpStudy.csproj.AssemblyReference.cache
+C:\git_portfolio\CSharpStudy\bin\Release\net5.0\Google.Apis.Core.dll
+C:\git_portfolio\CSharpStudy\bin\Release\net5.0\Newtonsoft.Json.dll
+C:\git_portfolio\CSharpStudy\obj\Release\net5.0\CSharpStudy.csproj.CopyComplete
