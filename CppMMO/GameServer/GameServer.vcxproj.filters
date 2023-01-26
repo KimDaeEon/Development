@@ -4,6 +4,9 @@
     <Filter Include="Main">
       <UniqueIdentifier>{4326edec-0b81-4824-b902-8e6ac9089e1a}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Archive">
+      <UniqueIdentifier>{cd044058-043f-4121-b834-ece593df4ef4}</UniqueIdentifier>
+    </Filter>
     <Filter Include="Utils">
       <UniqueIdentifier>{2774edea-9435-4da3-b09a-16e8bb3b4ceb}</UniqueIdentifier>
     </Filter>
@@ -16,21 +19,21 @@
       <Filter>Utils</Filter>
     </ClCompile>
     <ClCompile Include="ConcurrentQueue.cpp">
-      <Filter>Main</Filter>
+      <Filter>Archive</Filter>
     </ClCompile>
     <ClCompile Include="ConcurrentStack.cpp">
-      <Filter>Main</Filter>
+      <Filter>Archive</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h">
       <Filter>Utils</Filter>
     </ClInclude>
-    <ClInclude Include="ConcurrentQueue.h">
-      <Filter>Main</Filter>
-    </ClInclude>
     <ClInclude Include="ConcurrentStack.h">
-      <Filter>Main</Filter>
+      <Filter>Archive</Filter>
+    </ClInclude>
+    <ClInclude Include="ConcurrentQueue.h">
+      <Filter>Archive</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

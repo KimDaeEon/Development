@@ -1,43 +1,85 @@
 ﻿#include "pch.h"
+#include "ThreadManager.h"
 #include <iostream>
 #include <thread>
 #include <mutex>
-#include "ConcurrentQueue.h"
-#include "ConcurrentStack.h"
 
-LockQueue<int32> q;
-LockStack<int32> s;
+class TestLock
+{
+	USE_LOCK;
 
-void Push()
+public:
+	int32 TestRead()
+	{
+		READ_LOCK;
+
+		if (_queue.empty())
+		{
+			return -1;
+		}
+
+		return _queue.front();
+	}
+
+	void TestPush()
+	{
+		WRITE_LOCK;
+
+		_queue.push(rand() % 100);
+	}
+
+	void TestPop()
+	{
+		WRITE_LOCK;
+
+		while (true)
+		{
+
+		}
+
+		if (_queue.empty() == false)
+		{
+			_queue.pop();
+		}
+	}
+
+private:
+	queue<int32> _queue;
+};
+
+TestLock testLock;
+
+void ThreadWrite()
 {
 	while (true)
 	{
-		int32 value = rand() % 100;
-		q.Push(value);
-
-		this_thread::sleep_for(10ms);
+		testLock.TestPush();
+		this_thread::sleep_for(1ms);
+		testLock.TestPop();
 	}
 }
 
-void Pop()
+void ThreadRead()
 {
 	while (true)
 	{
-		int32 data = 3;
-
-		//q.WaitPop(data);
-		if (q.TryPop(data))
-		{
-			cout << data << endl;
-		}
+		int32 value = testLock.TestRead();
+		cout << value << endl;
+		this_thread::sleep_for(1ms);
 	}
 }
 
 int main()
 {
-	thread t1(Push);
-	thread t2(Pop);
+	for (int32 i = 0; i < 2; i++)
+	{
+		GThreadManager->Launch(ThreadWrite);
+	}
 
-	t1.join();
-	t2.join();
+	for (int32 i = 0; i < 5; i++)
+	{
+		GThreadManager->Launch(ThreadRead);
+	}
+
+	GThreadManager->Join();
 }
