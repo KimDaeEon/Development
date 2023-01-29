@@ -1,9 +1,14 @@
 #include "pch.h"
 #include "Lock.h"
 #include "CoreTLS.h"
+#include "DeadLockDetector.h"
 
-void Lock::WriteLock()
+void Lock::WriteLock(const char* name)
 {
+#if _DEBUG
+	GDeadLockDetector->PushLock(name);
+#endif
+
 	// 동일한 쓰레드가 소유하고 있다면 무조건 성공
 	const uint32 lockThreadId = (_lockFlag.load() & WRITE_THREAD_ID_MASK) >> 16;
 	if (LThreadId == lockThreadId)
@@ -36,8 +41,12 @@ void Lock::WriteLock()
 	this_thread::yield();
 }
 
-void Lock::WriteUnlock()
+void Lock::WriteUnlock(const char* name)
 {
+#if _DEBUG
+	GDeadLockDetector->PopLock(name);
+#endif
+
 	// ReadLock 다 풀기 전에는 WriteUnlock 불가능
 	if ((_lockFlag.load() & READ_THREAD_COUNT_MASK) != 0)
 	{
@@ -51,8 +60,12 @@ void Lock::WriteUnlock()
 	}
 }
 
-void Lock::ReadLock()
+void Lock::ReadLock(const char* name)
 {
+#if _DEBUG
+	GDeadLockDetector->PushLock(name);
+#endif
+
 	// 동일한 쓰레드가 소유하고 있다면 무조건 성공
 	const uint32 lockThreadId = (_lockFlag.load() & WRITE_THREAD_ID_MASK) >> 16;
 	if (LThreadId == lockThreadId)
@@ -83,8 +96,12 @@ void Lock::ReadLock()
 	}
 }
 
-void Lock::ReadUnlock()
+void Lock::ReadUnlock(const char* name)
 {
+#if _DEBUG
+	GDeadLockDetector->PopLock(name);
+#endif
+
 	// fetch_sub에서 이전 값을 리턴하기 때문에 이전 값이 0이란 것은 이상한 상황이다.
 	if ((_lockFlag.fetch_sub(1) & READ_THREAD_COUNT_MASK) == 0)
 	{

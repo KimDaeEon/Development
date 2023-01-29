@@ -13,6 +13,9 @@
     <Filter Include="Thread">
       <UniqueIdentifier>{50c91850-a505-497e-9284-08677c02bc6a}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Memory">
+      <UniqueIdentifier>{f916b839-0974-4c8f-81d5-b08ad33cbd89}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="CorePch.h">
@@ -39,6 +42,18 @@
     <ClInclude Include="Lock.h">
       <Filter>Thread</Filter>
     </ClInclude>
+    <ClInclude Include="DeadLockDetector.h">
+      <Filter>Thread</Filter>
+    </ClInclude>
+    <ClInclude Include="RefCounting.h">
+      <Filter>Memory</Filter>
+    </ClInclude>
+    <ClInclude Include="Allocator.h">
+      <Filter>Memory</Filter>
+    </ClInclude>
+    <ClInclude Include="Memory.h">
+      <Filter>Memory</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="CorePch.cpp">
@@ -58,6 +73,18 @@
     </ClCompile>
     <ClCompile Include="Lock.cpp">
       <Filter>Thread</Filter>
+    </ClCompile>
+    <ClCompile Include="DeadLockDetector.cpp">
+      <Filter>Thread</Filter>
+    </ClCompile>
+    <ClCompile Include="RefCounting.cpp">
+      <Filter>Memory</Filter>
+    </ClCompile>
+    <ClCompile Include="Allocator.cpp">
+      <Filter>Memory</Filter>
+    </ClCompile>
+    <ClCompile Include="Memory.cpp">
+      <Filter>Memory</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

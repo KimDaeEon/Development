@@ -18,6 +18,10 @@ namespace CSharpStudy
         int a;
         int b;
     }
+
+    class InnerType
+    {
+    }
     class Program
     {
         #region Do Not Create Generic Specialization on Base Classes Or Interfaces
@@ -61,15 +65,6 @@ namespace CSharpStudy
 
         static void Main(string[] args)
         {
-
-
-            temp a = new temp();
-            int c = 10;
-            c = 0;
-
-            a = null;
-
-
 
             #region Prefer Iterator Methods to Returning Collections
             ////var it = Iterator3.GenerateAlphabetSubset('1', 'b'); // 실행 전 에러 출력

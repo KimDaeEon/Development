@@ -11,7 +11,6 @@
 // W : WriteFlag (현재 lock을 차지한 ThreadId)
 // R : ReadFlag (현재 Read하고 있는 스레드 갯수)
 
-// TODO: 아래 내용 나머지 코드 구현되는거 보면서 재확인 필요
 // Lock 정책
 // Write -> Write 순으로 lock 잡는 것 가능
 // Write -> Read 순으로 lock을 잡는 것 가능
@@ -28,14 +27,14 @@ class Lock
 	};
 
 public:
-	void WriteLock();
-	void WriteUnlock();
-	void ReadLock();
-	void ReadUnlock();
+	void WriteLock(const char* name);
+	void WriteUnlock(const char* name);
+	void ReadLock(const char* name);
+	void ReadUnlock(const char* name);
 
 private:
 	Atomic<uint32> _lockFlag = EMPTY_FLAG;
-	uint16 _writeCount = 0; // // WriteLock을 잡고 있는 상태에서 또 잡을 수도 있다. 그것을 체크하기 위한 변수
+	uint16 _writeCount = 0; // WriteLock을 잡고 있는 상태에서 또 잡을 수도 있다. 그것을 체크하기 위한 변수. 동일 스레드에서만 변경되기에 atomic이 쓰이지 않았다.
 };
 
 
@@ -45,34 +44,36 @@ private:
 class ReadLockGuard
 {
 public:
-	ReadLockGuard(Lock& lock) : _lock(lock)
+	ReadLockGuard(Lock& lock, const char* name) : _lock(lock), _name(name)
 	{
-		_lock.ReadLock();
+		_lock.ReadLock(_name);
 	}
 
 	~ReadLockGuard()
 	{
-		_lock.ReadUnlock();
+		_lock.ReadUnlock(_name);
 	}
 
 private:
-	Lock& _lock;
+	Lock&			_lock;
+	const char*		_name;
 };
 
 
 class WriteLockGuard
 {
 public:
-	WriteLockGuard(Lock& lock) : _lock(lock)
+	WriteLockGuard(Lock& lock, const char* name) : _lock(lock), _name(name)
 	{
-		_lock.WriteLock();
+		_lock.WriteLock(_name);
 	}
 
 	~WriteLockGuard()
 	{
-		_lock.WriteUnlock();
+		_lock.WriteUnlock(_name);
 	}
 
 private:
-	Lock& _lock;
+	Lock&			_lock;
+	const char*		_name;
 };

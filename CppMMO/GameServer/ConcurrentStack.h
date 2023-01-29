@@ -38,7 +38,7 @@ namespace Archive
 		void WaitPop(T& value)
 		{
 			unique_lock<mutex> lock(_mutex);
-			_condVar.wait(lock, [this] { return _stack.empty() == false; }); // TODO: 람대 캡쳐 [this]  이거 안쓰면 _stack 부분에서 에러나는지 확인
+			_condVar.wait(lock, [this] { return _stack.empty() == false; }); // [this] 캡처 안쓰면 멤버 변수 접근 시에 에러가 나온다.
 			value = std::move(_stack.front());
 			_stack.pop();
 		}
