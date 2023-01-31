@@ -9,19 +9,11 @@ using System.Threading;
 using System.Collections;
 using System.Linq;
 using LINQ.PreferIteratorMethodsToReturningCollections;
+using LINQ.CreateComposableAPIsForSequences;
 using System.Diagnostics;
 
 namespace CSharpStudy
 {
-    public class temp
-    {
-        int a;
-        int b;
-    }
-
-    class InnerType
-    {
-    }
     class Program
     {
         #region Do Not Create Generic Specialization on Base Classes Or Interfaces
@@ -63,8 +55,18 @@ namespace CSharpStudy
         //}
         #endregion
 
+
         static void Main(string[] args)
         {
+            #region Create Composable APIs for Sequences
+            //List<int> a = new List<int>() { 1, 2, 3, 4 };
+            //var i = foo.Square(foo.Unique(a));
+
+            //foreach (var n in i)
+            //{
+            //    Console.WriteLine(n);
+            //}
+            #endregion
 
             #region Prefer Iterator Methods to Returning Collections
             ////var it = Iterator3.GenerateAlphabetSubset('1', 'b'); // 실행 전 에러 출력

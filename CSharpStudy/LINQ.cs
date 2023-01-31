@@ -66,29 +66,29 @@ namespace LINQ
             public static IEnumerator<char> GenerateAlphabetSubset(char first, char last)
             {
                 // 이 부분에 대한 체크는 MoveNext()에서 처리된다. 이 코드로 인해 생성되는 코드는 아래 EmbeddedSubsetIterator를 참고
-                if(first < 'a')
+                if (first < 'a')
                 {
                     throw new ArgumentException("first must be at least the letter a", nameof(first));
                 }
 
-                if(first > 'z')
+                if (first > 'z')
                 {
                     throw new ArgumentException("first must be no greater than z", nameof(first));
                 }
 
-                if(last < first)
+                if (last < first)
                 {
                     throw new ArgumentException("last must be at least as large as first", nameof(last));
                 }
 
-                if(last > 'z')
+                if (last > 'z')
                 {
                     throw new ArgumentException("last must not be past z", nameof(last));
                 }
 
                 var letter = first;
 
-                while(letter <= last)
+                while (letter <= last)
                 {
                     yield return letter;
                     letter++;
@@ -100,7 +100,7 @@ namespace LINQ
                 private readonly char first;
                 private readonly char last;
 
-                public EmbeddedSubsetIterator (char first, char last)
+                public EmbeddedSubsetIterator(char first, char last)
                 {
                     this.first = first;
                     this.last = last;
@@ -131,22 +131,22 @@ namespace LINQ
                     {
                         if (!isInitialized)
                         {
-                            if(first < 'a')
+                            if (first < 'a')
                             {
                                 throw new ArgumentException("first must be at least the letter a", nameof(first));
                             }
 
-                            if(first > 'z')
+                            if (first > 'z')
                             {
                                 throw new ArgumentException("first must be no greater than z", nameof(first));
                             }
 
-                            if(last < first)
+                            if (last < first)
                             {
                                 throw new ArgumentException("last must be at least as large as first", nameof(last));
                             }
 
-                            if(last > 'z')
+                            if (last > 'z')
                             {
                                 throw new ArgumentException("last must not be past z", nameof(last));
                             }
@@ -162,7 +162,7 @@ namespace LINQ
                     object IEnumerator.Current => letter;
                     public void Reset() => isInitialized = false;
                     void IDisposable.Dispose() { }
-                    
+
                 }
             }
         }
@@ -174,22 +174,22 @@ namespace LINQ
             // 실제 문자를 생성하는 IEnumerable<char>는 GenerateAlphabetSubsetImpl에서 생성하고, 여기서는 조건만 체크한다.
             public static IEnumerable<char> GenerateAlphabetSubset(char first, char last)
             {
-                if(first < 'a')
+                if (first < 'a')
                 {
                     throw new ArgumentException("first must be at least the letter a", nameof(first));
                 }
 
-                if(first > 'z')
+                if (first > 'z')
                 {
                     throw new ArgumentException("first must be no greater than z", nameof(first));
                 }
 
-                if(last < first)
+                if (last < first)
                 {
                     throw new ArgumentException("last must be at least as large as first", nameof(last));
                 }
 
-                if(last > 'z')
+                if (last > 'z')
                 {
                     throw new ArgumentException("last must not be past z", nameof(last));
                 }
@@ -205,6 +205,49 @@ namespace LINQ
                     yield return letter;
                     letter++;
                 }
+            }
+        }
+    }
+
+    // 시퀀스에 사용할 수 있는 조합 가능한 API를 작성하라
+    namespace CreateComposableAPIsForSequences
+    {
+        // 아래처럼 Input으로 시퀀스를 받고 시퀀스를 리턴하는 함수를 만들라는 것이다.
+        // 그래야지 Unique(Square(a))와 같이 함수를 중첩해서 지연 실행할 수 있다.
+        public class foo
+        {
+            // Square과 Unique는 조합되어서 '지연연산'이 되어 저장공간이 따로 필요 없고, 시퀀스 순회 자체도 1번만 하게 된다.
+            // 시퀀스란 IEnumerable<T> 인터페이스 또는 IQueryable<T> 인터페이스를 구현하는 형식의 개체를 의미한다.
+            public static IEnumerable<T> Unique<T>(IEnumerable<T> nums)
+            {
+                var uniqueVals = new HashSet<T>();
+                Console.WriteLine("Entering Unique");
+
+                foreach (var num in nums)
+                {
+                    if (!uniqueVals.Contains(num))
+                    {
+                        uniqueVals.Add(num);
+                        Console.WriteLine("yield return Unique");
+                        yield return num;
+                        Console.WriteLine("re-entering Unique after yield return");
+                    }
+                }
+
+                Console.WriteLine("Exiting Unique");
+            }
+
+            public static IEnumerable<int> Square(IEnumerable<int> nums)
+            {
+                Console.WriteLine("Entering Square");
+                foreach (var num in nums)
+                {
+                    Console.WriteLine("yield return Sqaure");
+                    yield return num * num;
+                    Console.WriteLine("re-entering Square after yield return");
+                }
+
+                Console.WriteLine("Exiting Square");
             }
         }
     }
