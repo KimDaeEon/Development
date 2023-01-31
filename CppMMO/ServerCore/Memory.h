@@ -3,9 +3,9 @@
 
 // 가변 인자를 쓰면 인자가 없을 수도 있다.
 template<typename Type, typename... Args>
-Type* xnew(Args&&... args)
+Type* myNew(Args&&... args)
 {
-	Type* memory = static_cast<Type*>(BaseAllocator::Alloc(sizeof(Type)));
+	Type* memory = static_cast<Type*>(myAlloc(sizeof(Type)));
 
 	// placement new
 	new(memory) Type(std::forward<Args>(args)...);
@@ -14,8 +14,8 @@ Type* xnew(Args&&... args)
 }
 
 template<typename Type>
-void xdelete(Type* obj)
+void myDelete(Type* obj)
 {
 	obj->~Type();
-	xrelease(obj);
+	myRelease(obj);
 }
