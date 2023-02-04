@@ -17,10 +17,9 @@
 // ------------------------
 //			Memory
 // ------------------------
-
 #ifdef _DEBUG
-#define myAlloc(size) StompAllocator::Alloc(size)
-#define myRelease(ptr) StompAllocator::Release(ptr)
+#define myAlloc(size) PoolAllocator::Alloc(size)
+#define myRelease(ptr) PoolAllocator::Release(ptr)
 #else
 #define myAlloc(size) BaseAllocator::Alloc(size)
 #define myRelease(ptr) BaseAllocator::Release(ptr)

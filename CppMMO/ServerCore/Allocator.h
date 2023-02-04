@@ -27,12 +27,24 @@ public:
 	static void Release(void* ptr);
 };
 
+// ------------------------
+//		PoolAllocator
+// ------------------------
+
+// 메모리 풀을 사용하는 할당자
+class PoolAllocator
+{
+public:
+	static void* Alloc(int32 size);
+	static void Release(void* ptr);
+};
+
 // -------------------------
 //		STL Allocator
 // -------------------------
 
-// STL에서 요구하는 내용들을 담아 놓은 Custom Allocator
-// STL 컨테이너에서 사용이 가능하다.
+// STL 컨테이너에서 요구하는 사항들을 만족하는 할당자
+// 이로 인해 STL 컨테이너에서 사용이 가능하다.
 // TODO: 코드누리 강의를 보면 여기에 들어가야할 요소가 많다.. 추후 필요하면 추가
 template<typename T>
 class StlAllocator

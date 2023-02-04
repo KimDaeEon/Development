@@ -1,5 +1,6 @@
 #include "pch.h"
 #include "Allocator.h"
+#include "Memory.h"
 
 // ------------------------
 //		BaseAllocator
@@ -41,4 +42,19 @@ void StompAllocator::Release(void* ptr)
 	// MEM_RELEASE 옵션을 주면 아래 함수 두 번째 인자는 0을 넣어야 한다.
 	// MEM_DECOMMIT 옵션을 주면 맨처음 인자 주소부터 두 번째 인자크기만큼 메모리를 해제
 	::VirtualFree(reinterpret_cast<void*>(baseAddress), 0, MEM_RELEASE);
+}
+
+
+// -----------------------
+//		PoolAllocator
+// -----------------------
+
+void* PoolAllocator::Alloc(int32 size)
+{
+	return GMemoryPoolManager->Allocate(size);
+}
+
+void PoolAllocator::Release(void* ptr)
+{
+	GMemoryPoolManager->Release(ptr);
 }

@@ -5,6 +5,7 @@
 #include <mutex>
 #include "Memory.h"
 #include "Allocator.h"
+#include "Memory.h"
 
 #pragma region StompAllocatorTest
 //class Player
@@ -31,16 +32,5 @@
 
 int main()
 {
-	mySet<int> um;
 
-	um.insert(1);
-	um.insert(1);
-	um.insert(2);
-
-	for (auto i : um)
-	{
-		cout << i << endl;
-	}
-	
 }
-
