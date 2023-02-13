@@ -3,6 +3,7 @@
 #include "ThreadManager.h"
 #include "DeadLockDetector.h"
 #include "Memory.h"
+#include "SocketUtils.h"
 
 ThreadManager*		GThreadManager = nullptr;
 MemoryPoolManager*	GMemoryPoolManager = nullptr;
@@ -17,6 +18,7 @@ public:
 		GThreadManager = new ThreadManager();
 		GMemoryPoolManager = new MemoryPoolManager();
 		GDeadLockDetector = new DeadLockDetector();
+		SocketUtils::Init();
 	}
 
 	~CoreGlobal()
@@ -24,6 +26,7 @@ public:
 		delete GThreadManager;
 		delete GMemoryPoolManager;
 		delete GDeadLockDetector;
+		SocketUtils::Clear();
 	}
 
 } GCoreGlobal; // 전역변수를 통해 초기화 실행
