@@ -55,9 +55,57 @@ namespace CSharpStudy
         //}
         #endregion
 
+        #region  Decouple Iterations from Actions, Predicates, and Functions
+        // LINQ에서 사용하는 Where이 아래와 유사하다고 보면 된다.
+        // 순회방식(시퀀스)과 Predicate(Function, Action도 넓게 보면)이 분리되어서 작동됨을 알 수 있다.
+        public static IEnumerable MyWhere<T>(IEnumerable<T> sequence, Predicate<T> filterFunc)
+        {
+            if (sequence == null)
+            {
+                throw new ArgumentNullException(nameof(sequence), "sequence must not be null");
+            }
+
+            if (filterFunc == null)
+            {
+                throw new ArgumentNullException("Predicate mut not be null");
+            }
+
+            foreach (T item in sequence)
+            {
+                if (filterFunc(item))
+                {
+                    yield return item;
+                }
+            }
+        }
+
+        public static IEnumerable<T> MySelect<T>(IEnumerable<T> sequence, Func<T,T> func)
+        {
+            if (sequence == null)
+            {
+                throw new ArgumentNullException(nameof(sequence), "sequence must not be null");
+            }
+
+            foreach (T element in sequence)
+            {
+                yield return func(element);
+            }
+        }
+
+        //List<int> li = new List<int>() { 1, 2, 3, 4 };
+
+        //foreach (var item in MyWhere(MySelect(li, (item)=>item*item), (item) => item % 2 == 0))
+        //{
+        //    Console.WriteLine(item);
+        //}
+        #endregion
 
         static void Main(string[] args)
         {
+            Func<float, int> a = ((item) => { return (int)(item * item); });
+
+            Console.WriteLine(a(2.3f));
+
             #region Create Composable APIs for Sequences
             //List<int> a = new List<int>() { 1, 2, 3, 4 };
             //var i = foo.Square(foo.Unique(a));
