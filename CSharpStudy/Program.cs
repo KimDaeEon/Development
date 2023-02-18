@@ -10,10 +10,85 @@ using System.Collections;
 using System.Linq;
 using LINQ.PreferIteratorMethodsToReturningCollections;
 using LINQ.CreateComposableAPIsForSequences;
+using LINQ.AvoidModifyingBoundVariables;
 using System.Diagnostics;
+using System.Threading.Tasks;
 
 namespace CSharpStudy
 {
+    #region  Decouple Iterations from Actions, Predicates, and Functions
+    public static class MyExtension
+    {
+        // LINQ에서 사용하는 Where이 아래와 유사하다고 보면 된다.
+        // 순회방식(시퀀스)과 Predicate(Function, Action도 넓게 보면)이 분리되어서 작동됨을 알 수 있다.
+        public static IEnumerable<T> MyWhere<T>(this IEnumerable<T> sequence, Predicate<T> filterFunc)
+        {
+            if (sequence == null)
+            {
+                throw new ArgumentNullException(nameof(sequence), "sequence must not be null");
+            }
+
+            if (filterFunc == null)
+            {
+                throw new ArgumentNullException("Predicate mut not be null");
+            }
+
+            foreach (T item in sequence)
+            {
+                if (filterFunc(item))
+                {
+                    yield return item;
+                }
+            }
+        }
+
+        public static IEnumerable<T> MySelect<T>(this IEnumerable<T> sequence, Func<T, T> func)
+        {
+            if (sequence == null)
+            {
+                throw new ArgumentNullException(nameof(sequence), "sequence must not be null");
+            }
+
+            foreach (T element in sequence)
+            {
+                yield return func(element);
+            }
+        }
+
+        //List<int> li = new List<int>() { 1, 2, 3, 4 };
+
+        //foreach (var item in MyWhere(MySelect(li, (item)=>item*item), (item) => item % 2 == 0))
+        //{
+        //    Console.WriteLine(item);
+        //}
+    }
+    #endregion
+
+    public class ExceptiontTest
+    {
+        public static bool LogException(Exception e)
+        {
+            Console.WriteLine();
+            Console.WriteLine("Logging..");
+            Console.WriteLine(e);
+            Console.WriteLine();
+
+            return false;
+        }
+
+        public static void MakeException(int a)
+        {
+            if (a == 1)
+            {
+                throw new ArgumentException("ArgumentException");
+            }
+            else
+            {
+                throw new TimeoutException("TimeOutException");
+            }
+        }
+    }
+
     class Program
     {
         #region Do Not Create Generic Specialization on Base Classes Or Interfaces
@@ -55,56 +130,84 @@ namespace CSharpStudy
         //}
         #endregion
 
-        #region  Decouple Iterations from Actions, Predicates, and Functions
-        // LINQ에서 사용하는 Where이 아래와 유사하다고 보면 된다.
-        // 순회방식(시퀀스)과 Predicate(Function, Action도 넓게 보면)이 분리되어서 작동됨을 알 수 있다.
-        public static IEnumerable MyWhere<T>(IEnumerable<T> sequence, Predicate<T> filterFunc)
-        {
-            if (sequence == null)
-            {
-                throw new ArgumentNullException(nameof(sequence), "sequence must not be null");
-            }
-
-            if (filterFunc == null)
-            {
-                throw new ArgumentNullException("Predicate mut not be null");
-            }
-
-            foreach (T item in sequence)
-            {
-                if (filterFunc(item))
-                {
-                    yield return item;
-                }
-            }
-        }
-
-        public static IEnumerable<T> MySelect<T>(IEnumerable<T> sequence, Func<T,T> func)
-        {
-            if (sequence == null)
-            {
-                throw new ArgumentNullException(nameof(sequence), "sequence must not be null");
-            }
-
-            foreach (T element in sequence)
-            {
-                yield return func(element);
-            }
-        }
-
-        //List<int> li = new List<int>() { 1, 2, 3, 4 };
-
-        //foreach (var item in MyWhere(MySelect(li, (item)=>item*item), (item) => item % 2 == 0))
-        //{
-        //    Console.WriteLine(item);
-        //}
-        #endregion
 
         static void Main(string[] args)
         {
-            Func<float, int> a = ((item) => { return (int)(item * item); });
+            // 예외 필터의 다른 활용 예를 살펴보자
+            #region Leverage Side Effects in Exception Filters
+            //int input = int.Parse(Console.ReadLine());
+            //try
+            //{
+            //    ExceptiontTest.MakeException(input);
+            //}
+            //// 아래를 보면 예외 필터를 써서 모든 Exception에 대해서 로깅을 한다.
+            //// catch 안의 내용은 when 내부가 false이면 실행이 안되고 다음 catch문으로 넘어가서 처리된다는 것도 알아두자.
+            //// 아래처럼 작성하면 Debugging 시에는 로그가 뜨고, 디버깅이 아닐 때에는 로그가 안나오게 할 수 있다.
+            //catch(Exception e) when ((System.Diagnostics.Debugger.IsAttached) && ExceptiontTest.LogException(e) )
+            //{
+            //    Console.WriteLine("Can't happen");
+            //}
+            //catch (ArgumentException e)
+            //{
+            //    Console.WriteLine("Do something for AE");
+            //}
 
-            Console.WriteLine(a(2.3f));
+            //catch (TimeoutException e)
+            //{
+            //    Console.WriteLine("Do something for TE");
+            //}
+            //// 맨 위의 코드와는 반대로 앞에서 처리되지 않은 예외에 대해서 로깅하는 방법
+            ////catch (Exception e) when (ExceptiontTest.LogException(e))
+            ////{
+            ////    Console.WriteLine("Can't happen");
+            ////}
+            #endregion
+
+
+            #region Avoid Modifying Bound Variables
+            //// 람다 표현식에서 인스턴스 변수만 접근하는 경우
+            //List<int> li = new List<int>() { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
+            //{
+            //    temp2.ModFilter a = new temp2.ModFilter(5);
+            //    temp2.ModFilterGeneratedByCompiler b = new temp2.ModFilterGeneratedByCompiler(5);
+
+            //    foreach (var i in a.FindValues(li))
+            //    {
+            //        Console.WriteLine(i);
+            //    }
+
+            //    foreach (var i in b.FindValues(li))
+            //    {
+            //        Console.WriteLine(i);
+            //    }
+            //}
+
+            //// 람다 표현식에서 인스턴스 변수 + 지역 변수 모두 접근하는 경우
+            //{
+            //    temp3.ModFilter a = new temp3.ModFilter(5);
+            //    temp3.ModFilterGeneratedByCompiler b = new temp3.ModFilterGeneratedByCompiler(5);
+
+            //    foreach (var i in a.FindValues(li))
+            //    {
+            //        Console.WriteLine(i);
+            //    }
+
+            //    foreach (var i in b.FindValues(li))
+            //    {
+            //        Console.WriteLine(i);
+            //    }
+            //}
+            #endregion
+
+            #region  Decouple Iterations from Actions, Predicates, and Functions
+            //List<int> a = new List<int>() { 1, 2, 3, 4 };
+
+            //// LINQ 구문을 쓰면 아래와 같이 컴파일러가 확장 함수가 바꿔준다고 보면 된다.
+            //foreach (var i in a.MyWhere(item => item % 2 == 0).MySelect(item => item * item))
+            //{
+            //    Console.WriteLine(i);
+            //}
+            #endregion
 
             #region Create Composable APIs for Sequences
             //List<int> a = new List<int>() { 1, 2, 3, 4 };

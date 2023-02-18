@@ -251,4 +251,148 @@ namespace LINQ
             }
         }
     }
+
+    // 바인딩된 변수는 수정하지 말라
+    namespace AvoidModifyingBoundVariables
+    {
+        // 람다 표현식이 인스턴스 변수나 지역변수에 전혀 접근하지 않는 경우 코드 생성 예제
+        public class temp1
+        {
+
+            public void foo()
+            {
+                int[] someNumbers = { 0, 1, 2, 3, 4, 5 };
+                var answers = from n in someNumbers select n * n;
+            }
+
+            // 컴파일러가 위의 코드를 실행시키기 위해 만들어내는 코드
+            private static int HiddenFunc(int n) => (n * n); 
+            private static Func<int, int> HiddenDelegateDefinition; 
+            public void foo2()
+            {
+                int[] someNumbers = new int[] { 0, 1, 2, 3, 4, 5 };
+                if(HiddenDelegateDefinition == null)
+                {
+                    HiddenDelegateDefinition = new Func<int, int>(HiddenFunc); // 이렇게 Delegate가 정적으로 만들어져서 사용되는 것 명심
+                }
+
+                var answers = someNumbers.Select<int, int>(HiddenDelegateDefinition);
+            }
+        }
+
+        // 람다 표현식이 인스턴스 변수에 접근, 지역변수에는 접근하지 않는 경우 코드 생성 예제
+        public class temp2
+        {
+            public class ModFilter
+            {
+                private readonly int modulus;
+
+                public ModFilter(int mod)
+                {
+                    modulus = mod;
+                }
+
+                public IEnumerable<int> FindValues(IEnumerable<int> sequence)
+                {
+                    return from n in sequence
+                           where n % modulus == 0 // 인스턴스 변수를 참조하게 되었다.
+                           select n * n; // 이전 예제와 이 부분은 동일
+                }
+            }
+
+            // 위의 코드로 인해 컴파일러가 생성하는 코드
+            public class ModFilterGeneratedByCompiler
+            {
+                private readonly int modulus;
+
+                public ModFilterGeneratedByCompiler(int mod)
+                {
+                    modulus = mod;
+                }
+
+                // 새롭게 추가된 인스턴스 메서드, modulus가 멤버변수여서 그것을 참조하기 위해 인스턴스용 멤버 함수가 만들어졌다.
+                private bool WhereClause(int n) => ((n % this.modulus) == 0);
+
+                // 기존 메서드
+                private static int HiddenFunc(int n) => (n * n);
+
+                // 기존 델리게이트
+                private static Func<int, int> HiddenDelegateDefinition;
+
+                public IEnumerable<int> FindValues(IEnumerable<int> sequence)
+                {
+                    if (HiddenDelegateDefinition == null)
+                    {
+                        HiddenDelegateDefinition = new Func<int, int>(HiddenFunc);
+                    }
+
+                    // 새롭게 추가된 인스턴스 메서드 WhereClause가 쓰이게 되었다.
+                    return sequence.Where<int>(
+                        new Func<int, bool>(this.WhereClause)).Select<int, int>(HiddenDelegateDefinition);
+                }
+            }
+        }
+
+        // 람다 표현식이 인스턴스 변수와 지역 변수 모두 접근하는 경우 코드 생성 예제
+        public class temp3
+        {
+            public class ModFilter
+            {
+                private readonly int modulus;
+
+                public ModFilter(int mod)
+                {
+                    modulus = mod;
+                }
+
+                public IEnumerable<int> FindValues(IEnumerable<int> sequence)
+                {
+                    int numValues = 0;
+                    return from n in sequence
+                           where n % modulus == 0 // 이전 예전 부분과 동일
+                           select n * n / ++numValues; // 여기서 지역 변수를 사용하는 것이 위의 예제와 다르다.
+                }
+            }
+
+            // 위의 코드로 인해 컴파일러가 생성하는 코드
+            public class ModFilterGeneratedByCompiler
+            {
+                // 기존 클래스 안에 Nested Class인 Closure가 생성이 되고,
+                // 지역변수와 앞서 만들었던 HiddenFunction도 이 클래스에 포함된다.
+                private sealed class Closure
+                {
+                    public ModFilterGeneratedByCompiler outer;
+                    public int numValues;
+
+                    public int SelectClause(int n) => ((n * n) / ++this.numValues);
+                }
+
+                private readonly int modulus;
+
+                public ModFilterGeneratedByCompiler(int mod)
+                {
+                    this.modulus = mod;
+                }
+
+                private bool WhereClause(int n) => ((n % this.modulus) == 0);
+
+                public IEnumerable<int> FindValues(IEnumerable<int> sequence)
+                {
+                    var c = new Closure();
+                    c.outer = this; // 추후에 Closure 내부에서 다른 참조가 필요할 때에 사용
+
+                    // 아래 부분이 정말 중요, C++ 람다처럼 값이 복사되어서 사용되는 것이 아니다.
+                    // 지역 변수가 캡쳐된 블럭에서 발생한 지역 변수에 대한 수정 사항이 람다 함수에 그대로 반영된다고 보면 된다.
+                    // 그래서 람다 함수에 캡쳐된 변수는 수정하지 않는 것이 좋다.
+                    c.numValues = 0; 
+
+                    return sequence.Where<int>(
+                        new Func<int, bool>(this.WhereClause))
+                        .Select<int, int>(new Func<int, int>(c.SelectClause));
+                }
+            }
+        }
+
+        
+    }
 }
