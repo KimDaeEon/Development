@@ -62,8 +62,16 @@ void myDelete(Type* obj)
 	myRelease(obj);
 }
 
-template<typename Type>
-shared_ptr<Type> myMakeShared()
+// 이게 있으면 아래의 shared_ptr<Type> myMakeShared(Args&&... args)로 추론이 안된다.. 
+// 템플릿 추론 우선 순서 명심해두자.
+//template<typename Type>
+//shared_ptr<Type> myMakeShared()
+//{
+//	return shared_ptr<Type>{ myNew<Type>(), myDelete<Type> };
+//}
+
+template<typename Type, typename... Args>
+shared_ptr<Type> myMakeShared(Args&&... args)
 {
-	return shared_ptr<Type>{ myNew<Type>(), myDelete<Type> };
+	return shared_ptr<Type>{ myNew<Type>(std::forward<Args>(args)...), myDelete<Type> };
 }

@@ -40,12 +40,13 @@ public:
 	 }
 
 	 // Pop과 Push를 잊을 수도 있으니 shared_ptr로 만들어서 넘겨주는 함수 추가
-	 //static shared_ptr<Type> MakeShared()
-	 //{
-		// // shared_ptr의 경우 아래처럼 소멸자를 따로 지정해줄 수 있다는 것도 알아두자.
-		// shared_ptr<Type> ptr = { Pop(), Push };
-		// return ptr;
-	 //}
+	 template<typename... Args>
+	 static shared_ptr<Type> MakeShared(Args&&... args)
+	 {
+		 // shared_ptr의 경우 아래처럼 소멸자를 따로 지정해줄 수 있다는 것도 알아두자.
+		 shared_ptr<Type> ptr = { Pop(forward<Args>(args)...), Push };
+		 return ptr;
+	 }
 
 private:
 

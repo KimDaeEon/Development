@@ -7,8 +7,10 @@
 #include <iostream>
 #include <thread>
 #include <mutex>
-#include <SocketUtils.h>
 
+#include "Service.h"
+#include "Session.h"
+#include "Memory.h"
 
 #pragma region StompAllocatorTest
 //class Player
@@ -100,21 +102,30 @@
 //}
 #pragma endregion
 
+class GameSession : public Session
+{
+
+};
 int main()
 {
-	SOCKET socket = SocketUtils::CreateSocket();
+	ServerServiceRef service = myMakeShared<ServerService>(
+		NetworkAddress(L"127.0.0.1", 7777),
+		myMakeShared<IocpCore>(),
+		myMakeShared<GameSession>,
+		100
+		);
 
-	SocketUtils::BindAnyAddress(socket, 7777);
-
-	SocketUtils::Listen(socket);
-
-	SOCKET clientSocket = ::accept(socket, nullptr, nullptr);
-
-	cout << "Client Connected" << endl;
-
-	while (true)
+	ASSERT_CRASH(service->Start());
+	
+	for (int32 i = 0; i < 5; i++)
 	{
-
+		GThreadManager->Launch([=]()
+			{
+				while (true)
+				{
+					service->GetIocpCore()->Dispatch();
+				}
+			});
 	}
 
 	GThreadManager->Join();
