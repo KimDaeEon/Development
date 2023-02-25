@@ -5,6 +5,7 @@ class Session;
 enum class EventType : uint8
 {
 	Connect,
+	Disconnect,
 	Accept,
 	//PreRecv, zero byte recv 용도, 설명은 링크 참조 // https://ozt88.tistory.com/26
 	Recv,
@@ -44,6 +45,15 @@ public:
 	ConnectEvent() : IocpEvent(EventType::Connect) {}
 };
 
+// ------------------------------
+//		  DisconnectEvent
+// ------------------------------
+class DisconnectEvent : public IocpEvent
+{
+public:
+	DisconnectEvent() : IocpEvent(EventType::Disconnect) {}
+};
+
 
 // ------------------------------
 //			AcceptEvent
@@ -75,4 +85,7 @@ class SendEvent : public IocpEvent
 {
 public:
 	SendEvent() : IocpEvent(EventType::Send) {}
+
+	// TEMP
+	vector<BYTE> buffer;
 };

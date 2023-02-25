@@ -20,6 +20,7 @@ void Service::CloseService()
 SessionRef Service::CreateSession()
 {
 	SessionRef session = _sessionFactory();
+	session->SetSerivce(shared_from_this()); // 세션을 관리하고 있는 서비스 등록
 
 	if (_iocpCore->Register(session) == false)
 	{
@@ -58,7 +59,22 @@ ClientService::~ClientService()
 
 bool ClientService::Start()
 {
-	return false;
+	if (CanStart() == false)
+	{
+		return false;
+	}
+
+	const int32 sessionCount = GetMaxSessionCount();
+	for (int32 i = 0; i < sessionCount; i++)
+	{
+		SessionRef session = CreateSession();
+		if (session->Connect() == false)
+		{
+			return false;
+		}
+	}
+
+	return true;
 }
 
 
