@@ -5,7 +5,6 @@
 // ---------------------------
 //		MemoryPoolManager
 // ---------------------------
-
 MemoryPoolManager::MemoryPoolManager()
 {
 	int32 size = 0;

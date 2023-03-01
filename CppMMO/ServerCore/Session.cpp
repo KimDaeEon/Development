@@ -6,7 +6,7 @@
 // --------------------------------
 //			   Session
 // --------------------------------
-Session::Session()
+Session::Session() : _recvBuffer(BUFFER_SIZE)
 {
 	_socket = SocketUtils::CreateSocket();
 }
@@ -16,26 +16,37 @@ Session::~Session()
 	SocketUtils::Close(_socket);
 }
 
-// 기본적으로 Send가 가장 생각할 것이 많고 구현이 어렵다.
-// 고민해야할 것들
-// 1) 버퍼 관리 
-// 2) sendEvent 관리 (단일 or 복수, WSASend 중첩 여부)
-void Session::Send(BYTE* buffer, int32 len)
+void Session::Send(SendBufferRef sendBuffer)
 {
-	// TEMP
-	SendEvent* sendEvent = myNew<SendEvent>();
-	sendEvent->owner = shared_from_this();
-	sendEvent->buffer.resize(len);
-	::memcpy(sendEvent->buffer.data(), buffer, len);
+	if(IsConnected() == false)
+	{
+		return;
+	}
+	
+	bool isRegisterSend = false;
 
 	// WSASend는 thread-safe가 아니여서 여러 스레드에서 Send를 호출할 수 있기에 lock으로 안전함을 보장해줘야 한다.
 	// 그렇다면 Recv는 thread-safe 하지 않냐가 궁금할 수 있는데, Recv도 thread-safe 하지 않다.
 	// 그런데 Recv는 현재 코드에서 lock을 잡지 않는다. 한 세션에서 Recv를 여러 스레드에서 호출하지 않기 때문이다.
 	// WSASend와 WSARecv의 thread-safe에 대한 설명은 아래 링크 참조
 	// https://stackoverflow.com/questions/28770789/is-calling-wsasend-and-wsarecv-from-two-threads-safe-when-using-iocp
-	WRITE_LOCK; 
+	{
+		WRITE_LOCK;
 
-	RegisterSend(sendEvent);
+		_sendQueue.push(sendBuffer);
+
+		// RegisterSend가 안걸렸으면 걸어준다.
+		if (_isSendRegistered.exchange(true) == false)
+		{
+			isRegisterSend = true;
+		}
+	}
+
+	// 이렇게 RegisterSend를 바깥으로 빼줘서 WRITE_LOCK 부분이 너무 길어지지 않게 한다.
+	if (isRegisterSend)
+	{
+		RegisterSend();
+	}
 }
 
 bool Session::Connect()
@@ -55,9 +66,6 @@ void Session::Disconnect(const WCHAR* cause)
 	// TEMP
 	wcout << "Disconnect : " << cause << endl;
 
-	OnDisconnected(); // 컨텐츠 코드에서 오버로딩되어 처리
-	
-	GetService()->ReleaseSession(GetSessionRef());
 	RegisterDisconnect();
 }
 
@@ -83,7 +91,7 @@ void Session::Dispatch(IocpEvent* iocpEvent, int32 numOfBytes)
 		break;
 		
 	case EventType::Send:
-		ProcessSend(static_cast<SendEvent*>(iocpEvent), numOfBytes);
+		ProcessSend(numOfBytes);
 		break;
 		
 	default:
@@ -159,8 +167,8 @@ void Session::RegisterRecv()
 	_recvEvent.owner = shared_from_this(); // 이를 통해서 WSARecv 호출해둔 상황에서 Session 유지
 
 	WSABUF wsaBuf;
-	wsaBuf.buf = reinterpret_cast<char*>(_recvBuffer);
-	wsaBuf.len = len32(_recvBuffer);
+	wsaBuf.buf = reinterpret_cast<char*>(_recvBuffer.WritePos());
+	wsaBuf.len = _recvBuffer.FreeSize();
 
 	DWORD numOfBytes = 0;
 	DWORD flags = 0;
@@ -175,26 +183,56 @@ void Session::RegisterRecv()
 	}
 }
 
-void Session::RegisterSend(SendEvent* sendEvent)
+void Session::RegisterSend()
 {
 	if (IsConnected() == false)
 	{
 		return;
 	}
 
-	WSABUF wsaBuf;
-	wsaBuf.buf = (char*)sendEvent->buffer.data();
-	wsaBuf.len = (ULONG)sendEvent->buffer.size();
+	_sendEvent.Init();
+	_sendEvent.owner = shared_from_this();
+
+	// 보낼 데이터를 sendEvent에 등록
+	{
+		// 밖에서 Lock을 잡아주고 있지만, 혹시나 밖의 코드가 바뀔 수 있어서 락을 잡는다.
+		WRITE_LOCK;
+		
+		int32 writeSize = 0;
+		while (_sendQueue.empty() == false)
+		{
+			SendBufferRef sendBuffer = _sendQueue.front();
+			writeSize += sendBuffer->WriteSize();
+			// TODO: 너무 많은 데이터가 들어올 때에 예외 처리 코드 추가 필요
+
+			_sendQueue.pop();
+			_sendEvent.sendBuffers.push_back(sendBuffer);
+		}
+	}
+
+	// Scatter-Gather (흩어져 있는 WSABUF 데이터 모아서 보내기)
+	myVector<WSABUF> wsaBufs;
+	wsaBufs.reserve(_sendEvent.sendBuffers.size());
+
+	for (SendBufferRef sendBuffer : _sendEvent.sendBuffers)
+	{
+		WSABUF wsaBuf;
+		wsaBuf.buf = reinterpret_cast<char*>(sendBuffer->Buffer());
+		wsaBuf.len = static_cast<ULONG>(sendBuffer->WriteSize());
+		wsaBufs.push_back(wsaBuf);
+	}
+	
 
 	DWORD numOfBytes = 0;
-	if (SOCKET_ERROR == ::WSASend(_socket, &wsaBuf, 1, &numOfBytes, 0, sendEvent, nullptr))
+	if (SOCKET_ERROR == ::WSASend(_socket, wsaBufs.data(), static_cast<DWORD>(wsaBufs.size()), &numOfBytes, 0, &_sendEvent, nullptr))
 	{
 		int32 errorCode = ::WSAGetLastError();
 		if (errorCode != WSA_IO_PENDING)
 		{
 			HandleError(errorCode);
-			sendEvent->owner = nullptr;
-			myDelete(sendEvent);
+			_sendEvent.owner = nullptr;
+			_sendEvent.sendBuffers.clear();
+			_isSendRegistered.store(false);
 		}
 	}
 }
@@ -218,6 +256,11 @@ void Session::ProcessConnect()
 void Session::ProcessDisconnect()
 {
 	_disconnectEvent.owner = nullptr;
+
+	// 컨텐츠 코드에서 오버로딩되어 처리
+	// 아래 코드들이 Disconnect()에 있으면 Send 중에 접속이 끊길 시에 _sessions를 건드리게 된다.
+	OnDisconnected(); 
+	GetService()->ReleaseSession(GetSessionRef());
 }
 
 void Session::ProecessDisconnect()
@@ -234,17 +277,34 @@ void Session::ProcessRecv(int32 numOfBytes)
 		return;
 	}
 
-	// 컨텐츠 코드에서 오버로딩
-	OnRecv(_recvBuffer, numOfBytes);
+	// writePos를 당겨준다.
+	if (false == _recvBuffer.OnWrite(numOfBytes))
+	{
+		Disconnect(L"OnWrite Overflow"); // 이런 상황이 생기면 안된다.
+		return;
+	}
+
+	int32 dataSize = _recvBuffer.DataSize(); // 쌓여서 처리되어야할 데이터 크기
+
+	// 컨텐츠 코드에서 재정의
+	int32 processedLen = OnRecv(_recvBuffer.ReadPos(), numOfBytes);
+	if (processedLen < 0 || dataSize < processedLen || _recvBuffer.OnRead(processedLen) == false)
+	{
+		Disconnect(L"OnRead Overflow");
+		return;
+	}
+
+	// 데이터 읽기작업이 끝났으므로 버퍼 정렬을 실시
+	_recvBuffer.Relocate();
 
 	// 수신 등록
 	RegisterRecv();
 }
 
-void Session::ProcessSend(SendEvent* sendEvent, int32 numOfBytes)
+void Session::ProcessSend(int32 numOfBytes)
 {
-	sendEvent->owner = nullptr;
-	myDelete(sendEvent);
+	_sendEvent.owner = nullptr;
+	_sendEvent.sendBuffers.clear();
 
 	if (numOfBytes == 0)
 	{
@@ -254,6 +314,17 @@ void Session::ProcessSend(SendEvent* sendEvent, int32 numOfBytes)
 
 	// 컨텐츠 코드에서 오버로딩
 	OnSend(numOfBytes);
+
+	WRITE_LOCK;
+	if (_sendQueue.empty()) // TODO: 이거 LockFreeQueue로 바꾸고 위에 WRITE_LOCK 지우는 것 고려해보기
+	{
+		_isSendRegistered.store(false);
+	}
+	// sendQueue에 데이터가 추가되었다면 해당 스레드에서 다시 Send를 등록해준다.
+	else
+	{
+		RegisterSend();
+	}
 }
 
 void Session::HandleError(int32 errorCode)
@@ -272,4 +343,46 @@ void Session::HandleError(int32 errorCode)
 		cout << "Handle Error : " << errorCode << endl;
 		break;
 	}
+}
+
+
+// ---------------------------------
+//			PacketSession
+// ---------------------------------
+PacketSession::PacketSession()
+{
+}
+
+PacketSession::~PacketSession()
+{
+}
+
+// [size(2)][id(2)][data ...][size(2)][id(2)][data ...] <- 요런 구조의 데이터를 분리 조립한다.
+int32 PacketSession::OnRecv(BYTE* buffer, int32 len)
+{
+	int32 processedLen = 0;
+
+	while (true)
+	{
+		int32 dataSize = len - processedLen;
+		// 헤더를 파싱할 수 있을 때까지 대기
+		if (dataSize < sizeof(PacketHeader))
+		{
+			break;
+		}
+
+		PacketHeader header = *(reinterpret_cast<PacketHeader*>(&buffer[processedLen]));
+		// 헤더에 기록된 패킷 크기의 데이터를 파싱할 수 있을 때까지 대기
+		if (dataSize < header.size)
+		{
+			break;
+		}
+
+		// 헤더와 데이터 모두 분리 및 조립이 가능한 상태이므로 조립 시작
+		OnRecvPacket(&buffer[0], header.size);
+
+		processedLen += header.size;
+	}
+
+	return processedLen;
 }

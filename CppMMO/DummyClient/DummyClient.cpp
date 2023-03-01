@@ -5,35 +5,41 @@
 #include "Service.h"
 #include "Session.h"
 
-BYTE sendBuffer[] = "Hello Server";
+BYTE sendData[] = "Hello Server";
 
-class ServerSession : public Session
+class ServerSession : public PacketSession
 {
 public:
 	virtual void OnConnected() override
 	{
-		cout << "Connected to Server" << endl;
-		Send(sendBuffer, sizeof(sendBuffer));
+		//cout << "Connected to Server" << endl;
+
+		SendBufferRef sendBuffer = GSendBufferManager->Open(4096);
+		::memcpy(sendBuffer->Buffer(), sendData, sizeof(sendData));
+		sendBuffer->Close(sizeof(sendData));
+
+		Send(sendBuffer);
 	}
 
-	virtual int32 OnRecv(BYTE* buffer, int32 len) override
+	virtual int32 OnRecvPacket(BYTE* buffer, int32 len) override
 	{
-		cout << "OnRecv Len = " << len << endl;
+		PacketHeader* header = ((PacketHeader*)buffer);
+		cout << "Packet ID : " << header->id << " Size : " << header->size << endl;
 
-		//this_thread::sleep_for(1s);
-
-		Send(sendBuffer, sizeof(sendBuffer));
+		char recvBuffer[4096];
+		::memcpy(recvBuffer, &buffer[4], header->size - sizeof(PacketHeader));
+		cout << recvBuffer << endl;
 		return len;
 	}
 
 	virtual void OnSend(int32 len) override
 	{
-		cout << "OnSend Len = " << len << endl;
+		//cout << "OnSend Len = " << len << endl;
 	}
 
 	virtual void OnDisconnected() override
 	{
-		cout << "Disconnected" << endl;
+		//cout << "Disconnected" << endl;
 	}
 
 	~ServerSession()
@@ -44,16 +50,18 @@ public:
 
 int main()
 {
+	this_thread::sleep_for(1s);
+
 	ClientServiceRef service = myMakeShared<ClientService>(
 		NetworkAddress(L"127.0.0.1", 7777),
 		myMakeShared<IocpCore>(),
 		myMakeShared<ServerSession>,
-		100
+		1000
 		);
 
 	ASSERT_CRASH(service->Start());
 
-	for (int32 i = 0; i < 2; i++)
+	for (int32 i = 0; i < 5; i++)
 	{
 		GThreadManager->Launch([=]()
 			{

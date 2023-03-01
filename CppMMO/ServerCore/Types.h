@@ -20,9 +20,14 @@ using UniqueLock	= std::unique_lock<std::mutex>;
 using LockGuard		= std::lock_guard <std::mutex>;  
 
 // shared_ptr 전부 다 타이밍하기 귀찮으므로 아래와 같이 타입으로 만들어둔다.
-using IocpCoreRef		= std::shared_ptr<class IocpCore>;
-using IocpObjectRef		= std::shared_ptr<class IocpObject>;
-using SessionRef		= std::shared_ptr<class Session>;
-using ListenerRef		= std::shared_ptr<class Listener>;
-using ServerServiceRef	= std::shared_ptr<class ServerService>;
-using ClientServiceRef	= std::shared_ptr<class ClientService>;
+using IocpCoreRef			= std::shared_ptr<class IocpCore>;
+using IocpObjectRef			= std::shared_ptr<class IocpObject>;
+using SessionRef			= std::shared_ptr<class Session>;
+using PacketSessionRef		= std::shared_ptr<class PacketSession>;
+using ListenerRef			= std::shared_ptr<class Listener>;
+using ServerServiceRef		= std::shared_ptr<class ServerService>;
+using ClientServiceRef		= std::shared_ptr<class ClientService>;
+using SendBufferRef			= std::shared_ptr<class SendBuffer>;
+using SendBufferChunkRef	= std::shared_ptr<class SendBufferChunk>;
+
+#define _STOMP // TODO: 추후 이처 해제하고 테스트 필요. MemoryPoolManager::Allocate에서 문제 발생 중임

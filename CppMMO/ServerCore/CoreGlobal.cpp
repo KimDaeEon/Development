@@ -5,9 +5,11 @@
 #include "Memory.h"
 #include "SocketUtils.h"
 
-ThreadManager*		GThreadManager = nullptr;
-MemoryPoolManager*	GMemoryPoolManager = nullptr;
-DeadLockDetector*	GDeadLockDetector = nullptr;
+ThreadManager*			GThreadManager = nullptr;
+MemoryPoolManager*		GMemoryPoolManager = nullptr;
+SendBufferManager*		GSendBufferManager = nullptr;
+
+DeadLockDetector*		GDeadLockDetector = nullptr;
 
 // 여기서 Manager의 생성 순서를 조절
 class CoreGlobal
@@ -17,6 +19,8 @@ public:
 	{
 		GThreadManager = new ThreadManager();
 		GMemoryPoolManager = new MemoryPoolManager();
+		GSendBufferManager = new SendBufferManager();
+
 		GDeadLockDetector = new DeadLockDetector();
 		SocketUtils::Init();
 	}
@@ -25,6 +29,8 @@ public:
 	{
 		delete GThreadManager;
 		delete GMemoryPoolManager;
+		delete GSendBufferManager;
+
 		delete GDeadLockDetector;
 		SocketUtils::Clear();
 	}

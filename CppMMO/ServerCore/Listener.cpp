@@ -91,7 +91,7 @@ void Listener::RegisterAccept(AcceptEvent* acceptEvent)
 
 	DWORD bytesReceived = 0;
 	if (false == SocketUtils::AcceptEx(_listenSocket, session->GetSocket(),
-		session->GetRecvBuffer(), 0 /*첫 번째로 수신할 바이트 스트림의 크기, 0이면 연결 수락하더라도 수신작업 X*/,
+		session->_recvBuffer.WritePos(), 0 /*첫 번째로 수신할 바이트 스트림의 크기, 0이면 연결 수락하더라도 수신작업 X*/,
 		sizeof(SOCKADDR_IN) + 16, sizeof(SOCKADDR_IN) + 16,
 		OUT & bytesReceived, static_cast<LPOVERLAPPED>(acceptEvent)))
 	{

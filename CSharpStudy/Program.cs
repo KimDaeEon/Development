@@ -89,6 +89,7 @@ namespace CSharpStudy
         }
     }
 
+
     class Program
     {
         #region Do Not Create Generic Specialization on Base Classes Or Interfaces
@@ -130,9 +131,45 @@ namespace CSharpStudy
         //}
         #endregion
 
+        #region new vs override
+        public class b
+        {
+            public virtual void foo()
+            {
+                Console.WriteLine("b foo()");
+            }
+        }
+
+        public class d1 : b
+        {
+            public new void foo() 
+            {
+                Console.WriteLine("d1 foo()");
+            }
+        }
+        
+        public class d2 : b
+        {
+            public override void foo() 
+            {
+                Console.WriteLine("d2 foo()");
+            }
+        }
+        #endregion
 
         static void Main(string[] args)
         {
+            #region new vs override
+            // 아래 코드를 실행해보면 override와 new의 차이를 알 수 있다.
+            b t1 = new d1();
+            b t2 = new d2();
+
+            t1.foo();
+            t2.foo();
+            #endregion
+
+            List<int> a;
+
             // 예외 필터의 다른 활용 예를 살펴보자
             #region Leverage Side Effects in Exception Filters
             //int input = int.Parse(Console.ReadLine());

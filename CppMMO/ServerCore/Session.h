@@ -2,6 +2,7 @@
 #include "IocpCore.h"
 #include "IocpEvent.h"
 #include "NetworkAddress.h"
+#include "RecvBuffer.h"
 
 class Service;
 
@@ -15,8 +16,13 @@ class Session : public IocpObject
 	friend class IocpCore;
 	friend class Service;
 
+	enum
+	{
+		BUFFER_SIZE = 0x10000, // 64kb
+	};
+
 public:
-						Session();
+	Session();
 	virtual				~Session();
 
 	// 관련 정보 함수
@@ -25,7 +31,6 @@ public:
 	void				SetNetworkAddress(NetworkAddress address) { _netAddress = address; }
 	NetworkAddress		GetAddress() { return _netAddress; }
 	SOCKET				GetSocket() { return _socket; }
-	BYTE*				GetRecvBuffer() { return _recvBuffer; } // TEMP TODO: 추후 변경
 	bool				IsConnected() { return _connected; }
 	SessionRef			GetSessionRef() { return static_pointer_cast<Session>(shared_from_this()); }
 
@@ -34,7 +39,7 @@ public:
 	virtual void		Dispatch(class IocpEvent* iocpEvent, int32 numOfBytes = 0) override;
 
 	// 외부 송수신 관련 함수
-	void				Send(BYTE* buffer, int32 len);
+	void				Send(SendBufferRef sendBuffer);
 	bool				Connect();
 	void				Disconnect(const WCHAR* cause);
 
@@ -50,34 +55,59 @@ private:
 	bool				RegisterConnect();
 	bool				RegisterDisconnect();
 	void				RegisterRecv();
-	void				RegisterSend(SendEvent* sendEvent);
+	void				RegisterSend();
 
 	void				ProcessConnect();
 	void				ProcessDisconnect();
 	void				ProecessDisconnect();
 	void				ProcessRecv(int32 numOfBytes);
-	void				ProcessSend(SendEvent* sendEvent, int32 numOfBytes);
+	void				ProcessSend(int32 numOfBytes);
 
 	void				HandleError(int32 errorCode);
-	
+
 private:
 	USE_LOCK;
 
-	weak_ptr<Service>	_service; // 서버가 떠 있다면 이건 항상 있을테니 굳이 nullptr 체크는 안하고 사용
-	SOCKET				_socket = { INVALID_SOCKET };
-	NetworkAddress		_netAddress = {};
-	Atomic<bool>		_connected = false;
+	weak_ptr<Service>		_service; // 서버가 떠 있다면 이건 항상 있을테니 굳이 nullptr 체크는 안하고 사용
+	SOCKET					_socket = { INVALID_SOCKET };
+	NetworkAddress			_netAddress = {};
+	Atomic<bool>			_connected = false;
 
-	BYTE				_recvBuffer[1000] = {}; // TEMP TODO: 추후 변경
+	// 수신 관련
+	RecvBuffer				_recvBuffer; // TEMP TODO: 추후 변경
 
-	// 수신 관련 기능
-
-	// 송신 관련 기능
+	// 송신 관련
+	myQueue<SendBufferRef>	_sendQueue; // SendEvent 처리가 안되었으면 여기에 보낼 패킷들이 쌓인다. // TODO: LockFreeQueue와 성능 비교 후 더 나은 것 적용
+	Atomic<bool>			_isSendRegistered; // SendEvent가 처리가 된 상황인지 체크
 
 	// IocpEvent 재사용을 위한 멤버 변수들
-	ConnectEvent		_connectEvent;
-	DisconnectEvent		_disconnectEvent;
-	RecvEvent			_recvEvent;
+	ConnectEvent			_connectEvent;
+	DisconnectEvent			_disconnectEvent;
+	RecvEvent				_recvEvent;
+	SendEvent				_sendEvent;
 
 };
 
+
+// ---------------------------------
+//			PacketSession
+// ---------------------------------
+struct PacketHeader
+{
+	uint16 size;
+	uint16 id; // Protocl ID
+};
+
+class PacketSession : public Session
+{
+public:
+	PacketSession();
+	virtual ~PacketSession();
+
+	PacketSessionRef GetPacketSessionRef() { return static_pointer_cast<PacketSession>(shared_from_this()); }
+
+protected:
+	virtual int32 OnRecv(BYTE* buffer, int32 len) sealed; // OnRecv는 재정의 불가능, OnRecvPacket만 재정의 가능
+	virtual int32 OnRecvPacket(BYTE* buffer, int32 len) abstract;
+
+};
