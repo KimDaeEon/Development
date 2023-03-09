@@ -4,6 +4,7 @@
 #include "ThreadManager.h"
 #include "Service.h"
 #include "Session.h"
+#include "BufferReader.h"
 
 BYTE sendData[] = "Hello Server";
 
@@ -23,11 +24,22 @@ public:
 
 	virtual int32 OnRecvPacket(BYTE* buffer, int32 len) override
 	{
-		PacketHeader* header = ((PacketHeader*)buffer);
-		cout << "Packet ID : " << header->id << " Size : " << header->size << endl;
+		BufferReader br(buffer, len);
+		PacketHeader header;
+		br >> header;
+
+		uint32 temp1;
+		uint32 temp2;
+		uint32 temp3;
+
+		br >> temp1 >> temp2 >> temp3;
+
+		cout << "temp1: " << temp1 << endl;
+		cout << "temp2: " << temp2 << endl;
+		cout << "temp3: " << temp3 << endl;
 
 		char recvBuffer[4096];
-		::memcpy(recvBuffer, &buffer[4], header->size - sizeof(PacketHeader));
+		br.Read(recvBuffer, header.size - br.ReadSize());
 		cout << recvBuffer << endl;
 		return len;
 	}

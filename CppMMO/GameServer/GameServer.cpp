@@ -6,6 +6,7 @@
 #include "Session.h"
 #include "GameSession.h"
 #include "GameSessionManager.h"
+#include "BufferWriter.h"
 
 #pragma region StompAllocatorTest
 //class Player
@@ -126,13 +127,20 @@ int main()
 	{
 		SendBufferRef sendBuffer = GSendBufferManager->Open(4096);
 
-		BYTE* buffer = sendBuffer->Buffer();
+		BufferWriter bw(sendBuffer->Buffer(), 4096);
 
-		((PacketHeader*)buffer)->size = sizeof(sendData) + sizeof(PacketHeader);
-		((PacketHeader*)buffer)->id = 1; // Hello Msg
+		// 이제 헤더를 이렇게 미리 집어둘 수 있다.
+		PacketHeader* header = bw.Reserve<PacketHeader>();
+		bw << (uint32)100 << (uint32)10 << (uint32)1;
 
-		::memcpy(&buffer[4], sendData, sizeof(sendData));
-		sendBuffer->Close((sizeof(sendData) + sizeof(PacketHeader)));
+		bw.Write(sendData, sizeof(sendData));
+
+		// 앞에서 헤더를 미리 집어둔 후 뒤에서 이렇게 입력이 가능하다.
+		// 맨 마지막에 size를 입력해주어야 하기에 Reserve를 사용한 것이다.
+		header->size = bw.WriteSize();
+		header->id = 1; // Hello Msg
+
+		sendBuffer->Close(bw.WriteSize());
 
 		this_thread::sleep_for(250ms);
 		GSessionManager.Broadcast(sendBuffer);
