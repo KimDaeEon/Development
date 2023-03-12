@@ -200,7 +200,6 @@ namespace CSharpStudy
             ////}
             #endregion
 
-
             #region Avoid Modifying Bound Variables
             //// 람다 표현식에서 인스턴스 변수만 접근하는 경우
             //List<int> li = new List<int>() { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
