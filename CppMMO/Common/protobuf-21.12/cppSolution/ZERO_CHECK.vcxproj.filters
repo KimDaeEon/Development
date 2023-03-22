@@ -1,0 +1,13 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="16.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <CustomBuild Include="C:\git_portfolio\CppMMO\protobuf-21.12\cppSolution\CMakeFiles\346e46a62933503a7436f86d863c36ec\generate.stamp.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="CMake Rules">
+      <UniqueIdentifier>{9A0D97A0-5749-3426-91D6-34A2A7239666}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>

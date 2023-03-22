@@ -1,0 +1,11 @@
+syntax = "proto3";
+package Protocol; // Protocol이라는 namespace 이름을 지어준 것
+
+import "Enum.proto";
+
+message BuffData
+{
+	uint64 buffId = 1;
+	float remainTime = 2;
+	repeated uint64 victims = 3;
+}
