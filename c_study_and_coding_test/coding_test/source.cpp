@@ -3868,9 +3868,107 @@ namespace Introduction
 
 	namespace SafeZone
 	{
+		// 지뢰 매설된 지역 1, 지뢰 없는 지역 0
+		// 안전한 지역의 수를 리턴
+
+		// r : 1 아래, -1 위
+		// c : 1 오른쪽, -1 왼쪽
+		int dr[8] = { 0, 1, 1,  1,  0, -1, -1, -1 }; // 동, 동남, 남, 남서, 서, 북서, 북, 북동
+		int dc[8] = { 1, 1, 0, -1, -1, -1,  0,  1 };
+
+		enum
+		{
+			UNSAFE = -1,
+			SAFE = 0,
+			LANDMINE = 1
+		};
+
+		void CheckUnsafeZone(int startR, int startC, vector<vector<int>>& board, int N)
+		{
+			for (int i = 0; i < 8; i++)
+			{
+				int nextR = startR + dr[i];
+				int nextC = startC + dc[i];
+
+				if (nextR >= N || nextR < 0 || nextC >= N || nextC < 0)
+				{
+					continue;
+				}
+
+				if (board[nextR][nextC] != LANDMINE)
+				{
+					board[nextR][nextC] = UNSAFE;
+				}
+			}
+		}
+
 		int solution(vector<vector<int>> board)
 		{
 			int answer = 0;
+
+			int N = board.size();
+			for (int r = 0; r < N; r++)
+			{
+				for (int c = 0; c < N; c++)
+				{
+					if (board[r][c] == LANDMINE)
+					{
+						CheckUnsafeZone(r, c, board, N);
+					}
+				}
+			}
+
+			for (int r = 0; r < N; r++)
+			{
+				for (int c = 0; c < N; c++)
+				{
+					if (board[r][c] == SAFE)
+					{
+						answer++;
+					}
+				}
+			}
+			return answer;
+		}
+	}
+
+	namespace HiddenNumberAddition
+	{
+		int offset1 = '0';
+		int offset2 = '9';
+
+		bool isNumChar(char c)
+		{
+			return c >= offset1 && c <= offset2;
+		}
+
+		int solution(string my_string)
+		{
+			int answer = 0;
+			int exponent = 0;
+
+			for (int i = my_string.size() -1; i >= 0; i--)
+			{
+				if (isNumChar(my_string[i]))
+				{
+					answer += ((int)my_string[i] - offset1) * pow(10, exponent);
+					exponent++;
+				}
+				else
+				{
+					exponent = 0;
+				}
+			}
+
+			return answer;
+		}
+	}
+
+	namespace AddingPolynomial
+	{
+		string solution(string polynomial)
+		{
+			string answer = "";
 			return answer;
 		}
 	}
