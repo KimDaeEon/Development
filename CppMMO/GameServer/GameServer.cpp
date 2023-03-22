@@ -6,7 +6,9 @@
 #include "Session.h"
 #include "GameSession.h"
 #include "GameSessionManager.h"
+#include "ClientPacketHandler.h"
 #include "BufferWriter.h"
+#include "Protocol.pb.h"
 
 #pragma region StompAllocatorTest
 //class Player
@@ -101,6 +103,8 @@
 
 int main()
 {
+	ClientPacketHandler::Init();
+
 	ServerServiceRef service = myMakeShared<ServerService>(
 		NetworkAddress(L"127.0.0.1", 7777),
 		myMakeShared<IocpCore>(),
@@ -121,29 +125,25 @@ int main()
 			});
 	}
 
-	char sendData[1000] = "Hello World";
 
 	while (true)
 	{
-		SendBufferRef sendBuffer = GSendBufferManager->Open(4096);
+		Protocol::S_TEST pkt;
+		pkt.set_id(1);
+		pkt.set_hp(2);
+		pkt.set_attack(3);
 
-		BufferWriter bw(sendBuffer->Buffer(), 4096);
+		Protocol::BuffData* data = pkt.add_buffs();
+		data->set_buffid(100);
+		data->set_remaintime(1.0f);
+		data->add_victims(1000);
+		data->add_victims(2000);
 
-		// 이제 헤더를 이렇게 미리 집어둘 수 있다.
-		PacketHeader* header = bw.Reserve<PacketHeader>();
-		bw << (uint32)100 << (uint32)10 << (uint32)1;
 
-		bw.Write(sendData, sizeof(sendData));
-
-		// 앞에서 헤더를 미리 집어둔 후 뒤에서 이렇게 입력이 가능하다.
-		// 맨 마지막에 size를 입력해주어야 하기에 Reserve를 사용한 것이다.
-		header->size = bw.WriteSize();
-		header->id = 1; // Hello Msg
-
-		sendBuffer->Close(bw.WriteSize());
-
-		this_thread::sleep_for(250ms);
+		SendBufferRef sendBuffer = ClientPacketHandler::MakeSendBuffer(pkt);
 		GSessionManager.Broadcast(sendBuffer);
+		this_thread::sleep_for(250ms);
+
 	}
 
 	GThreadManager->Join();

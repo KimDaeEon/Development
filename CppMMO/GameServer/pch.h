@@ -6,9 +6,11 @@
 // 아래처럼하면 링커에서 라이브러리를 추가 안해도 라이브러리가 추가된다.
 // 경로 입력할 때에 \\ <- 이거 2개씩 하는거 잊지 말자.
 #ifdef _DEBUG
-#pragma comment(lib, "Debug\\ServerCore.lib") 
+#pragma comment(lib, "ServerCore\\Debug\\ServerCore.lib")
+#pragma comment(lib, "Protobuf\\Debug\\libprotobufd.lib")
 #else
-#pragma comment(lib, "Release\\ServerCore.lib")
+#pragma comment(lib, "ServerCore\\Release\\ServerCore.lib")
+#pragma comment(lib, "Protobuf\\Release\\libprotobufd.lib")
 #endif
 
 #include "CorePch.h"

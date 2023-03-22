@@ -24,9 +24,6 @@ public:
 	bool			Write(void* src, uint32 len);
 
 	template<typename T>
-	BufferWriter&	operator<<(const T& src);
-
-	template<typename T>
 	BufferWriter&	operator<<(T&& src);
 
 private:
@@ -41,7 +38,7 @@ inline T* BufferWriter::Reserve()
 	if (FreeSize() < sizeof(T))
 	{
 		return nullptr;
-	}
+	} 
 
 	T* ret = reinterpret_cast<T*>(&_buffer[_pos]);
 	_pos += sizeof(T);
@@ -49,17 +46,10 @@ inline T* BufferWriter::Reserve()
 }
 
 template<typename T>
-inline BufferWriter& BufferWriter::operator<<(const T& src)
-{
-	*reinterpret_cast<T*>(&_buffer[_pos]) = src;
-	_pos += sizeof(T);
-	return *this;
-}
-
-template<typename T>
 inline BufferWriter& BufferWriter::operator<<(T&& src)
 {
-	*reinterpret_cast<std::remove_reference_t<T>*>(&_buffer[_pos]) = std::move(src);
+	// 여기서 forward 쪽에 remove_reference_t<T>로 하면 안된다는 것 주의하자.
+	*reinterpret_cast<std::remove_reference_t<T>*>(&_buffer[_pos]) = std::forward<T>(src);
 	_pos += sizeof(T);
 	return *this;
 }

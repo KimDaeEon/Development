@@ -5,6 +5,7 @@
 #include "Service.h"
 #include "Session.h"
 #include "BufferReader.h"
+#include "ServerPacketHandler.h"
 
 BYTE sendData[] = "Hello Server";
 
@@ -22,26 +23,10 @@ public:
 		Send(sendBuffer);
 	}
 
-	virtual int32 OnRecvPacket(BYTE* buffer, int32 len) override
+	virtual void OnRecvPacket(BYTE* buffer, int32 len) override
 	{
-		BufferReader br(buffer, len);
-		PacketHeader header;
-		br >> header;
-
-		uint32 temp1;
-		uint32 temp2;
-		uint32 temp3;
-
-		br >> temp1 >> temp2 >> temp3;
-
-		cout << "temp1: " << temp1 << endl;
-		cout << "temp2: " << temp2 << endl;
-		cout << "temp3: " << temp3 << endl;
-
-		char recvBuffer[4096];
-		br.Read(recvBuffer, header.size - br.ReadSize());
-		cout << recvBuffer << endl;
-		return len;
+		PacketSessionRef session = GetPacketSessionRef();
+		ServerPacketHandler::HandlePacket(session, buffer, len);
 	}
 
 	virtual void OnSend(int32 len) override
@@ -62,13 +47,15 @@ public:
 
 int main()
 {
+	ServerPacketHandler::Init();
+
 	this_thread::sleep_for(1s);
 
 	ClientServiceRef service = myMakeShared<ClientService>(
 		NetworkAddress(L"127.0.0.1", 7777),
 		myMakeShared<IocpCore>(),
 		myMakeShared<ServerSession>,
-		1000
+		1
 		);
 
 	ASSERT_CRASH(service->Start());
