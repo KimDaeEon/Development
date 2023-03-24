@@ -1,6 +1,4 @@
-C:/git_portfolio/CppMMO/protobuf-21.12/cppSolution/CMakeFiles/libprotobuf-lite.dir
-C:/git_portfolio/CppMMO/protobuf-21.12/cppSolution/CMakeFiles/libprotobuf.dir
-C:/git_portfolio/CppMMO/protobuf-21.12/cppSolution/CMakeFiles/libprotoc.dir
-C:/git_portfolio/CppMMO/protobuf-21.12/cppSolution/CMakeFiles/protoc.dir
-C:/git_portfolio/CppMMO/protobuf-21.12/cppSolution/CMakeFiles/ALL_BUILD.dir
-C:/git_portfolio/CppMMO/protobuf-21.12/cppSolution/CMakeFiles/ZERO_CHECK.dir
+C:/git_portfolio/CppMMO/Common/protobuf-21.12/cppSolution/CMakeFiles/libprotobuf-lite.dir
+C:/git_portfolio/CppMMO/Common/protobuf-21.12/cppSolution/CMakeFiles/libprotobuf.dir
+C:/git_portfolio/CppMMO/Common/protobuf-21.12/cppSolution/CMakeFiles/ALL_BUILD.dir
+C:/git_portfolio/CppMMO/Common/protobuf-21.12/cppSolution/CMakeFiles/ZERO_CHECK.dir

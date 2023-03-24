@@ -29,16 +29,14 @@ C:/Program Files/CMake/share/cmake-3.26/Modules/Platform/Windows-MSVC-CXX.cmake
 C:/Program Files/CMake/share/cmake-3.26/Modules/Platform/Windows-MSVC.cmake
 C:/Program Files/CMake/share/cmake-3.26/Modules/Platform/Windows.cmake
 C:/Program Files/CMake/share/cmake-3.26/Modules/Platform/WindowsPaths.cmake
-C:/git_portfolio/CppMMO/protobuf-21.12/CMakeLists.txt
-C:/git_portfolio/CppMMO/protobuf-21.12/cmake/CMakeLists.txt
-C:/git_portfolio/CppMMO/protobuf-21.12/cmake/extract_includes.bat.in
-C:/git_portfolio/CppMMO/protobuf-21.12/cmake/libprotobuf-lite.cmake
-C:/git_portfolio/CppMMO/protobuf-21.12/cmake/libprotobuf.cmake
-C:/git_portfolio/CppMMO/protobuf-21.12/cmake/libprotoc.cmake
-C:/git_portfolio/CppMMO/protobuf-21.12/cmake/protobuf-options.cmake
-C:/git_portfolio/CppMMO/protobuf-21.12/cmake/protoc.cmake
-C:/git_portfolio/CppMMO/protobuf-21.12/cmake/version.rc.in
-C:/git_portfolio/CppMMO/protobuf-21.12/cppSolution/CMakeFiles/3.26.0/CMakeCCompiler.cmake
-C:/git_portfolio/CppMMO/protobuf-21.12/cppSolution/CMakeFiles/3.26.0/CMakeCXXCompiler.cmake
-C:/git_portfolio/CppMMO/protobuf-21.12/cppSolution/CMakeFiles/3.26.0/CMakeRCCompiler.cmake
-C:/git_portfolio/CppMMO/protobuf-21.12/cppSolution/CMakeFiles/3.26.0/CMakeSystem.cmake
+C:/git_portfolio/CppMMO/Common/protobuf-21.12/CMakeLists.txt
+C:/git_portfolio/CppMMO/Common/protobuf-21.12/cmake/CMakeLists.txt
+C:/git_portfolio/CppMMO/Common/protobuf-21.12/cmake/extract_includes.bat.in
+C:/git_portfolio/CppMMO/Common/protobuf-21.12/cmake/libprotobuf-lite.cmake
+C:/git_portfolio/CppMMO/Common/protobuf-21.12/cmake/libprotobuf.cmake
+C:/git_portfolio/CppMMO/Common/protobuf-21.12/cmake/protobuf-options.cmake
+C:/git_portfolio/CppMMO/Common/protobuf-21.12/cmake/version.rc.in
+C:/git_portfolio/CppMMO/Common/protobuf-21.12/cppSolution/CMakeFiles/3.26.0/CMakeCCompiler.cmake
+C:/git_portfolio/CppMMO/Common/protobuf-21.12/cppSolution/CMakeFiles/3.26.0/CMakeCXXCompiler.cmake
+C:/git_portfolio/CppMMO/Common/protobuf-21.12/cppSolution/CMakeFiles/3.26.0/CMakeRCCompiler.cmake
+C:/git_portfolio/CppMMO/Common/protobuf-21.12/cppSolution/CMakeFiles/3.26.0/CMakeSystem.cmake
