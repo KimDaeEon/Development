@@ -17271,3 +17271,9 @@ CSharpStudy/obj/Release/net5.0/CSharpStudy.csproj.CopyComplete
 *.pch
 c_study_and_coding_test/coding_test/x64/Debug/coding_test.vcxproj.FileListAbsolute.txt
 CppMMO/ServerCore/x64/Debug/ServerCore.vcxproj.FileListAbsolute.txt
+CppMMO/Common/protoc-21.12-win64/bin/ClientPacketHandler.h
+CppMMO/Common/protoc-21.12-win64/bin/Protocol.pb.cc
+CppMMO/Common/protoc-21.12-win64/bin/Protocol.pb.h
+CppMMO/Common/protoc-21.12-win64/bin/ServerPacketHandler.h
+CppMMO/Common/protoc-21.12-win64/bin/Struct.pb.cc
+CppMMO/Common/protoc-21.12-win64/bin/Struct.pb.h
