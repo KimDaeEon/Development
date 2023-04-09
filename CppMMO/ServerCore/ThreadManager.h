@@ -15,6 +15,10 @@ public:
 
 	static void InitTLS();
 	static void DestoryTLS();
+
+	static void DoGlobalQueueJobs();
+	static void DistributeFutureJobs();
+
 private:
 	Mutex			_lock;
 	vector<thread>	_threads;

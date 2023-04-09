@@ -12,15 +12,21 @@ public:
 	// Django나 Blazor의 Template 문법과도 유사하다.
 	enum : uint16
 	{
-		PKT_C_TEST = 1000,
-		PKT_S_TEST = 1001,
+		PKT_C_LOGIN = 1000,
+		PKT_S_LOGIN = 1001,
+		PKT_C_ENTER_GAME = 1002,
+		PKT_S_ENTER_GAME = 1003,
+		PKT_C_CHAT = 1004,
+		PKT_S_CHAT = 1005,
 	};
 
 public:
 	static bool Handle_INVALID(PacketSessionRef& session, BYTE* buffer, int32 len);
 
 	// Protocol.proto와 연동되어 자동 생성
-	static bool Handle_C_TEST(PacketSessionRef& session, Protocol::C_TEST&pkt);
+	static bool Handle_C_LOGIN(PacketSessionRef& session, Protocol::C_LOGIN&pkt);
+	static bool Handle_C_ENTER_GAME(PacketSessionRef& session, Protocol::C_ENTER_GAME&pkt);
+	static bool Handle_C_CHAT(PacketSessionRef& session, Protocol::C_CHAT&pkt);
 
 public:
 	static void Init()
@@ -31,9 +37,17 @@ public:
 		}
 
 		// Protocol.proto와 연동되어 자동 생성
-		GPacketHandler[PKT_C_TEST] = [](PacketSessionRef& session, BYTE* buffer, int32 len)
+		GPacketHandler[PKT_C_LOGIN] = [](PacketSessionRef& session, BYTE* buffer, int32 len)
 		{
-			return HandlePacket<Protocol::C_TEST>(Handle_C_TEST, session, buffer, len);
+			return HandlePacket<Protocol::C_LOGIN>(Handle_C_LOGIN, session, buffer, len);
+		};
+		GPacketHandler[PKT_C_ENTER_GAME] = [](PacketSessionRef& session, BYTE* buffer, int32 len)
+		{
+			return HandlePacket<Protocol::C_ENTER_GAME>(Handle_C_ENTER_GAME, session, buffer, len);
+		};
+		GPacketHandler[PKT_C_CHAT] = [](PacketSessionRef& session, BYTE* buffer, int32 len)
+		{
+			return HandlePacket<Protocol::C_CHAT>(Handle_C_CHAT, session, buffer, len);
 		};
 
 	}
@@ -45,7 +59,9 @@ public:
 	}
 
 	// Protocol.proto와 연동되어 자동 생성
-	static SendBufferRef MakeSendBuffer(Protocol::S_TEST& pkt) { return MakeSendBuffer(pkt, PKT_S_TEST); }
+	static SendBufferRef MakeSendBuffer(Protocol::S_LOGIN& pkt) { return MakeSendBuffer(pkt, PKT_S_LOGIN); }
+	static SendBufferRef MakeSendBuffer(Protocol::S_ENTER_GAME& pkt) { return MakeSendBuffer(pkt, PKT_S_ENTER_GAME); }
+	static SendBufferRef MakeSendBuffer(Protocol::S_CHAT& pkt) { return MakeSendBuffer(pkt, PKT_S_CHAT); }
 
 private:
 	template<typename PacketType, typename ProcessFunc>

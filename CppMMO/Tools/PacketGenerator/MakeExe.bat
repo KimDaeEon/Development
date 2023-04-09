@@ -1,6 +1,6 @@
 Rem 혹시나 이 배치파일이 작동하지 않는다면 python 및 pyinstaller 설치 여부와 
 Rem pyinstaller의 시스템 환경 변수 설정을 확인한다.
-
+@echo off
 pushd %~dp0
 
 pyinstaller --onefile PacketGenerator.py

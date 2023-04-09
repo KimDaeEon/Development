@@ -75,6 +75,10 @@ bool SocketUtils::SetTcpNoDelay(SOCKET socket, bool flag)
 // ListenSocket의 특성을 Accept에서 나오는 ClientSocket에 그대로 적용한다는 옵션 설정
 bool SocketUtils::SetUpdateAcceptSocket(SOCKET socket, SOCKET listenSocket)
 {
+	// AcceptEx를 쓰는 경우 SO_UPDATE_ACCEPT_CONTEXT 옵션은 무조건 해줘야 한다.
+	// 이것을 안하면 다른 소켓함수를 쓸 때에 오류가 나온다.
+	// AcceptEx로 새로운 소켓이 생기긴 하지만 이 옵션이 설정되어야 getsockname 함수가 호출이 가능하고,
+	// getsockname 함수를 호출해서 accept socket의 포트를 확인해봐도 리슨 소켓과 같은 포트번호가 나온다.
 	return SetSockOpt(socket, SOL_SOCKET, SO_UPDATE_ACCEPT_CONTEXT, listenSocket);
 }
 #pragma endregion

@@ -20,14 +20,19 @@ using UniqueLock	= std::unique_lock<std::mutex>;
 using LockGuard		= std::lock_guard <std::mutex>;  
 
 // shared_ptr 전부 다 타이밍하기 귀찮으므로 아래와 같이 타입으로 만들어둔다.
-using IocpCoreRef			= std::shared_ptr<class IocpCore>;
-using IocpObjectRef			= std::shared_ptr<class IocpObject>;
-using SessionRef			= std::shared_ptr<class Session>;
-using PacketSessionRef		= std::shared_ptr<class PacketSession>;
-using ListenerRef			= std::shared_ptr<class Listener>;
-using ServerServiceRef		= std::shared_ptr<class ServerService>;
-using ClientServiceRef		= std::shared_ptr<class ClientService>;
-using SendBufferRef			= std::shared_ptr<class SendBuffer>;
-using SendBufferChunkRef	= std::shared_ptr<class SendBufferChunk>;
+// 객체이름Ref 형식으로 shared_ptr 축약형 타입이 만들어진다.
+#define MAKE_REF_TYPE(name) using name##Ref = std::shared_ptr<class name>;
+MAKE_REF_TYPE(IocpCore);
+MAKE_REF_TYPE(IocpObject);
+MAKE_REF_TYPE(Session);
+MAKE_REF_TYPE(PacketSession);
+MAKE_REF_TYPE(Listener);
+MAKE_REF_TYPE(ServerService);
+MAKE_REF_TYPE(ClientService);
+MAKE_REF_TYPE(SendBuffer);
+MAKE_REF_TYPE(SendBufferChunk);
+MAKE_REF_TYPE(Job);
+MAKE_REF_TYPE(JobQueue);
 
-#define _STOMP // TODO: 추후 이처 해제하고 테스트 필요. MemoryPoolManager::Allocate에서 문제 발생 중임
+
+#define _STOMP // TODO: 추후 이거 해제하고 테스트 필요. MemoryPoolManager::Allocate에서 문제 발생 중임

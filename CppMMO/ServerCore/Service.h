@@ -32,6 +32,7 @@ public:
 	virtual void	CloseService();
 	void			SetSessionFactory(SessionFactory func) { _sessionFactory = func; }
 
+	void			Broadcast(SendBufferRef sendBuffer);
 	SessionRef		CreateSession(); // 技记 积己 + Iocp俊 殿废
 	void			AddSession(SessionRef session);
 	void			ReleaseSession(SessionRef session);
@@ -55,7 +56,6 @@ protected:
 	SessionFactory		_sessionFactory;
 
 };
-
 
 // ---------------------------------
 //			 ClientService

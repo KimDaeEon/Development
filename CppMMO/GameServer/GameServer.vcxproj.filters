@@ -13,6 +13,9 @@
     <Filter Include="Protocol">
       <UniqueIdentifier>{3f67b6e7-53ce-4ac5-acbe-641b5bc73cef}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Contents">
+      <UniqueIdentifier>{1c0aa4ca-ce8d-4bfd-b818-e8e8b7e5f27c}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="GameServer.cpp">
@@ -27,10 +30,10 @@
     <ClCompile Include="ConcurrentStack.cpp">
       <Filter>Archive</Filter>
     </ClCompile>
-    <ClCompile Include="GameSession.cpp">
+    <ClCompile Include="ClientSession.cpp">
       <Filter>Main</Filter>
     </ClCompile>
-    <ClCompile Include="GameSessionManager.cpp">
+    <ClCompile Include="ClientSessionManager.cpp">
       <Filter>Main</Filter>
     </ClCompile>
     <ClCompile Include="..\Common\protoc-21.12-win64\bin\Struct.pb.cc">
@@ -45,6 +48,12 @@
     <ClCompile Include="ClientPacketHandler.cpp">
       <Filter>Main</Filter>
     </ClCompile>
+    <ClCompile Include="Player.cpp">
+      <Filter>Contents</Filter>
+    </ClCompile>
+    <ClCompile Include="Room.cpp">
+      <Filter>Contents</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h">
@@ -56,10 +65,10 @@
     <ClInclude Include="ConcurrentQueue.h">
       <Filter>Archive</Filter>
     </ClInclude>
-    <ClInclude Include="GameSession.h">
+    <ClInclude Include="ClientSession.h">
       <Filter>Main</Filter>
     </ClInclude>
-    <ClInclude Include="GameSessionManager.h">
+    <ClInclude Include="ClientSessionManager.h">
       <Filter>Main</Filter>
     </ClInclude>
     <ClInclude Include="..\Common\protoc-21.12-win64\bin\Enum.pb.h">
@@ -73,6 +82,12 @@
     </ClInclude>
     <ClInclude Include="ClientPacketHandler.h">
       <Filter>Main</Filter>
+    </ClInclude>
+    <ClInclude Include="Room.h">
+      <Filter>Contents</Filter>
+    </ClInclude>
+    <ClInclude Include="Player.h">
+      <Filter>Contents</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

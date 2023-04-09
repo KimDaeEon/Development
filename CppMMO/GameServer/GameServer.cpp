@@ -4,11 +4,13 @@
 #include "ThreadManager.h"
 #include "Service.h"
 #include "Session.h"
-#include "GameSession.h"
-#include "GameSessionManager.h"
+#include "ClientSession.h"
+#include "ClientSessionManager.h"
 #include "ClientPacketHandler.h"
 #include "BufferWriter.h"
 #include "Protocol.pb.h"
+#include "Job.h"
+#include "Room.h"
 
 #pragma region StompAllocatorTest
 //class Player
@@ -100,15 +102,35 @@
 //}
 #pragma endregion
 
+void DoWorkerJob(ServerServiceRef& service)
+{
+	constexpr int WORKER_TICK = 64;
+	while (true)
+	{
+		LEndTickCount = ::GetTickCount64() + WORKER_TICK;
+
+		// 네트워크 입출력 처리, 10ms TimeOut을 두어서 Iocp작업 없으면 GlobalQueue의 작업을 처리한다.
+		service->GetIocpCore()->Dispatch(10);
+
+		// 예약 작업 분배
+		ThreadManager::DistributeFutureJobs();
+
+		// 글로벌 큐 작업 처리
+		ThreadManager::DoGlobalQueueJobs();
+	}
+}
 
 int main()
 {
 	ClientPacketHandler::Init();
+	GRoom->PushFutureJob(1000, []() { cout << "1000" << endl; });
+	GRoom->PushFutureJob(2000, []() { cout << "2000" << endl; });
+	GRoom->PushFutureJob(4000, []() { cout << "4000" << endl; });
 
 	ServerServiceRef service = myMakeShared<ServerService>(
 		NetworkAddress(L"127.0.0.1", 7777),
 		myMakeShared<IocpCore>(),
-		myMakeShared<GameSession>,
+		myMakeShared<ClientSession>,
 		10000
 		);
 
@@ -116,34 +138,19 @@ int main()
 	
 	for (int32 i = 0; i < 5; i++)
 	{
-		GThreadManager->Launch([=]()
+		GThreadManager->Launch([&service]()
 			{
 				while (true)
 				{
-					service->GetIocpCore()->Dispatch();
+					DoWorkerJob(service);
 				}
 			});
 	}
 
-
 	while (true)
 	{
-		Protocol::S_TEST pkt;
-		pkt.set_id(1);
-		pkt.set_hp(2);
-		pkt.set_attack(3);
-
-		Protocol::BuffData* data = pkt.add_buffs();
-		data->set_buffid(100);
-		data->set_remaintime(1.0f);
-		data->add_victims(1000);
-		data->add_victims(2000);
-
-
-		SendBufferRef sendBuffer = ClientPacketHandler::MakeSendBuffer(pkt);
-		GSessionManager.Broadcast(sendBuffer);
-		this_thread::sleep_for(250ms);
-
+		DoWorkerJob(service);
+		this_thread::sleep_for(1ms);
 	}
 
 	GThreadManager->Join();

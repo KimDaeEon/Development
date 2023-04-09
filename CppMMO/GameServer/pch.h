@@ -14,3 +14,7 @@
 #endif
 
 #include "CorePch.h"
+#include "Enum.pb.h"
+
+using ClientSessionRef = shared_ptr<class ClientSession>;
+using PlayerRef = shared_ptr<struct Player>;

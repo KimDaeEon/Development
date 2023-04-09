@@ -3,9 +3,9 @@ package Protocol; // Protocol이라는 namespace 이름을 지어준 것
 
 import "Enum.proto";
 
-message BuffData
+message Player
 {
-	uint64 buffId = 1;
-	float remainTime = 2;
-	repeated uint64 victims = 3;
+	uint64 id = 1; // 메모리 상에서 발급받는 id로 설정, dbId와는 달라야 한다.
+	string name = 2;
+	PlayerType playerType = 3;
 }

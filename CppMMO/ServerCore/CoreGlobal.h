@@ -6,3 +6,5 @@ extern class SendBufferManager*		GSendBufferManager;
 
 extern class DeadLockDetector*		GDeadLockDetector;
 
+extern class GlobalQueue*			GGlobalQueue;
+extern class JobTimer*				GJobTimer;

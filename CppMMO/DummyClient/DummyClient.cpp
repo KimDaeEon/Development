@@ -16,10 +16,8 @@ public:
 	{
 		//cout << "Connected to Server" << endl;
 
-		SendBufferRef sendBuffer = GSendBufferManager->Open(4096);
-		::memcpy(sendBuffer->Buffer(), sendData, sizeof(sendData));
-		sendBuffer->Close(sizeof(sendData));
-
+		Protocol::C_LOGIN pkt;
+		auto sendBuffer = ServerPacketHandler::MakeSendBuffer(pkt);
 		Send(sendBuffer);
 	}
 
@@ -55,7 +53,7 @@ int main()
 		NetworkAddress(L"127.0.0.1", 7777),
 		myMakeShared<IocpCore>(),
 		myMakeShared<ServerSession>,
-		1
+		3
 		);
 
 	ASSERT_CRASH(service->Start());
@@ -69,6 +67,16 @@ int main()
 					service->GetIocpCore()->Dispatch();
 				}
 			});
+	}
+
+	Protocol::C_CHAT chatPkt;
+	chatPkt.set_msg("Hello World");
+	auto sendBuffer = ServerPacketHandler::MakeSendBuffer(chatPkt);
+
+	while (true)
+	{
+		service->Broadcast(sendBuffer);
+		this_thread::sleep_for(1s);
 	}
 
 	GThreadManager->Join();
