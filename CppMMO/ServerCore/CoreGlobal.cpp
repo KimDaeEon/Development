@@ -6,6 +6,8 @@
 #include "JobTimer.h"
 #include "Memory.h"
 #include "SocketUtils.h"
+#include "DBConnectionPool.h"
+#include "ConsoleLog.h"
 
 ThreadManager*			GThreadManager		= nullptr;
 MemoryPoolManager*		GMemoryPoolManager	= nullptr;
@@ -16,7 +18,11 @@ DeadLockDetector*		GDeadLockDetector	= nullptr;
 GlobalQueue*			GGlobalQueue		= nullptr;
 JobTimer*				GJobTimer			= nullptr;
 
-// 여기서 Manager의 생성 순서를 조절
+DBConnectionPool*		GDBConnectionPool	= nullptr;
+ConsoleLog*				GConsoleLogger = nullptr;
+
+
+// 여기서 Manager 의 생성 순서를 조절
 class CoreGlobal
 {
 public:
@@ -31,6 +37,10 @@ public:
 		GGlobalQueue		= new GlobalQueue();
 		GJobTimer			= new JobTimer();
 
+		GDBConnectionPool	= new DBConnectionPool();
+
+		GConsoleLogger		= new ConsoleLog();
+
 		SocketUtils::Init();
 	}
 
@@ -44,6 +54,10 @@ public:
 
 		delete GGlobalQueue;
 		delete GJobTimer;
+
+		delete GDBConnectionPool;
+
+		delete GConsoleLogger;
 
 		SocketUtils::Clear();
 	}

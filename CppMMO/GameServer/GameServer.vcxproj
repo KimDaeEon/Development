@@ -236,6 +236,9 @@
     <UpToDateCheckInput Include="..\Common\protoc-21.12-win64\bin\Protocol.proto" />
     <UpToDateCheckInput Include="..\Common\protoc-21.12-win64\bin\Struct.proto" />
   </ItemGroup>
+  <ItemGroup>
+    <Xml Include="TestDB.xml" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

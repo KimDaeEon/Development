@@ -3,6 +3,12 @@
 // C#의 OUT이 없기에, 매크로로 표시
 #define OUT 
 
+// ---------------------------
+//			Namespace
+// ---------------------------
+#define NAMESPACE_BEGIN(name)	namespace name {
+#define NAMESPACE_END			}
+
 // ------------------------
 //			Type
 // ------------------------

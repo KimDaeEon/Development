@@ -21,18 +21,17 @@ using LockGuard		= std::lock_guard <std::mutex>;
 
 // shared_ptr 전부 다 타이밍하기 귀찮으므로 아래와 같이 타입으로 만들어둔다.
 // 객체이름Ref 형식으로 shared_ptr 축약형 타입이 만들어진다.
-#define MAKE_REF_TYPE(name) using name##Ref = std::shared_ptr<class name>;
-MAKE_REF_TYPE(IocpCore);
-MAKE_REF_TYPE(IocpObject);
-MAKE_REF_TYPE(Session);
-MAKE_REF_TYPE(PacketSession);
-MAKE_REF_TYPE(Listener);
-MAKE_REF_TYPE(ServerService);
-MAKE_REF_TYPE(ClientService);
-MAKE_REF_TYPE(SendBuffer);
-MAKE_REF_TYPE(SendBufferChunk);
-MAKE_REF_TYPE(Job);
-MAKE_REF_TYPE(JobQueue);
-
+#define MAKE_SHARED_PTR_TYPE(name) using name##Ref = std::shared_ptr<class name>;
+MAKE_SHARED_PTR_TYPE(IocpCore);
+MAKE_SHARED_PTR_TYPE(IocpObject);
+MAKE_SHARED_PTR_TYPE(Session);
+MAKE_SHARED_PTR_TYPE(PacketSession);
+MAKE_SHARED_PTR_TYPE(Listener);
+MAKE_SHARED_PTR_TYPE(ServerService);
+MAKE_SHARED_PTR_TYPE(ClientService);
+MAKE_SHARED_PTR_TYPE(SendBuffer);
+MAKE_SHARED_PTR_TYPE(SendBufferChunk);
+MAKE_SHARED_PTR_TYPE(Job);
+MAKE_SHARED_PTR_TYPE(JobQueue);
 
 #define _STOMP // TODO: 추후 이거 해제하고 테스트 필요. MemoryPoolManager::Allocate에서 문제 발생 중임

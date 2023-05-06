@@ -11,6 +11,11 @@
 #include "Protocol.pb.h"
 #include "Job.h"
 #include "Room.h"
+#include "DBConnectionPool.h"
+#include "DBBind.h"
+#include "DBSynchronizer.h"
+#include "XmlParser.h"
+
 
 #pragma region StompAllocatorTest
 //class Player
@@ -120,12 +125,17 @@ void DoWorkerJob(ServerServiceRef& service)
 	}
 }
 
+// Data Source=DESKTOP-9IA022F;Initial Catalog=TestDB;User ID=sa;Password=********;Connect Timeout=30;Encrypt=False;TrustServerCertificate=False;ApplicationIntent=ReadWrite;MultiSubnetFailover=False
 int main()
 {
+	ASSERT_CRASH(GDBConnectionPool->Connect(1,
+		L"Driver={ODBC Driver 17 for SQL Server};Server=DESKTOP-9IA022F;Database=TestDB;UID=sa;PWD=1234;Connect Timeout=30;"));
+
+	DBConnection* dbConn = GDBConnectionPool->Pop();
+	DBSynchronizer dbSync(*dbConn);
+	dbSync.Synchronize(L"TestDB.xml");
+
 	ClientPacketHandler::Init();
-	GRoom->PushFutureJob(1000, []() { cout << "1000" << endl; });
-	GRoom->PushFutureJob(2000, []() { cout << "2000" << endl; });
-	GRoom->PushFutureJob(4000, []() { cout << "4000" << endl; });
 
 	ServerServiceRef service = myMakeShared<ServerService>(
 		NetworkAddress(L"127.0.0.1", 7777),
