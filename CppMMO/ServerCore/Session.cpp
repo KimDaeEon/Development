@@ -380,7 +380,7 @@ int32 PacketSession::OnRecv(BYTE* buffer, int32 len)
 		}
 
 		// 헤더와 데이터 모두 분리 및 조립이 가능한 상태이므로 조립 시작
-		OnRecvPacket(&buffer[0], header.size);
+		OnRecvPacket(&buffer[processedLen], header.size);
 
 		processedLen += header.size;
 	}
