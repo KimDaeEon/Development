@@ -124,7 +124,7 @@ namespace CSharpServer
             IpAddress = ipAddr.ToString();
 
             try
-            { 
+            {
                 _listener.Init(endPoint, () => { return SessionManager.Instance.Generate(); });
                 Console.WriteLine($"{endPoint} Listening...");
             }
