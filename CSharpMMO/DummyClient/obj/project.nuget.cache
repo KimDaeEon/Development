@@ -1,10 +1,10 @@
 {
   "version": 2,
-  "dgSpecHash": "DcH2/kqtF/NcqfiFHGx24d48BTn91eO65jMZp1g9hVaXCwMHNZ9fE4b/S1Ka5CBBIC8T6r81UVMkfRsIxhF9fQ==",
+  "dgSpecHash": "u/KG2AeSlNuP4I9lVvgiuSnTscKmm7oAHgZd20rN0EHCqtQh3KulxWHXRPDEVh8cxNgMa9glFrVx9Ixngm9unw==",
   "success": true,
-  "projectFilePath": "C:\\git_portfolio\\CSharpMMO\\DummyClient\\DummyClient.csproj",
+  "projectFilePath": "C:\\GitForGame\\Development\\CSharpMMO\\DummyClient\\DummyClient.csproj",
   "expectedPackageFiles": [
-    "C:\\Users\\밥벌레\\.nuget\\packages\\google.protobuf\\3.21.7\\google.protobuf.3.21.7.nupkg.sha512"
+    "C:\\Users\\eo956\\.nuget\\packages\\google.protobuf\\3.21.7\\google.protobuf.3.21.7.nupkg.sha512"
   ],
   "logs": []
 }

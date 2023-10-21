@@ -1,39 +1,35 @@
 {
   "format": 1,
   "restore": {
-    "C:\\git_portfolio\\CSharpMMO\\DummyClient\\DummyClient.csproj": {}
+    "C:\\GitForGame\\Development\\CSharpMMO\\DummyClient\\DummyClient.csproj": {}
   },
   "projects": {
-    "C:\\git_portfolio\\CSharpMMO\\DummyClient\\DummyClient.csproj": {
+    "C:\\GitForGame\\Development\\CSharpMMO\\DummyClient\\DummyClient.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\git_portfolio\\CSharpMMO\\DummyClient\\DummyClient.csproj",
+        "projectUniqueName": "C:\\GitForGame\\Development\\CSharpMMO\\DummyClient\\DummyClient.csproj",
         "projectName": "DummyClient",
-        "projectPath": "C:\\git_portfolio\\CSharpMMO\\DummyClient\\DummyClient.csproj",
-        "packagesPath": "C:\\Users\\밥벌레\\.nuget\\packages\\",
-        "outputPath": "C:\\git_portfolio\\CSharpMMO\\DummyClient\\obj\\",
+        "projectPath": "C:\\GitForGame\\Development\\CSharpMMO\\DummyClient\\DummyClient.csproj",
+        "packagesPath": "C:\\Users\\eo956\\.nuget\\packages\\",
+        "outputPath": "C:\\GitForGame\\Development\\CSharpMMO\\DummyClient\\obj\\",
         "projectStyle": "PackageReference",
-        "fallbackFolders": [
-          "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
-        ],
         "configFilePaths": [
-          "C:\\Users\\밥벌레\\AppData\\Roaming\\NuGet\\NuGet.Config",
-          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
+          "C:\\Users\\eo956\\AppData\\Roaming\\NuGet\\NuGet.Config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
         "originalTargetFrameworks": [
-          "net5.0"
+          "net6.0"
         ],
         "sources": {
           "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
           "https://api.nuget.org/v3/index.json": {}
         },
         "frameworks": {
-          "net5.0": {
-            "targetAlias": "net5.0",
+          "net6.0": {
+            "targetAlias": "net6.0",
             "projectReferences": {
-              "C:\\git_portfolio\\CSharpMMO\\ServerCore\\ServerCore.csproj": {
-                "projectPath": "C:\\git_portfolio\\CSharpMMO\\ServerCore\\ServerCore.csproj"
+              "C:\\GitForGame\\Development\\CSharpMMO\\ServerCore\\ServerCore.csproj": {
+                "projectPath": "C:\\GitForGame\\Development\\CSharpMMO\\ServerCore\\ServerCore.csproj"
               }
             }
           }
@@ -45,8 +41,8 @@
         }
       },
       "frameworks": {
-        "net5.0": {
-          "targetAlias": "net5.0",
+        "net6.0": {
+          "targetAlias": "net6.0",
           "dependencies": {
             "Google.Protobuf": {
               "target": "Package",
@@ -59,7 +55,8 @@
             "net47",
             "net471",
             "net472",
-            "net48"
+            "net48",
+            "net481"
           ],
           "assetTargetFallback": true,
           "warn": true,
@@ -68,37 +65,33 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\5.0.416\\RuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\7.0.306\\RuntimeIdentifierGraph.json"
         }
       }
     },
-    "C:\\git_portfolio\\CSharpMMO\\ServerCore\\ServerCore.csproj": {
+    "C:\\GitForGame\\Development\\CSharpMMO\\ServerCore\\ServerCore.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\git_portfolio\\CSharpMMO\\ServerCore\\ServerCore.csproj",
+        "projectUniqueName": "C:\\GitForGame\\Development\\CSharpMMO\\ServerCore\\ServerCore.csproj",
         "projectName": "ServerCore",
-        "projectPath": "C:\\git_portfolio\\CSharpMMO\\ServerCore\\ServerCore.csproj",
-        "packagesPath": "C:\\Users\\밥벌레\\.nuget\\packages\\",
-        "outputPath": "C:\\git_portfolio\\CSharpMMO\\ServerCore\\obj\\",
+        "projectPath": "C:\\GitForGame\\Development\\CSharpMMO\\ServerCore\\ServerCore.csproj",
+        "packagesPath": "C:\\Users\\eo956\\.nuget\\packages\\",
+        "outputPath": "C:\\GitForGame\\Development\\CSharpMMO\\ServerCore\\obj\\",
         "projectStyle": "PackageReference",
-        "fallbackFolders": [
-          "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
-        ],
         "configFilePaths": [
-          "C:\\Users\\밥벌레\\AppData\\Roaming\\NuGet\\NuGet.Config",
-          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
+          "C:\\Users\\eo956\\AppData\\Roaming\\NuGet\\NuGet.Config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
         "originalTargetFrameworks": [
-          "net5.0"
+          "net6.0"
         ],
         "sources": {
           "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
           "https://api.nuget.org/v3/index.json": {}
         },
         "frameworks": {
-          "net5.0": {
-            "targetAlias": "net5.0",
+          "net6.0": {
+            "targetAlias": "net6.0",
             "projectReferences": {}
           }
         },
@@ -109,15 +102,16 @@
         }
       },
       "frameworks": {
-        "net5.0": {
-          "targetAlias": "net5.0",
+        "net6.0": {
+          "targetAlias": "net6.0",
           "imports": [
             "net461",
             "net462",
             "net47",
             "net471",
             "net472",
-            "net48"
+            "net48",
+            "net481"
           ],
           "assetTargetFallback": true,
           "warn": true,
@@ -126,7 +120,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\5.0.416\\RuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\7.0.306\\RuntimeIdentifierGraph.json"
         }
       }
     }

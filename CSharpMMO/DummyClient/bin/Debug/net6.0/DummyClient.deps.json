@@ -6,12 +6,13 @@
   "compilationOptions": {},
   "targets": {
     ".NETCoreApp,Version=v6.0": {
-      "PacketGenerator/1.0.0": {
+      "DummyClient/1.0.0": {
         "dependencies": {
-          "Google.Protobuf": "3.21.7"
+          "Google.Protobuf": "3.21.7",
+          "ServerCore": "1.0.0"
         },
         "runtime": {
-          "PacketGenerator.dll": {}
+          "DummyClient.dll": {}
         }
       },
       "Google.Protobuf/3.21.7": {
@@ -21,11 +22,16 @@
             "fileVersion": "3.21.7.0"
           }
         }
+      },
+      "ServerCore/1.0.0": {
+        "runtime": {
+          "ServerCore.dll": {}
+        }
       }
     }
   },
   "libraries": {
-    "PacketGenerator/1.0.0": {
+    "DummyClient/1.0.0": {
       "type": "project",
       "serviceable": false,
       "sha512": ""
@@ -36,6 +42,11 @@
       "sha512": "sha512-0Q+wYqtEVjRxVbtfxXzTUzwLGMZJKqhmIgdDpwWyg8J4ykYqfPn0M60FPBcZkjiGgtJqvZp+8t2van9rxTCLWQ==",
       "path": "google.protobuf/3.21.7",
       "hashPath": "google.protobuf.3.21.7.nupkg.sha512"
+    },
+    "ServerCore/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
     }
   }
 }

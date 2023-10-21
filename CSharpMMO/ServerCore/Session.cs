@@ -260,7 +260,8 @@ namespace ServerCore
                     }
 
                     RegisterRecv();
-                    
+                }
+
                 catch (Exception e)
                 {
                     // TODO: 방어 코드를 더 추가한 뒤에 여기로 넘어오면 Disconnect() 하는 것이 좋을 것 같다.

@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "G0fJnbeQnCVfsHE5Eol67aIBPbsVu9d2Tct2ATqOjqPVHr+7hs0zXXaCEuCuOjBLuSchYOJiYHRq42Uri9rhKg==",
+  "dgSpecHash": "2ajxAWSWYhWpDEzBbtVFFM2JLNUKquQro2f5n7XGR+kZ11LbjkbsU5+KDy0a8P5yFh55rUMcGcsQZLEKnjDl/w==",
   "success": true,
-  "projectFilePath": "C:\\git_portfolio\\CSharpMMO\\ServerCore\\ServerCore.csproj",
+  "projectFilePath": "C:\\GitForGame\\Development\\CSharpMMO\\ServerCore\\ServerCore.csproj",
   "expectedPackageFiles": [],
   "logs": []
 }

@@ -1,5 +1,5 @@
 using Google.Protobuf;
-using Google.Protobuf.Protocol
+using Google.Protobuf.Protocol;
 using ServerCore;
 using System;
 using System.Collections.Generic;
@@ -25,13 +25,47 @@ public class PacketManager
     {
         Register();
     }
-    Dictionary<ushort, Func<PacketSession, ArraySegment<byte>, ushort>> _funcMap = new Dictionary<ushort, Func<PacketSession, ArraySegment<byte>, ushort>>();
+
+    Dictionary<ushort, Action<PacketSession, ArraySegment<byte>, ushort>> _makePacketMap = new Dictionary<ushort, Action<PacketSession, ArraySegment<byte>, ushort>>();
     Dictionary<ushort, Action<PacketSession, IMessage>> _handlerMap = new Dictionary<ushort, Action<PacketSession, IMessage>>();
+
+    public Action<PacketSession, IMessage, ushort> CustomHandler { get; set; }
 
     public void Register()
     {
-        _funcMap.Add((ushort)MsgId.SChat, MakePacket<S_Chat>);
-        _handlerMap.Add((ushort)MsgId.SChat, PacketHandler.S_ChatHandler);
+        _makePacketMap.Add((ushort)MsgId.SHeartBeat, MakePacket<S_HeartBeat>);
+        _handlerMap.Add((ushort)MsgId.SHeartBeat, PacketHandler.S_HeartBeatHandler);
+        _makePacketMap.Add((ushort)MsgId.SEnterGame, MakePacket<S_EnterGame>);
+        _handlerMap.Add((ushort)MsgId.SEnterGame, PacketHandler.S_EnterGameHandler);
+        _makePacketMap.Add((ushort)MsgId.SConnected, MakePacket<S_Connected>);
+        _handlerMap.Add((ushort)MsgId.SConnected, PacketHandler.S_ConnectedHandler);
+        _makePacketMap.Add((ushort)MsgId.SLogin, MakePacket<S_Login>);
+        _handlerMap.Add((ushort)MsgId.SLogin, PacketHandler.S_LoginHandler);
+        _makePacketMap.Add((ushort)MsgId.SCreatePlayer, MakePacket<S_CreatePlayer>);
+        _handlerMap.Add((ushort)MsgId.SCreatePlayer, PacketHandler.S_CreatePlayerHandler);
+        _makePacketMap.Add((ushort)MsgId.SLeaveGame, MakePacket<S_LeaveGame>);
+        _handlerMap.Add((ushort)MsgId.SLeaveGame, PacketHandler.S_LeaveGameHandler);
+        _makePacketMap.Add((ushort)MsgId.SSpawn, MakePacket<S_Spawn>);
+        _handlerMap.Add((ushort)MsgId.SSpawn, PacketHandler.S_SpawnHandler);
+        _makePacketMap.Add((ushort)MsgId.SDespawn, MakePacket<S_Despawn>);
+        _handlerMap.Add((ushort)MsgId.SDespawn, PacketHandler.S_DespawnHandler);
+        _makePacketMap.Add((ushort)MsgId.SMove, MakePacket<S_Move>);
+        _handlerMap.Add((ushort)MsgId.SMove, PacketHandler.S_MoveHandler);
+        _makePacketMap.Add((ushort)MsgId.SSkill, MakePacket<S_Skill>);
+        _handlerMap.Add((ushort)MsgId.SSkill, PacketHandler.S_SkillHandler);
+        _makePacketMap.Add((ushort)MsgId.SChangeHp, MakePacket<S_ChangeHp>);
+        _handlerMap.Add((ushort)MsgId.SChangeHp, PacketHandler.S_ChangeHpHandler);
+        _makePacketMap.Add((ushort)MsgId.SDead, MakePacket<S_Dead>);
+        _handlerMap.Add((ushort)MsgId.SDead, PacketHandler.S_DeadHandler);
+        _makePacketMap.Add((ushort)MsgId.SItemList, MakePacket<S_ItemList>);
+        _handlerMap.Add((ushort)MsgId.SItemList, PacketHandler.S_ItemListHandler);
+        _makePacketMap.Add((ushort)MsgId.SAddItem, MakePacket<S_AddItem>);
+        _handlerMap.Add((ushort)MsgId.SAddItem, PacketHandler.S_AddItemHandler);
+        _makePacketMap.Add((ushort)MsgId.SEquipItem, MakePacket<S_EquipItem>);
+        _handlerMap.Add((ushort)MsgId.SEquipItem, PacketHandler.S_EquipItemHandler);
+        _makePacketMap.Add((ushort)MsgId.SChangeStat, MakePacket<S_ChangeStat>);
+        _handlerMap.Add((ushort)MsgId.SChangeStat, PacketHandler.S_ChangeStatHandler);
+
     }
     public void OnRecvPacket(PacketSession session, ArraySegment<byte> buffer)
     {
@@ -44,7 +78,7 @@ public class PacketManager
         count += 2;
         
         Action<PacketSession, ArraySegment<byte>, ushort> action = null;
-        if (_funcMap.TryGetValue(packetId, out action))
+        if (_makePacketMap.TryGetValue(packetId, out action))
         {
             action.Invoke(session, buffer, packetId);
         }
@@ -55,17 +89,28 @@ public class PacketManager
         // 패킷 조립
         T packet = new T();
         packet.MergeFrom(buffer.Array, buffer.Offset + 4, buffer.Count - 4);
-        Action<PacketSession, IMessage> action = null;
-        if (_handlerMap.TryGetValue(packetId, out action))
+
+        if (CustomHandler != null)
         {
-            action.Invoke(session, packet);
+            CustomHandler.Invoke(session, packet, packetId);
+        }
+        else
+        {
+            Action<PacketSession, IMessage> action = null;
+            if (_handlerMap.TryGetValue(packetId, out action))
+            {
+                #if DEBUG && !UNITY_EDITOR
+                Console.WriteLine("[Received] " + packet.Descriptor.Name + " " +  packet);
+                #endif
+                action.Invoke(session, packet);
+            }
         }
     }
 
     public Action<PacketSession, IMessage> GetPacketHandler(ushort packetId)
     {
         Action<PacketSession, IMessage> action = null;
-        if (_handlerMap.TryGetValue(packetId, out action)
+        if (_handlerMap.TryGetValue(packetId, out action))
         {
             return action;
         }

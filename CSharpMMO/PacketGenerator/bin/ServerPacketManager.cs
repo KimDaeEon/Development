@@ -1,5 +1,5 @@
 using Google.Protobuf;
-using Google.Protobuf.Protocol
+using Google.Protobuf.Protocol;
 using ServerCore;
 using System;
 using System.Collections.Generic;
@@ -25,13 +25,31 @@ public class PacketManager
     {
         Register();
     }
-    Dictionary<ushort, Func<PacketSession, ArraySegment<byte>, ushort>> _funcMap = new Dictionary<ushort, Func<PacketSession, ArraySegment<byte>, ushort>>();
+
+    Dictionary<ushort, Action<PacketSession, ArraySegment<byte>, ushort>> _makePacketMap = new Dictionary<ushort, Action<PacketSession, ArraySegment<byte>, ushort>>();
     Dictionary<ushort, Action<PacketSession, IMessage>> _handlerMap = new Dictionary<ushort, Action<PacketSession, IMessage>>();
+
+    public Action<PacketSession, IMessage, ushort> CustomHandler { get; set; }
 
     public void Register()
     {
-        _funcMap.Add((ushort)MsgId.CChat, MakePacket<C_Chat>);
-        _handlerMap.Add((ushort)MsgId.CChat, PacketHandler.C_ChatHandler);
+        _makePacketMap.Add((ushort)MsgId.CHeartBeat, MakePacket<C_HeartBeat>);
+        _handlerMap.Add((ushort)MsgId.CHeartBeat, PacketHandler.C_HeartBeatHandler);
+        _makePacketMap.Add((ushort)MsgId.CLoginDummy, MakePacket<C_LoginDummy>);
+        _handlerMap.Add((ushort)MsgId.CLoginDummy, PacketHandler.C_LoginDummyHandler);
+        _makePacketMap.Add((ushort)MsgId.CLogin, MakePacket<C_Login>);
+        _handlerMap.Add((ushort)MsgId.CLogin, PacketHandler.C_LoginHandler);
+        _makePacketMap.Add((ushort)MsgId.CEnterGame, MakePacket<C_EnterGame>);
+        _handlerMap.Add((ushort)MsgId.CEnterGame, PacketHandler.C_EnterGameHandler);
+        _makePacketMap.Add((ushort)MsgId.CCreatePlayer, MakePacket<C_CreatePlayer>);
+        _handlerMap.Add((ushort)MsgId.CCreatePlayer, PacketHandler.C_CreatePlayerHandler);
+        _makePacketMap.Add((ushort)MsgId.CMove, MakePacket<C_Move>);
+        _handlerMap.Add((ushort)MsgId.CMove, PacketHandler.C_MoveHandler);
+        _makePacketMap.Add((ushort)MsgId.CSkill, MakePacket<C_Skill>);
+        _handlerMap.Add((ushort)MsgId.CSkill, PacketHandler.C_SkillHandler);
+        _makePacketMap.Add((ushort)MsgId.CEquipItem, MakePacket<C_EquipItem>);
+        _handlerMap.Add((ushort)MsgId.CEquipItem, PacketHandler.C_EquipItemHandler);
+
     }
     public void OnRecvPacket(PacketSession session, ArraySegment<byte> buffer)
     {
@@ -44,7 +62,7 @@ public class PacketManager
         count += 2;
         
         Action<PacketSession, ArraySegment<byte>, ushort> action = null;
-        if (_funcMap.TryGetValue(packetId, out action))
+        if (_makePacketMap.TryGetValue(packetId, out action))
         {
             action.Invoke(session, buffer, packetId);
         }
@@ -55,17 +73,28 @@ public class PacketManager
         // 패킷 조립
         T packet = new T();
         packet.MergeFrom(buffer.Array, buffer.Offset + 4, buffer.Count - 4);
-        Action<PacketSession, IMessage> action = null;
-        if (_handlerMap.TryGetValue(packetId, out action))
+
+        if (CustomHandler != null)
         {
-            action.Invoke(session, packet);
+            CustomHandler.Invoke(session, packet, packetId);
+        }
+        else
+        {
+            Action<PacketSession, IMessage> action = null;
+            if (_handlerMap.TryGetValue(packetId, out action))
+            {
+                #if DEBUG && !UNITY_EDITOR
+                Console.WriteLine("[Received] " + packet.Descriptor.Name + " " +  packet);
+                #endif
+                action.Invoke(session, packet);
+            }
         }
     }
 
     public Action<PacketSession, IMessage> GetPacketHandler(ushort packetId)
     {
         Action<PacketSession, IMessage> action = null;
-        if (_handlerMap.TryGetValue(packetId, out action)
+        if (_handlerMap.TryGetValue(packetId, out action))
         {
             return action;
         }
