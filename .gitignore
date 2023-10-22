@@ -17222,7 +17222,6 @@ WinFormPractice/WinFormPractice/WinFormPractice/obj/Debug/WinFormPractice.exe
 WinFormPractice/WinFormPractice/WinFormPractice/obj/Debug/WinFormPractice.Form1.resources
 WinFormPractice/WinFormPractice/WinFormPractice/obj/Debug/WinFormPractice.Properties.Resources.resources
 *.obj
-*.exe
 *.tlog
 *.recipe
 *.iobj
@@ -17264,7 +17263,6 @@ c_study_and_coding_test/c_study/x64/Debug/vc142.idb
 CSharpStudy/obj/Release/net5.0/CSharpStudy.csproj.CopyComplete
 *.ilk
 *.idb
-*.lib
 *.enc
 *.pch
 c_study_and_coding_test/coding_test/x64/Debug/coding_test.vcxproj.FileListAbsolute.txt
@@ -17275,3 +17273,4 @@ CppMMO/Common/protoc-21.12-win64/bin/Protocol.pb.h
 CppMMO/Common/protoc-21.12-win64/bin/ServerPacketHandler.h
 CppMMO/Common/protoc-21.12-win64/bin/Struct.pb.cc
 CppMMO/Common/protoc-21.12-win64/bin/Struct.pb.h
+CppMMO/Libraries/Libs/ServerCore/Debug/ServerCore.lib
