@@ -4,7 +4,6 @@
 //			DBConnection
 // --------------------------------
 
-// TODO: 아래 코드들 무슨 의미인지 다 확인
 bool DBConnection::Connect(SQLHENV hEnv, const WCHAR* connectionString)
 {
     if (::SQLAllocHandle(SQL_HANDLE_DBC, hEnv, OUT &_hConnection) != SQL_SUCCESS)
@@ -25,18 +24,20 @@ bool DBConnection::Connect(SQLHENV hEnv, const WCHAR* connectionString)
         _countof(stringBuffer),
         OUT reinterpret_cast<SQLWCHAR*>(resultString),
         _countof(resultString),
-        OUT &resultStringLen,
-        SQL_DRIVER_NOPROMPT
+        OUT & resultStringLen,
+        SQL_DRIVER_NOPROMPT // 대화상자 안나타나고 연결 스트링 정보로 바로 연결
     );
 
+    // Statement Handle 생성
     if (::SQLAllocHandle(SQL_HANDLE_STMT, _hConnection, &_hStatement) != SQL_SUCCESS)
     {
         return false;
     }
 
-    return (ret == SQL_SUCCESS) || (ret == SQL_SUCCESS_WITH_INFO);
+    return (ret == SQL_SUCCESS) || (ret == SQL_SUCCESS_WITH_INFO); // SQL_SUCCESS_WITH_INFO : 연결은 됐지만, 경고가 있음
 }
 
+// Connection Handle과 Statement Handle을 해제한다.
 void DBConnection::Clear()
 {
     if (_hConnection != SQL_NULL_HANDLE)
@@ -99,9 +100,10 @@ int32 DBConnection::GetRowCount()
         return static_cast<int32>(count);
     }
 
-    return -1;
+    return INVALID_SQL_ROW_COUNT;
 }
 
+// 이걸 호출해야 다음 번에 BindParam 호출 가능
 void DBConnection::UnBind()
 {
     ::SQLFreeStmt(_hStatement, SQL_UNBIND);
@@ -109,6 +111,31 @@ void DBConnection::UnBind()
     ::SQLFreeStmt(_hStatement, SQL_CLOSE);
 }
 
+bool DBConnection::BindParam(SQLUSMALLINT paramIndex, SQLSMALLINT cType, SQLSMALLINT sqlType, SQLULEN len, SQLPOINTER ptr, SQLLEN* index)
+{
+    SQLRETURN ret = ::SQLBindParameter(_hStatement, paramIndex, SQL_PARAM_INPUT, cType, sqlType, len, 0, ptr, 0, index);
+    if (ret != SQL_SUCCESS && ret != SQL_SUCCESS_WITH_INFO)
+    {
+        HandleError(ret);
+        return false;
+    }
+
+    return true;
+}
+
+bool DBConnection::BindCol(SQLUSMALLINT columIndex, SQLSMALLINT cType, SQLULEN len, SQLPOINTER value, SQLLEN* index)
+{
+    SQLRETURN ret = ::SQLBindCol(_hStatement, columIndex, cType, value, len, index);
+    if (ret != SQL_SUCCESS && ret != SQL_SUCCESS_WITH_INFO)
+    {
+        HandleError(ret);
+        return false;
+    }
+
+    return true;
+}
+
+// 간편하게 쓸 수 있게 만든 BindParam 함수들
 bool DBConnection::BindParam(int32 paramIndex, bool* value, SQLLEN* index)
 {
     return BindParam(paramIndex, SQL_C_TINYINT, SQL_TINYINT, sizeof32(bool), value, index);
@@ -116,7 +143,7 @@ bool DBConnection::BindParam(int32 paramIndex, bool* value, SQLLEN* index)
 
 bool DBConnection::BindParam(int32 paramIndex, float* value, SQLLEN* index)
 {
-    return BindParam(paramIndex, SQL_C_FLOAT, SQL_REAL, 0, value, index);
+    return BindParam(paramIndex, SQL_C_FLOAT, SQL_REAL, 0, value, index); // 정수가 아니면 len을 0을 넣어주어도 된다고 한다.   
 }
 
 bool DBConnection::BindParam(int32 paramIndex, double* value, SQLLEN* index)
@@ -158,11 +185,11 @@ bool DBConnection::BindParam(int32 paramIndex, const WCHAR* str, SQLLEN* index)
 
     if (size > WVARCHAR_MAX)
     {
-        return BindParam (paramIndex, SQL_C_WCHAR, SQL_WLONGVARCHAR, size, (SQLPOINTER)str, index);
+        return BindParam(paramIndex, SQL_C_WCHAR, SQL_WLONGVARCHAR, size, (SQLPOINTER)str, index);
     }
     else
     {
-        return BindParam (paramIndex, SQL_C_WCHAR, SQL_WVARCHAR, size, (SQLPOINTER)str, index);
+        return BindParam(paramIndex, SQL_C_WCHAR, SQL_WVARCHAR, size, (SQLPOINTER)str, index);
     }
 }
 
@@ -189,6 +216,7 @@ bool DBConnection::BindParam(int32 paramIndex, const BYTE* binary, int32 size, S
     }
 }
 
+// 간편하게 쓸 수 있게 만든 BindParam 함수들
 bool DBConnection::BindCol(int32 columnIndex, bool* value, SQLLEN* index)
 {
     return BindCol(columnIndex, SQL_C_TINYINT, sizeof32(bool), value, index);
@@ -241,35 +269,11 @@ bool DBConnection::BindCol(int32 columnIndex, BYTE* binary, int32 size, SQLLEN* 
     return BindCol(columnIndex, SQL_BINARY, size, binary, index);
 }
 
-bool DBConnection::BindParam(SQLUSMALLINT paramIndex, SQLSMALLINT cType, SQLSMALLINT sqlType, SQLULEN len, SQLPOINTER ptr, SQLLEN* index)
-{
-	SQLRETURN ret = ::SQLBindParameter(_hStatement, paramIndex, SQL_PARAM_INPUT, cType, sqlType, len, 0, ptr, 0, index);
-	if (ret != SQL_SUCCESS && ret != SQL_SUCCESS_WITH_INFO)
-	{
-		HandleError(ret);
-		return false;
-	}
-
-	return true;
-}
-
-bool DBConnection::BindCol(SQLUSMALLINT columIndex, SQLUSMALLINT cType, SQLULEN len, SQLPOINTER value, SQLLEN* index)
-{
-	SQLRETURN ret = ::SQLBindCol(_hStatement, columIndex, cType, value, len, index);
-	if (ret != SQL_SUCCESS && ret != SQL_SUCCESS_WITH_INFO)
-	{
-		HandleError(ret);
-		return false;
-	}
-
-	return true;
-}
-
 void DBConnection::HandleError(SQLRETURN ret)
 {
     if (ret == SQL_SUCCESS || ret == SQL_SUCCESS_WITH_INFO)
     {
-        cout << "Invalid HandleError(DB)" << endl;
+        cout << "Invalid HandleError Call" << endl;
         return;
     }
 
@@ -282,6 +286,7 @@ void DBConnection::HandleError(SQLRETURN ret)
 
     while (true)
     {
+        // SQL 에러 정보를 가져온다.
         errorRet = ::SQLGetDiagRecW(
             SQL_HANDLE_STMT,
             _hStatement,
@@ -293,6 +298,7 @@ void DBConnection::HandleError(SQLRETURN ret)
             OUT &msgLen
         );
 
+        // 에러 정보가 없으면 루프를 빠져나온다.
         if (errorRet == SQL_NO_DATA)
         {
             break;

@@ -1,6 +1,8 @@
 #pragma once
 #include "DBConnection.h"
 
+// 해당 클래스는 DBConnection을 쉽게 쓸 수 있도록 도와주는 클래스이다.
+
 // 재귀적으로 value 의 모든 비트가 1이된다.
 // FullBits<3> 이렇게 하면 0~2번 비트가 1이 되어 있는 구조체가 나온다. 
 template<int32 C>
@@ -34,8 +36,9 @@ public:
 		ASSERT_CRASH(ParamCount < 64);
 		ASSERT_CRASH(ColumnCount < 64);
 
-		::memset(_paramIndex, 0, sizeof(_paramIndex));
-		::memset(_columnIndex, 0, sizeof(_columnIndex));
+		// 내부 변수 초기화
+		::memset(_paramIndexs, 0, sizeof(_paramIndexs));
+		::memset(_columnIndexs, 0, sizeof(_columnIndexs));
 		_paramFlag = 0;
 		_columnFlag = 0;
 		dbConnection.UnBind();
@@ -43,7 +46,7 @@ public:
 
 	bool Validate()
 	{
-		// For Debugging
+		// 아래 변수들은 디버깅 시에 변수값 확인을 위한 것들이다.
 		int32 pCnt = ParamCount;
 		int32 cCnt = ColumnCount;
 		int32 validParamFlag = FullBits<ParamCount>::value;
@@ -70,13 +73,13 @@ public:
 		// 우리 프로그래머들은 0부터 시작하는게 익숙하다. 
 		// 하지만 SQL의 BindParam같은 경우는 처음 index 가 1부터 시작한다. 
 		// 그래서 이 함수는 인자를 0부터 받고, 내부 BindParam에 넘겨줄 때에 +1을 한다.
-		_dbConnection.BindParam(idx + 1, &value, &_paramIndex[idx]);
-		_paramFlag |= (1LL << idx);
+		_dbConnection.BindParam(idx + 1, &value, &_paramIndexs[idx]);
+		_paramFlag |= (1LL << idx); // flag는 0번째 idx부터 1씩 채워나간다.
 	}
 
 	void BindParam(int32 idx, const WCHAR* value)
 	{
-		_dbConnection.BindParam(idx + 1, value, &_paramIndex[idx]);
+		_dbConnection.BindParam(idx + 1, value, &_paramIndexs[idx]);
 		_paramFlag |= (1LL << idx);
 	}
 
@@ -85,52 +88,52 @@ public:
 	template<typename T, int32 N>
 	void BindParam(int32 idx, T(&value)[N])
 	{
-		_dbConnection.BindParam(idx + 1, (const BYTE*)value, sizeof32(T) * N, &_paramIndex[idx]);
+		_dbConnection.BindParam(idx + 1, (const BYTE*)value, sizeof32(T) * N, &_paramIndexs[idx]);
 		_paramFlag |= (1LL << idx);
 	}
 
 	template<typename T>
 	void BindParam(int32 idx, T* value, int32 N)
 	{
-		_dbConnection.BindParam(idx + 1, (const BYTE*)value, sizeof32(T) * N, &_paramIndex[idx]);
+		_dbConnection.BindParam(idx + 1, (const BYTE*)value, sizeof32(T) * N, &_paramIndexs[idx]);
 		_paramFlag |= (1LL << idx);
 	}
 
 	template<typename T>
 	void BindCol(int32 idx, T& value)
 	{
-		_dbConnection.BindCol(idx + 1, &value, &_columnIndex[idx]);
+		_dbConnection.BindCol(idx + 1, &value, &_columnIndexs[idx]);
 		_columnFlag |= (1LL << idx);
 	}
 
-	// TODO: NULL 빼느라 N - 1이나 그 아래 코드는 len - 1을 하는데, 이렇게 하는게 맞나 확인 필요
+	// 결과 받아올 배열에서 NULL 공간은 빼고 받아야 문자열로 인식가능하니 -1 한다.
 	template<int32 N>
 	void BindCol(int32 idx, WCHAR(&value)[N])
 	{
-		_dbConnection.BindCol(idx + 1, value, N - 1, &_columnIndex[idx]);
+		_dbConnection.BindCol(idx + 1, value, N - 1, &_columnIndexs[idx]);
 		_columnFlag |= (1LL << idx);
 	}
 
 	void BindCol(int32 idx, WCHAR* value, int32 len)
 	{
-		_dbConnection.BindCol(idx + 1, value, len - 1, &_columnIndex[idx]);
+		_dbConnection.BindCol(idx + 1, value, len - 1, &_columnIndexs[idx]);
 		_columnFlag |= (1LL << idx);
 	}
 
+	// 위의 WCHAR 버전과 다르게 문자열이 아니라서 배열의 길이 전체를 다 받아오는데에 사용한다.
 	template<typename T, int32 N>
 	void BindCol(int32 idx, T(&value)[N])
 	{
-		_dbConnection.BindCol(idx + 1, value, sizeof32(T) * N, &_columnIndex[idx]);
+		_dbConnection.BindCol(idx + 1, value, sizeof32(T) * N, &_columnIndexs[idx]);
 		_columnFlag |= (1LL << idx);
 	}
 
 protected:
 	DBConnection&	_dbConnection;
 	const WCHAR*	_query;
-	SQLLEN			_paramIndex[ParamCount > 0 ? ParamCount : 1]; // 크기가 0인 배열은 선언할 수 없기에..
-	SQLLEN			_columnIndex[ColumnCount > 0 ? ColumnCount : 1];
-	uint64			_paramFlag;
-	uint64			_columnFlag;
-
+	SQLLEN			_paramIndexs[ParamCount > 0 ? ParamCount : 1]; // 크기가 0인 배열은 선언할 수 없기에..
+	SQLLEN			_columnIndexs[ColumnCount > 0 ? ColumnCount : 1];
+	uint64			_paramFlag; // bit로_parmIndexs 에서 똑같은 인덱스에 바인딩 안되도록 체크하는 변수
+	uint64			_columnFlag; // bit로_columnIndexs 에서 똑같은 인덱스에 바인딩 안되도록 체크하는 변수
 };
 

@@ -129,11 +129,63 @@ void DoWorkerJob(ServerServiceRef& service)
 int main()
 {
 	ASSERT_CRASH(GDBConnectionPool->Connect(1,
-		L"Driver={ODBC Driver 17 for SQL Server};Server=DESKTOP-9IA022F;Database=TestDB;UID=sa;PWD=1234;Connect Timeout=30;"));
+		L"Driver={ODBC Driver 17 for SQL Server};Server=(localdb)\\MSSQLLocalDB;Database=ServerDb;Trusted_Connection=Yes;"));
 
-	DBConnection* dbConn = GDBConnectionPool->Pop();
+	//// Create Table
+	//{
+	//	auto query = L"\
+	//		CREATE TABLE[dbo].[Gold](\
+	//							[id] INT NOT NULL PRIMARY KEY IDENTITY, \
+	//							[gold] [int] NOT NULL,\
+	//							);";
+
+	//	DBConnection* dbConn = GDBConnectionPool->Pop();
+	//	ASSERT_CRASH(dbConn->Execute(query));
+	//	GDBConnectionPool->Push(dbConn);
+	//}
+
+	{
+		for (int32 i = 0; i < 3; i++)
+		{
+			DBConnection* dbConn = GDBConnectionPool->Pop();
+
+			DBBind<2, 0> dbBind(*dbConn, L"INSERT INTO [dbo].[Gold]([gold], [createTime]) VALUES(?, ?);");
+
+			int32 gold = 200;
+			TIMESTAMP_STRUCT ts{2020, 10, 10};
+			dbBind.BindParam(0, gold);
+			dbBind.BindParam(1, ts);
+
+			ASSERT_CRASH(dbBind.Execute());
+			GDBConnectionPool->Push(dbConn);
+		}
+	}
+
+	{
+		DBConnection* dbConn = GDBConnectionPool->Pop();
+		DBBind<0, 3> dbBind(*dbConn, L"SELECT * FROM Gold;");
+
+		int32 outId = 0;
+		int32 outGold = 0;
+		TIMESTAMP_STRUCT outCreateTime{};
+		dbBind.BindCol(0, outId);
+		dbBind.BindCol(1, outGold);
+		dbBind.BindCol(2, outCreateTime);	
+
+		ASSERT_CRASH(dbBind.Execute());
+
+		while (dbConn->Fetch())
+		{
+			cout << "id: "<<  outId << " gold: " << outGold << " createTime year: " << outCreateTime.year 
+				<< " month: " << outCreateTime.month << " day: " << outCreateTime.day << endl;
+		}
+		GDBConnectionPool->Push(dbConn);
+	}
+
+
+	/*DBConnection* dbConn = GDBConnectionPool->Pop();
 	DBSynchronizer dbSync(*dbConn);
-	dbSync.Synchronize(L"TestDB.xml");
+	dbSync.Synchronize(L"TestDB.xml");*/
 
 	ClientPacketHandler::Init();
 

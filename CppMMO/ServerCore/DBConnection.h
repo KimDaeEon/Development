@@ -7,6 +7,7 @@
 // --------------------------------
 enum
 {
+	INVALID_SQL_ROW_COUNT = -1,
 	WVARCHAR_MAX = 4000, // SQL Server 4000, MySQL인 경우 65535
 	BINARY_MAX = 8000,
 };
@@ -30,7 +31,7 @@ public:
 	bool		BindParam(int32 paramIndex, int16* value, SQLLEN* index);
 	bool		BindParam(int32 paramIndex, int32* value, SQLLEN* index);
 	bool		BindParam(int32 paramIndex, int64* value, SQLLEN* index);
-	bool		BindParam(int32 paramIndex, TIMESTAMP_STRUCT* value, SQLLEN* index);
+	bool		BindParam(int32 paramIndex, TIMESTAMP_STRUCT* value, SQLLEN* index); // 여기서 TIMESTAMP_STRUCT는 SQL의 Datetime(2)에 대응한다. SQL Server의 TimeStamp는 테이블 Row Version 관리 용도 데이터니 헷갈리지 말자.
 	bool		BindParam(int32 paramIndex, const WCHAR* str, SQLLEN* index);
 	bool		BindParam(int32 paramIndex, const BYTE* binary, int32 size, SQLLEN* index);
 
@@ -45,18 +46,14 @@ public:
 	bool		BindCol(int32 columnIndex, WCHAR* str, int32 size, SQLLEN* index);
 	bool		BindCol(int32 columnIndex, BYTE* binary, int32 size, SQLLEN* index);
 
-
-private:
-	// 인자 넘겨줄 때에 사용
-	bool		BindParam(SQLUSMALLINT paramIndex, SQLSMALLINT cType, SQLSMALLINT sqlType, SQLULEN len, SQLPOINTER ptr, SQLLEN* index);
 	
-	// 컬럼을 가져올 때에 사용
-	bool		BindCol(SQLUSMALLINT columIndex, SQLUSMALLINT cType, SQLULEN len, SQLPOINTER value, SQLLEN* index);
+private:
+	bool		BindParam(SQLUSMALLINT paramIndex, SQLSMALLINT cType /*C언어의 타입*/, SQLSMALLINT sqlType/*SQL의 타입*/, SQLULEN len, SQLPOINTER ptr, SQLLEN* index);
+	bool		BindCol(SQLUSMALLINT columIndex, SQLSMALLINT cType, SQLULEN len, SQLPOINTER value, SQLLEN* index); // 컬럼 값 가져올 때에 사용
 	void		HandleError(SQLRETURN ret);
 
 private:
-	// 아래처럼 DB 연결용 핸들과 인자를 연결해서 보내는 상태 핸들이 필요하단 것을 알아두자.
-	SQLHDBC		_hConnection = SQL_NULL_HANDLE;
-	SQLHSTMT	_hStatement = SQL_NULL_HANDLE;
+	SQLHDBC		_hConnection = SQL_NULL_HANDLE; // DB 연결용 핸들
+	SQLHSTMT	_hStatement = SQL_NULL_HANDLE; // 인자 연결용 핸들
 };
 

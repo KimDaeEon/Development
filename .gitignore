@@ -17274,3 +17274,8 @@ CppMMO/Common/protoc-21.12-win64/bin/ServerPacketHandler.h
 CppMMO/Common/protoc-21.12-win64/bin/Struct.pb.cc
 CppMMO/Common/protoc-21.12-win64/bin/Struct.pb.h
 CppMMO/Libraries/Libs/ServerCore/Debug/ServerCore.lib
+CppMMO/BinaryFiles/Debug/DummyClient.exe
+CppMMO/BinaryFiles/Debug/GameServer.exe
+CSharpMMO/ServerCore/bin/Debug/net6.0/enet.dylib
+CSharpMMO/ServerCore/bin/Debug/net6.0/libenet.so
+CSharpMMO/SharedDB/obj/Debug/netcoreapp3.1/SharedDB.csproj.BuildWithSkipAnalyzers
