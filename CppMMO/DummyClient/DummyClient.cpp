@@ -53,7 +53,7 @@ int main()
 		NetworkAddress(L"127.0.0.1", 7777),
 		myMakeShared<IocpCore>(),
 		myMakeShared<ServerSession>,
-		3
+		50
 		);
 
 	ASSERT_CRASH(service->Start());
@@ -76,7 +76,7 @@ int main()
 	while (true)
 	{
 		service->Broadcast(sendBuffer);
-		this_thread::sleep_for(1s);
+		this_thread::sleep_for(33ms);
 	}
 
 	GThreadManager->Join();

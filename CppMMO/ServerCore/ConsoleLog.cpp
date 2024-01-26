@@ -4,14 +4,14 @@
 ConsoleLog::ConsoleLog()
 {
 	_stdOut = ::GetStdHandle(STD_OUTPUT_HANDLE);
-	_stdErr = ::GetStdHandle(STD_ERROR_HANDLE);
+	_stdErr = ::GetStdHandle(STD_ERROR_HANDLE); // cerr << "b" << endl; 이런 식으로도 출력이 가능하다. 출력 세팅 옵션을 cout과 다르게 줄 수 있음
 }
 
 ConsoleLog::~ConsoleLog()
 {
 }
 
-void ConsoleLog::WriteStdOut(Color color, const WCHAR* format, ...)
+void ConsoleLog::WriteStdOut(LogColor color, const WCHAR* format, ...)
 {
 	if (format == nullptr)
 		return;
@@ -25,10 +25,10 @@ void ConsoleLog::WriteStdOut(Color color, const WCHAR* format, ...)
 
 	fflush(stdout);
 
-	SetColor(true, Color::WHITE);
+	SetColor(true, LogColor::WHITE);
 }
 
-void ConsoleLog::WriteStdErr(Color color, const WCHAR* format, ...)
+void ConsoleLog::WriteStdErr(LogColor color, const WCHAR* format, ...)
 {
 	WCHAR buffer[BUFFER_SIZE];
 
@@ -45,10 +45,10 @@ void ConsoleLog::WriteStdErr(Color color, const WCHAR* format, ...)
 	::fwprintf_s(stderr, buffer);
 	fflush(stderr);
 
-	SetColor(false, Color::WHITE);
+	SetColor(false, LogColor::WHITE);
 }
 
-void ConsoleLog::SetColor(bool stdOut, Color color)
+void ConsoleLog::SetColor(bool stdOut, LogColor color)
 {
 	static WORD SColors[]
 	{

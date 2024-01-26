@@ -110,7 +110,8 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
     <PreBuildEvent>
-      <Command>CALL $(SolutionDir)Common\protoc-21.12-win64\bin\GenPackets.bat</Command>
+      <Command>CALL $(SolutionDir)Common\protoc-21.12-win64\bin\GenPackets.bat
+CALL $(SolutionDir)Common\storedProcedures\GenStoredProcedures.bat</Command>
     </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -152,7 +153,8 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
     <PreBuildEvent>
-      <Command>CALL $(SolutionDir)Common\protoc-21.12-win64\bin\GenPackets.bat</Command>
+      <Command>CALL $(SolutionDir)Common\protoc-21.12-win64\bin\GenPackets.bat
+CALL $(SolutionDir)Common\storedProcedures\GenStoredProcedures.bat</Command>
     </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -221,6 +223,7 @@
     <ClInclude Include="ConcurrentStack.h" />
     <ClInclude Include="ClientSession.h" />
     <ClInclude Include="ClientSessionManager.h" />
+    <ClInclude Include="GeneratedStoredProcedures.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="Player.h" />
     <ClInclude Include="Room.h" />
@@ -230,14 +233,16 @@
     <None Include="..\Common\protoc-21.12-win64\bin\GenPackets.bat" />
     <None Include="..\Common\protoc-21.12-win64\bin\Protocol.proto" />
     <None Include="..\Common\protoc-21.12-win64\bin\Struct.proto" />
+    <None Include="..\Common\storedProcedures\GenStoredProcedures.bat" />
   </ItemGroup>
   <ItemGroup>
     <UpToDateCheckInput Include="..\Common\protoc-21.12-win64\bin\Enum.proto" />
     <UpToDateCheckInput Include="..\Common\protoc-21.12-win64\bin\Protocol.proto" />
     <UpToDateCheckInput Include="..\Common\protoc-21.12-win64\bin\Struct.proto" />
+    <UpToDateCheckInput Include="GameDB.xml" />
   </ItemGroup>
   <ItemGroup>
-    <Xml Include="TestDB.xml" />
+    <Xml Include="GameDB.xml" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

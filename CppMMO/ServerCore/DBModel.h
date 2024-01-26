@@ -50,9 +50,9 @@ public:
 	myString				_typeText;
 	int32					_maxLength = 0;
 	bool					_nullable = false;
-	bool					_identity = false;
-	int64					_seedValue = 0;
-	int64					_incrementValue = 0;
+	bool					_identity = false; // identity (1,1) 에서 맨 앞 identity 여부 의미
+	int64					_seedValue = 0; // identity (1,1) 에서 맨 처음 1 의미, identity 시작 값
+	int64					_incrementValue = 0; // identity (1,1) 에서 맨 뒤 1 의미, identity 증가 값
 	myString				_default;
 	myString				_defaultConstraintName; // DB
 };

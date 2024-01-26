@@ -61,6 +61,7 @@ def ParseColumns(node, tables):
         words = query[select_idx+len('SELECT') : from_idx].strip().split(",")
         for word in words:
             column_name = word.strip().split()[0]
+            print(column_name)
             columns.append(Column(column_name, table.columns[column_name]))
     elif select_idx > 0:
         word = query[select_idx+len('SELECT') : -1].strip().split()[0]
@@ -70,6 +71,7 @@ def ParseColumns(node, tables):
             columns.append(Column('Identity', 'int64'))
     return columns
 
+# SQL에서 파라미터 개수만큼 ?를 만들어준다. ?는 SQL Query 전달할 때에 인자를 넘겨주는 형식이다.
 def MakeQuestions(params):
     questions = ''
     if len(params) != 0:

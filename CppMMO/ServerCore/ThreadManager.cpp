@@ -67,6 +67,10 @@ void ThreadManager::DoGlobalQueueJobs()
 		JobQueueRef jobQueue = GGlobalQueue->Pop();
 		if (jobQueue == nullptr)
 		{
+			// 어차피 프로세스가 해당 컴퓨터 자원을 다 쓰려고 하는 서버 같은 경우 yield해서 괜히 스레드들 context switch를 발생시키지 말라는 얘기가 있다.
+			// 테스트를 해봐도 yield가 CPU가 더 튀는 것 같다.
+			// https://stackoverflow.com/questions/11048946/stdthis-threadyield-vs-stdthis-threadsleep-for
+			std::this_thread::sleep_for(1ms); 
 			break;
 		}
 

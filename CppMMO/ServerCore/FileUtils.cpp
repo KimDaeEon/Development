@@ -7,7 +7,7 @@
 //			FileUtils
 // ----------------------------
 
-namespace fs = std::filesystem;
+namespace fs = std::filesystem; // C++ 17에 추가된 파일 시스템 라이브러리
 
 myVector<BYTE> FileUtils::ReadFile(const WCHAR* path)
 {

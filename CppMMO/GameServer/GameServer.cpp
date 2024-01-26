@@ -15,6 +15,7 @@
 #include "DBBind.h"
 #include "DBSynchronizer.h"
 #include "XmlParser.h"
+#include "GeneratedStoredProcedures.h"
 
 
 #pragma region StompAllocatorTest
@@ -131,61 +132,43 @@ int main()
 	ASSERT_CRASH(GDBConnectionPool->Connect(1,
 		L"Driver={ODBC Driver 17 for SQL Server};Server=(localdb)\\MSSQLLocalDB;Database=ServerDb;Trusted_Connection=Yes;"));
 
-	//// Create Table
-	//{
-	//	auto query = L"\
-	//		CREATE TABLE[dbo].[Gold](\
-	//							[id] INT NOT NULL PRIMARY KEY IDENTITY, \
-	//							[gold] [int] NOT NULL,\
-	//							);";
-
-	//	DBConnection* dbConn = GDBConnectionPool->Pop();
-	//	ASSERT_CRASH(dbConn->Execute(query));
-	//	GDBConnectionPool->Push(dbConn);
-	//}
-
-	{
-		for (int32 i = 0; i < 3; i++)
-		{
-			DBConnection* dbConn = GDBConnectionPool->Pop();
-
-			DBBind<2, 0> dbBind(*dbConn, L"INSERT INTO [dbo].[Gold]([gold], [createTime]) VALUES(?, ?);");
-
-			int32 gold = 200;
-			TIMESTAMP_STRUCT ts{2020, 10, 10};
-			dbBind.BindParam(0, gold);
-			dbBind.BindParam(1, ts);
-
-			ASSERT_CRASH(dbBind.Execute());
-			GDBConnectionPool->Push(dbConn);
-		}
-	}
-
+	// DBSync
 	{
 		DBConnection* dbConn = GDBConnectionPool->Pop();
-		DBBind<0, 3> dbBind(*dbConn, L"SELECT * FROM Gold;");
-
-		int32 outId = 0;
-		int32 outGold = 0;
-		TIMESTAMP_STRUCT outCreateTime{};
-		dbBind.BindCol(0, outId);
-		dbBind.BindCol(1, outGold);
-		dbBind.BindCol(2, outCreateTime);	
-
-		ASSERT_CRASH(dbBind.Execute());
-
-		while (dbConn->Fetch())
+		DBSynchronizer dbSync(*dbConn);
+		dbSync.Synchronize(L"GameDB.xml");
+		
+		// insert
 		{
-			cout << "id: "<<  outId << " gold: " << outGold << " createTime year: " << outCreateTime.year 
-				<< " month: " << outCreateTime.month << " day: " << outCreateTime.day << endl;
+			SP::InsertGold insertGold(*dbConn);
+			insertGold.In_Gold(100);
+			insertGold.In_CreateTime(TIMESTAMP_STRUCT{ 4220,06,17 });
+			insertGold.Execute();
 		}
+
+		// select
+		{
+			SP::GetGold getGold(*dbConn);
+			getGold.In_Gold(100);
+
+			int32 id = 0;
+			int32 gold = 0;
+			TIMESTAMP_STRUCT createTime;
+
+			getGold.Out_Id(id); 
+			getGold.Out_Gold(gold);
+			getGold.Out_CreateTime(createTime);
+
+			getGold.Execute();
+
+			while(getGold.Fetch())
+			{
+				cout << "id" << id << " gold" << gold << " createTime.year" << createTime.year << endl;
+			}
+		}
+		
 		GDBConnectionPool->Push(dbConn);
 	}
-
-
-	/*DBConnection* dbConn = GDBConnectionPool->Pop();
-	DBSynchronizer dbSync(*dbConn);
-	dbSync.Synchronize(L"TestDB.xml");*/
 
 	ClientPacketHandler::Init();
 

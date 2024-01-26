@@ -5,7 +5,7 @@
 // ------------------------
 
 // 단순히 색깔을 바꿔서 콘솔로그를 찍는 클래스이다.
-enum class Color
+enum class LogColor
 {
 	BLACK,
 	WHITE,
@@ -24,11 +24,11 @@ public:
 	~ConsoleLog();
 
 public:
-	void		WriteStdOut(Color color, const WCHAR* str, ...);
-	void		WriteStdErr(Color color, const WCHAR* str, ...);
+	void		WriteStdOut(LogColor color, const WCHAR* str, ...);
+	void		WriteStdErr(LogColor color, const WCHAR* str, ...);
 
 protected:
-	void		SetColor(bool stdOut, Color color);
+	void		SetColor(bool stdOut, LogColor color);
 
 private:
 	HANDLE		_stdOut;

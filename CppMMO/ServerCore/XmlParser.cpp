@@ -157,11 +157,13 @@ XmlNode XmlNode::FindChild(const WCHAR* key)
 	return XmlNode(_node->first_node(key));
 }
 
+// XmlNodeType = xml_node<WCHAR>로 되어 있어서 WCHAR를 key로 써도 문제 없다.
 myVector<XmlNode> XmlNode::FindChildren(const WCHAR* key)
 {
 	myVector<XmlNode> nodes;
 
 	xml_node<WCHAR>* node = _node->first_node(key);
+
 	while (node)
 	{
 		nodes.push_back(XmlNode(node));
@@ -188,6 +190,6 @@ bool XmlParser::ParseFromFile(const WCHAR* path, OUT XmlNode& root)
 	// parse<0>은 파싱 관련 아무 플래그도 설정하지 않은 것을 의미
 	// RapidXML 라이브러리가 XML 문자열을 내부 트리 구조로 변환한다.
 	_document->parse<0>(reinterpret_cast<WCHAR*>(&_data[0]));
-	root = XmlNode(_document->first_node());
+	root = XmlNode(_document->first_node()); // 현재 TestDB.xml의 <GameDB> 부분(맨 처음)부터 시작이라고 보면 된다.
 	return true;
 }
