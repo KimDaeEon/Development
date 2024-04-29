@@ -5,6 +5,7 @@
 #include "Common/TcpSocketBuilder.h" // TCP 소켓을 빌더 패턴으로 만들고, 소켓 설정 간결하게 하도록 도와줌
 #include "Serialization/ArrayWriter.h"
 #include "SocketSubsystem.h" // 플랫폼 독립적인 소켓 시스템을 위한 인터페이스 제공
+#include "PacketSession.h"
 
 void UMyGameInstance::ConnectToGameServer()
 {
@@ -26,7 +27,8 @@ void UMyGameInstance::ConnectToGameServer()
 		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("Connection Success"));
 
 		// Session 추가
-
+		GameServerSession = MakeShared<PacketSession>(Socket);
+		GameServerSession->Run();
 	}
 	else
 	{
@@ -36,4 +38,20 @@ void UMyGameInstance::ConnectToGameServer()
 
 void UMyGameInstance::DisconnectFromGameServer()
 {
+}
+
+void UMyGameInstance::HandleRecvPacket()
+{
+	if (Socket == nullptr || GameServerSession == nullptr)
+		return;
+
+	GameServerSession->HandleRecvPackets();
+}
+
+void UMyGameInstance::SendPacket(SendBufferRef SendBuf)
+{
+	if (Socket == nullptr || GameServerSession == nullptr)
+		return;
+
+	GameServerSession->SendPacket(SendBuf);
 }

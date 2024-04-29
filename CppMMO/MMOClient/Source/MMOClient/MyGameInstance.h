@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Engine/GameInstance.h"
+#include "MMOClient.h"
 #include "MyGameInstance.generated.h"
 
 /**
@@ -21,10 +22,15 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void DisconnectFromGameServer();
 
+	UFUNCTION(BlueprintCallable)
+	void HandleRecvPacket();
+
+	void SendPacket(SendBufferRef SendBuf);
+
 public:
 	// Network
 	class FSocket* Socket;
 	FString IpAddress = TEXT("127.0.0.1"); // TODO: 추후 게임 서버 입력받도록 변경 필요
 	int16 Port = 7777;
-	
+	TSharedPtr<class PacketSession> GameServerSession;
 };

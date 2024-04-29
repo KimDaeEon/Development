@@ -4,3 +4,8 @@
 
 #include "CoreMinimal.h"
 
+// 아래는 추후 너무 많아지면 네트워크용 매크로 따로 빼자.
+#define USING_SHARED_PTR(name) using name##Ref = TSharedPtr<class name>;
+USING_SHARED_PTR(Session);
+USING_SHARED_PTR(PacketSession);
+USING_SHARED_PTR(SendBuffer);
