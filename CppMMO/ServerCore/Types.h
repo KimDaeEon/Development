@@ -34,4 +34,4 @@ MAKE_SHARED_PTR_TYPE(SendBufferChunk);
 MAKE_SHARED_PTR_TYPE(Job);
 MAKE_SHARED_PTR_TYPE(JobQueue);
 
-#define _STOMP // TODO: 추후 이거 해제하고 테스트 필요. MemoryPoolManager::Allocate에서 문제 발생 중임
+//#define _STOMP // TODO: 추후 이거 해제하고 테스트 필요. MemoryPoolManager::Allocate에서 문제 발생 중임
