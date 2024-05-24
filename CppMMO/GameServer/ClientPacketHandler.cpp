@@ -90,7 +90,8 @@ bool ClientPacketHandler::Handle_C_CHAT(PacketSessionRef& session, Protocol::C_C
 
 	auto sendBuffer = ClientPacketHandler::MakeSendBuffer(chatPkt);
 
-	GRoom->PushJob(&Room::Broadcast, sendBuffer);
+	session->Send(sendBuffer);
+	//GRoom->PushJob(&Room::Broadcast, sendBuffer);
 
 	return true;
 }
