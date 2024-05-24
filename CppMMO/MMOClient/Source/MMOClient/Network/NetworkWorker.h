@@ -6,6 +6,13 @@
 
 class FSocket;
 
+// 혹시나.. 패킷 사이즈 변경되면 아래 FPacketHeader와 함께 수정
+struct PacketHeader
+{
+	uint16 size;
+	uint16 id; // 프로토콜ID (ex. 1=로그인, 2=이동요청)
+};
+
 struct MMOCLIENT_API FPacketHeader
 {
 	FPacketHeader() : PacketSize(0), PacketId(0)

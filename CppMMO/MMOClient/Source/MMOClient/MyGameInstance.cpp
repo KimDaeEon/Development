@@ -6,6 +6,14 @@
 #include "Serialization/ArrayWriter.h"
 #include "SocketSubsystem.h" // 플랫폼 독립적인 소켓 시스템을 위한 인터페이스 제공
 #include "PacketSession.h"
+#include "ServerPacketHandler.h"
+
+void UMyGameInstance::Init()
+{
+	Super::Init();
+
+	ServerPacketHandler::Init();
+}
 
 void UMyGameInstance::ConnectToGameServer()
 {

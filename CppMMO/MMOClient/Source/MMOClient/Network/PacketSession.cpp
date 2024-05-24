@@ -1,5 +1,6 @@
 #include "Network/PacketSession.h"
 #include "NetworkWorker.h"
+#include "ServerPacketHandler.h"
 
 PacketSession::PacketSession(class FSocket* Socket) : Socket(Socket)
 {
@@ -45,10 +46,8 @@ void PacketSession::HandleRecvPackets()
 			break;
 		}
 
-		// TODO: Handle Packet
-		/*PacketSessionRef ThisPtr = AsShared();
-		ClientPacketHandler::HandlePacket(ThisPtr, Packet.GetData(), Packet.Num());*/
-		 
+		PacketSessionRef self = AsShared();
+		ServerPacketHandler::HandlePacket(self, Packet.GetData(), Packet.Num());
 	}
 }
 

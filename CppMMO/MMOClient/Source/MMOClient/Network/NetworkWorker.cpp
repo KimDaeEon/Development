@@ -75,7 +75,7 @@ bool RecvWorker::ReceivePacket(TArray<uint8>& OUT Packet)
 	const int32 payLoadSize = header.PacketSize - headerSize;
 	Packet.AddZeroed(payLoadSize);
 
-	if (ReceiveDesiredBytes(Packet.GetData(), payLoadSize))
+	if (ReceiveDesiredBytes(&Packet[headerSize], payLoadSize))
 	{
 		return true;
 	}
@@ -85,7 +85,7 @@ bool RecvWorker::ReceivePacket(TArray<uint8>& OUT Packet)
 
 bool RecvWorker::ReceiveDesiredBytes(uint8* OUT Results, int32 Size)
 {
-	uint32 pendingDataSize = 0;
+	uint32 pendingDataSize;
 	if (Socket->HasPendingData(pendingDataSize) == false || pendingDataSize <= 0)
 	{
 		return false;
@@ -111,7 +111,7 @@ bool RecvWorker::ReceiveDesiredBytes(uint8* OUT Results, int32 Size)
 	return true;
 }
 
-SendWorker::SendWorker(FSocket* Socket, TSharedPtr<class PacketSession> Session)
+SendWorker::SendWorker(FSocket* Socket, TSharedPtr<class PacketSession> Session) : Socket(Socket), SessionRef(Session)
 {
 	Thread = FRunnableThread::Create(this, TEXT("SendWorkerThread"));
 }
@@ -122,7 +122,7 @@ SendWorker::~SendWorker()
 
 bool SendWorker::Init()
 {
-	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("Send Thread Init")));
+	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("Send Worker Init")));
 
 	return true;
 }
