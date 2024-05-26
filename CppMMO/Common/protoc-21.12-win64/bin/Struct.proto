@@ -3,9 +3,39 @@ package Protocol; // Protocol이라는 namespace 이름을 지어준 것
 
 import "Enum.proto";
 
-message Player
+message Position
 {
-	uint64 id = 1; // 메모리 상에서 발급받는 id로 설정, dbId와는 달라야 한다.
+	float x = 1;
+	float y = 2;
+	float z = 3;
+}
+
+message Rotation
+{
+	float x = 1;
+	float y = 2;
+	float z = 3;
+}
+
+message Scale
+{
+	float x = 1;
+	float y = 2;
+	float z = 3;
+}
+
+message Transform
+{
+	Position position = 1;
+	Rotation rotation = 2;
+	Scale scale = 3;
+}
+
+
+message ActorInfo
+{
+	uint64 gameId = 1; // 메모리 상에서 발급받는 id로 설정, dbId와는 달라야 한다. 몬스터같은 경우 templateId(datasheetId)만, 사용자 캐릭터의 경우 dbId, gameId 모두 부여.
 	string name = 2;
-	PlayerType playerType = 3;
+	Transform transform = 3;
+	ActorType type = 4;
 }

@@ -73,6 +73,11 @@ bool RecvWorker::ReceivePacket(TArray<uint8>& OUT Packet)
 	// 패킷 내용 파싱
 	TArray<uint8> payLoadBuffer;
 	const int32 payLoadSize = header.PacketSize - headerSize;
+	if (payLoadSize == 0) // 헤더만 있는 패킷에 대한 처리
+	{
+		return true;
+	}
+
 	Packet.AddZeroed(payLoadSize);
 
 	if (ReceiveDesiredBytes(&Packet[headerSize], payLoadSize))

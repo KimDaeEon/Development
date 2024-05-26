@@ -42,6 +42,21 @@ bool ServerPacketHandler::Handle_S_ENTER_GAME(PacketSessionRef& session, Protoco
 	return true;
 }
 
+bool ServerPacketHandler::Handle_S_LEAVE_GAME(PacketSessionRef& session, Protocol::S_LEAVE_GAME& pkt)
+{
+	return true;
+}
+
+bool ServerPacketHandler::Handle_S_SPAWN(PacketSessionRef& session, Protocol::S_SPAWN& pkt)
+{
+	return true;
+}
+
+bool ServerPacketHandler::Handle_S_DESPAWN(PacketSessionRef& session, Protocol::S_DESPAWN& pkt)
+{
+	return true;
+}
+
 bool ServerPacketHandler::Handle_S_CHAT(PacketSessionRef& session, Protocol::S_CHAT& pkt)
 {
 	UE_LOG(LogTemp, Warning, TEXT("S_CHAT : %s"), *FString(pkt.msg().c_str()));

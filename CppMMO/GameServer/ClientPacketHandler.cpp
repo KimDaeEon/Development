@@ -26,28 +26,28 @@ bool ClientPacketHandler::Handle_C_LOGIN(PacketSessionRef& session, Protocol::C_
 
 	// TODO: DB에서 플레이어 정보 가져오기 + 메모리에 올리기
 	{
-		auto player = loginPkt.add_players();
+		auto player = loginPkt.add_playercharacters();
 		player->set_name(u8"ss"); // TODO: C++17까진 이렇게 해도 되는데, 20부터 protobuff와 같이 쓰려면 변환을 해야한다. C++20 이후 추가되는 문법 보면서 이 부분 어떻게 할 지 고민
-		player->set_playertype(Protocol::PLAYER_TYPE_KNIGHT);
+		player->set_type(Protocol::PLAYER_TYPE_KNIGHT);
 
 		PlayerRef playerRef = myMakeShared<Player>();
 		playerRef->playerId = idGenerator++;
 		playerRef->name = player->name();
-		playerRef->type = player->playertype();
+		playerRef->type = player->type();
 		playerRef->ownerSession = clientSession;
 
 		clientSession->_players.push_back(playerRef);
 	}
 
 	{
-		auto player = loginPkt.add_players();
+		auto player = loginPkt.add_playercharacters();
 		player->set_name(u8"ss");
-		player->set_playertype(Protocol::PLAYER_TYPE_KNIGHT);
+		player->set_type(Protocol::PLAYER_TYPE_KNIGHT);
 
 		PlayerRef playerRef = myMakeShared<Player>();
 		playerRef->playerId = idGenerator++;
 		playerRef->name = player->name();
-		playerRef->type = player->playertype();
+		playerRef->type = player->type();
 		playerRef->ownerSession = clientSession;
 
 		clientSession->_players.push_back(playerRef);
@@ -63,7 +63,7 @@ bool ClientPacketHandler::Handle_C_ENTER_GAME(PacketSessionRef& session, Protoco
 {
 	ClientSessionRef clientSession = static_pointer_cast<ClientSession>(session);
 
-	uint64 index = pkt.playerindex();
+	uint64 index = pkt.playercharacterindex();
 
 	// TODO : 아래 부분 RoomManager를 통한 로직으로 변경 필요
 
@@ -84,6 +84,11 @@ bool ClientPacketHandler::Handle_C_ENTER_GAME(PacketSessionRef& session, Protoco
 	return true;
 }
 
+bool ClientPacketHandler::Handle_C_LEAVE_GAME(PacketSessionRef& session, Protocol::C_LEAVE_GAME& pkt)
+{
+	return true;
+}
+
 bool ClientPacketHandler::Handle_C_CHAT(PacketSessionRef& session, Protocol::C_CHAT& pkt)
 {
 	cout << pkt.msg() << endl;
@@ -94,7 +99,6 @@ bool ClientPacketHandler::Handle_C_CHAT(PacketSessionRef& session, Protocol::C_C
 	auto sendBuffer = ClientPacketHandler::MakeSendBuffer(chatPkt);
 
 	session->Send(sendBuffer);
-	//GRoom->PushJob(&Room::Broadcast, sendBuffer);
 
 	return true;
 }
