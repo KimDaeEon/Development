@@ -28,8 +28,9 @@ class CoreGlobal
 public:
 	CoreGlobal()
 	{
+		GMemoryPoolManager = new MemoryPoolManager();
 		GThreadManager		= new ThreadManager();
-		GMemoryPoolManager	= new MemoryPoolManager();
+
 		GSendBufferManager	= new SendBufferManager();
 
 		GDeadLockDetector	= new DeadLockDetector();
@@ -47,7 +48,6 @@ public:
 	~CoreGlobal()
 	{
 		delete GThreadManager;
-		delete GMemoryPoolManager;
 		delete GSendBufferManager;
 
 		delete GDeadLockDetector;
@@ -60,6 +60,7 @@ public:
 		delete GConsoleLogger;
 
 		SocketUtils::Clear();
+		delete GMemoryPoolManager;
 	}
 
 } GCoreGlobal; // 전역변수를 통해 초기화 실행

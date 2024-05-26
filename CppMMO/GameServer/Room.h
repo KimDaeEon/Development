@@ -16,5 +16,3 @@ private:
 	USE_LOCK;
 	unordered_map<uint64, PlayerRef> _players;
 };
-
-extern std::shared_ptr<Room> GRoom; // TODO: 추후 RoomManager에서 관리하도록 변경 필요

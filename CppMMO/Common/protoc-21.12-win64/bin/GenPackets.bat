@@ -12,6 +12,7 @@ IF ERRORLEVEL 1 PAUSE
 
 SET gameServerPath="..\..\..\GameServer"
 SET dummyClientPath="..\..\..\DummyClient"
+SET unrealClientPath="..\..\..\MMOClient\Source\MMOClient\Network"
 
 XCOPY /Y Enum.pb.h %gameServerPath%
 XCOPY /Y Enum.pb.cc %gameServerPath%
@@ -28,3 +29,11 @@ XCOPY /Y Struct.pb.cc %dummyClientPath%
 XCOPY /Y Protocol.pb.h %dummyClientPath%
 XCOPY /Y Protocol.pb.cc %dummyClientPath%
 XCOPY /Y ServerPacketHandler.h %dummyClientPath%
+
+XCOPY /Y Enum.pb.h %unrealClientPath%
+XCOPY /Y Enum.pb.cc %unrealClientPath%
+XCOPY /Y Struct.pb.h %unrealClientPath%
+XCOPY /Y Struct.pb.cc %unrealClientPath%
+XCOPY /Y Protocol.pb.h %unrealClientPath%
+XCOPY /Y Protocol.pb.cc %unrealClientPath%
+XCOPY /Y ServerPacketHandler.h %unrealClientPath%

@@ -6,6 +6,7 @@
 // 하지만 이런 경우 메모리 오염 문제가 발생했을 때에 어떤 클래스에서 생겼는지 알아내기가 힘들다.
 // 그런 것까지 고려해서 사용하는 방식이 ObjectPool 방식이다.
 
+//#define _STOMP
 template<typename Type>
 class ObjectPool
 {

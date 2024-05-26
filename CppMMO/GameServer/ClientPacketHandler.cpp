@@ -65,18 +65,21 @@ bool ClientPacketHandler::Handle_C_ENTER_GAME(PacketSessionRef& session, Protoco
 
 	uint64 index = pkt.playerindex();
 
-	// TODO : 정합성 체크
+	// TODO : 아래 부분 RoomManager를 통한 로직으로 변경 필요
 
 	PlayerRef player = clientSession->_players[index];
 	clientSession->_currentPlayer = player;
-	clientSession->_room = GRoom;
+	clientSession->_room = std::make_shared<Room>();
 
-	GRoom->PushJob(&Room::Enter, player);
-
-	Protocol::S_ENTER_GAME enterGamePkt;
-	enterGamePkt.set_success(true);
-	auto sendBuffer = ClientPacketHandler::MakeSendBuffer(enterGamePkt);
-	clientSession->_currentPlayer->ownerSession->Send(sendBuffer);
+	auto room = clientSession->_room.lock();
+	if (room)
+	{
+		room->PushJob(&Room::Enter, player);
+		Protocol::S_ENTER_GAME enterGamePkt;
+		enterGamePkt.set_success(true);
+		auto sendBuffer = ClientPacketHandler::MakeSendBuffer(enterGamePkt);
+		clientSession->_currentPlayer->ownerSession->Send(sendBuffer);
+	}
 
 	return true;
 }
