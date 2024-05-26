@@ -31,11 +31,12 @@ void Session::Send(SendBufferRef sendBuffer)
 	// WSASend와 WSARecv의 thread-safe에 대한 설명은 아래 링크 참조
 	// https://stackoverflow.com/questions/28770789/is-calling-wsasend-and-wsarecv-from-two-threads-safe-when-using-iocp
 	{
+		// WRITE_LOCK을 걸어주면서 _sendQueue에 데이터를 넣어준다.
 		WRITE_LOCK;
 
 		_sendQueue.push(sendBuffer);
 
-		// RegisterSend가 안걸렸으면 걸어준다.
+		// 처음 Send를 할 수 있는 녀석은 Send까지 처리한다. isSendRegistered를 획득하지 못한 녀석들은 _sendQueue에 push만 해준다.
 		if (_isSendRegistered.exchange(true) == false)
 		{
 			isRegisterSend = true;
@@ -46,6 +47,61 @@ void Session::Send(SendBufferRef sendBuffer)
 	if (isRegisterSend)
 	{
 		RegisterSend();
+	}
+}
+
+
+void Session::RegisterSend()
+{
+	if (IsConnected() == false)
+	{
+		return;
+	}
+
+	_sendEvent.Init();
+	_sendEvent.owner = shared_from_this();
+
+	// 보낼 데이터를 sendEvent에 등록
+	{
+		// _sendQueue에 여러 스레드가 접근하는 상황 고려해서 lock을 걸어준다.
+		WRITE_LOCK;
+
+		int32 writeSize = 0;
+		while (_sendQueue.empty() == false)
+		{
+			SendBufferRef sendBuffer = _sendQueue.front();
+			writeSize += sendBuffer->WriteSize();
+			// TODO: 너무 많은 데이터가 들어올 때에 예외 처리 코드 추가 필요
+
+			_sendQueue.pop();
+			_sendEvent.sendBuffers.push_back(sendBuffer);
+		}
+	}
+
+	// Scatter-Gather (흩어져 있는 WSABUF 데이터 모아서 보내기)
+	myVector<WSABUF> wsaBufs;
+	wsaBufs.reserve(_sendEvent.sendBuffers.size());
+
+	for (SendBufferRef sendBuffer : _sendEvent.sendBuffers)
+	{
+		WSABUF wsaBuf;
+		wsaBuf.buf = reinterpret_cast<char*>(sendBuffer->Buffer());
+		wsaBuf.len = static_cast<ULONG>(sendBuffer->WriteSize());
+		wsaBufs.push_back(wsaBuf);
+	}
+
+
+	DWORD numOfBytes = 0;
+	if (SOCKET_ERROR == ::WSASend(_socket, wsaBufs.data(), static_cast<DWORD>(wsaBufs.size()), &numOfBytes, 0, &_sendEvent, nullptr))
+	{
+		int32 errorCode = ::WSAGetLastError();
+		if (errorCode != WSA_IO_PENDING)
+		{
+			HandleError(errorCode);
+			_sendEvent.owner = nullptr;
+			_sendEvent.sendBuffers.clear();
+			_isSendRegistered.store(false);
+		}
 	}
 }
 
@@ -180,60 +236,6 @@ void Session::RegisterRecv()
 		{
 			HandleError(errorCode);
 			_recvEvent.owner = nullptr; // 이거 안해주면 session 삭제가 안되어서 메모리 릭 생긴다.
-		}
-	}
-}
-
-void Session::RegisterSend()
-{
-	if (IsConnected() == false)
-	{
-		return;
-	}
-
-	_sendEvent.Init();
-	_sendEvent.owner = shared_from_this();
-
-	// 보낼 데이터를 sendEvent에 등록
-	{
-		// 밖에서 Lock을 잡아주고 있지만, 혹시나 밖의 코드가 바뀔 수 있어서 락을 잡는다.
-		WRITE_LOCK;
-		
-		int32 writeSize = 0;
-		while (_sendQueue.empty() == false)
-		{
-			SendBufferRef sendBuffer = _sendQueue.front();
-			writeSize += sendBuffer->WriteSize();
-			// TODO: 너무 많은 데이터가 들어올 때에 예외 처리 코드 추가 필요
-
-			_sendQueue.pop();
-			_sendEvent.sendBuffers.push_back(sendBuffer);
-		}
-	}
-
-	// Scatter-Gather (흩어져 있는 WSABUF 데이터 모아서 보내기)
-	myVector<WSABUF> wsaBufs;
-	wsaBufs.reserve(_sendEvent.sendBuffers.size());
-
-	for (SendBufferRef sendBuffer : _sendEvent.sendBuffers)
-	{
-		WSABUF wsaBuf;
-		wsaBuf.buf = reinterpret_cast<char*>(sendBuffer->Buffer());
-		wsaBuf.len = static_cast<ULONG>(sendBuffer->WriteSize());
-		wsaBufs.push_back(wsaBuf);
-	}
-	
-
-	DWORD numOfBytes = 0;
-	if (SOCKET_ERROR == ::WSASend(_socket, wsaBufs.data(), static_cast<DWORD>(wsaBufs.size()), &numOfBytes, 0, &_sendEvent, nullptr))
-	{
-		int32 errorCode = ::WSAGetLastError();
-		if (errorCode != WSA_IO_PENDING)
-		{
-			HandleError(errorCode);
-			_sendEvent.owner = nullptr;
-			_sendEvent.sendBuffers.clear();
-			_isSendRegistered.store(false);
 		}
 	}
 }
