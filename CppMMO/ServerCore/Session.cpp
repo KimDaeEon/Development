@@ -50,7 +50,6 @@ void Session::Send(SendBufferRef sendBuffer)
 	}
 }
 
-
 void Session::RegisterSend()
 {
 	if (IsConnected() == false)
