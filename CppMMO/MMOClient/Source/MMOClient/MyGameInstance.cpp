@@ -37,6 +37,13 @@ void UMyGameInstance::ConnectToGameServer()
 		// Session 추가
 		GameServerSession = MakeShared<PacketSession>(Socket);
 		GameServerSession->Run();
+
+		// TODO: 로비 + 캐릭터 선택창 구현
+		{
+			Protocol::C_LOGIN loginPkt;
+			SendBufferRef sendBuffer = ServerPacketHandler::MakeSendBuffer(loginPkt);
+			SendPacket(sendBuffer);
+		}
 	}
 	else
 	{

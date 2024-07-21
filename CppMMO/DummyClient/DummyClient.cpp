@@ -6,42 +6,9 @@
 #include "Session.h"
 #include "BufferReader.h"
 #include "ServerPacketHandler.h"
+#include "ServerSession.h"
 
 BYTE sendData[] = "Hello Server";
-
-class ServerSession : public PacketSession
-{
-public:
-	virtual void OnConnected() override
-	{
-		//cout << "Connected to Server" << endl;
-
-		Protocol::C_LOGIN pkt;
-		auto sendBuffer = ServerPacketHandler::MakeSendBuffer(pkt);
-		Send(sendBuffer);
-	}
-
-	virtual void OnRecvPacket(BYTE* buffer, int32 len) override
-	{
-		PacketSessionRef session = GetPacketSessionRef();
-		ServerPacketHandler::HandlePacket(session, buffer, len);
-	}
-
-	virtual void OnSend(int32 len) override
-	{
-		//cout << "OnSend Len = " << len << endl;
-	}
-
-	virtual void OnDisconnected() override
-	{
-		//cout << "Disconnected" << endl;
-	}
-
-	~ServerSession()
-	{
-		cout << "~ServerSession()" << endl;
-	}
-};
 
 int main()
 {

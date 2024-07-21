@@ -10,7 +10,15 @@ private:
 	// Job에서 실행되는 함수
 	void Enter(PlayerRef player);
 	void Leave(PlayerRef player);
-	void Broadcast(SendBufferRef sendBuffer);
+	
+	template<typename T>
+	void Broadcast(T pkt)
+	{
+		for (auto& [playerId, player] : _players)
+		{
+			player->_ownerSession->SendPacket(pkt);
+		}
+	}
 
 private:
 	USE_LOCK;

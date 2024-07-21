@@ -14,7 +14,7 @@
 #endif
 
 #include "CorePch.h"
-#include "Enum.pb.h"
+#include "Protocol.pb.h"
 
-using ClientSessionRef = shared_ptr<class ClientSession>;
-using PlayerRef = shared_ptr<struct Player>;
+MAKE_SHARED_PTR_TYPE(ClientSession);
+MAKE_SHARED_PTR_TYPE(Player);

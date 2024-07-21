@@ -183,7 +183,11 @@ bool XmlParser::ParseFromFile(const WCHAR* path, OUT XmlNode& root)
 	_data = FileUtils::Convert(string(bytes.begin(), bytes.end()));
 
 	if (_data.empty())
+	{
+		// TODO: log
+		std::wcout << (L"Data Empty", path) << endl;;
 		return false;
+	}
 
 	_document = myMakeShared<XmlDocumentType>();
 

@@ -24,9 +24,6 @@
     <ClCompile Include="GameServer.cpp">
       <Filter>Main</Filter>
     </ClCompile>
-    <ClCompile Include="pch.cpp">
-      <Filter>Utils</Filter>
-    </ClCompile>
     <ClCompile Include="ConcurrentQueue.cpp">
       <Filter>Archive</Filter>
     </ClCompile>
@@ -57,11 +54,12 @@
     <ClCompile Include="Room.cpp">
       <Filter>Contents</Filter>
     </ClCompile>
+    <ClCompile Include="pch.cpp">
+      <Filter>Main</Filter>
+    </ClCompile>
+    <ClCompile Include="Utils.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="pch.h">
-      <Filter>Utils</Filter>
-    </ClInclude>
     <ClInclude Include="ConcurrentStack.h">
       <Filter>Archive</Filter>
     </ClInclude>
@@ -95,6 +93,10 @@
     <ClInclude Include="GeneratedStoredProcedures.h">
       <Filter>Main\DB</Filter>
     </ClInclude>
+    <ClInclude Include="pch.h">
+      <Filter>Main</Filter>
+    </ClInclude>
+    <ClInclude Include="Utils.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\Common\protoc-21.12-win64\bin\GenPackets.bat">

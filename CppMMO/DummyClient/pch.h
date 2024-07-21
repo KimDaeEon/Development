@@ -14,4 +14,6 @@
 #endif
 
 #include "CorePch.h"
-#include "Enum.pb.h"
+#include "Protocol.pb.h"
+
+MAKE_SHARED_PTR_TYPE(ServerSession);

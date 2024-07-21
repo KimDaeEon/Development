@@ -15,7 +15,6 @@
     <ClCompile Include="DummyClient.cpp">
       <Filter>Main</Filter>
     </ClCompile>
-    <ClCompile Include="pch.cpp" />
     <ClCompile Include="..\Common\protoc-21.12-win64\bin\Struct.pb.cc">
       <Filter>Protocol</Filter>
     </ClCompile>
@@ -28,9 +27,14 @@
     <ClCompile Include="ServerPacketHandler.cpp">
       <Filter>Main</Filter>
     </ClCompile>
+    <ClCompile Include="pch.cpp">
+      <Filter>Main</Filter>
+    </ClCompile>
+    <ClCompile Include="ServerSession.cpp">
+      <Filter>Main</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="pch.h" />
     <ClInclude Include="..\Common\protoc-21.12-win64\bin\Enum.pb.h">
       <Filter>Protocol</Filter>
     </ClInclude>
@@ -41,6 +45,12 @@
       <Filter>Protocol</Filter>
     </ClInclude>
     <ClInclude Include="ServerPacketHandler.h">
+      <Filter>Main</Filter>
+    </ClInclude>
+    <ClInclude Include="pch.h">
+      <Filter>Main</Filter>
+    </ClInclude>
+    <ClInclude Include="ServerSession.h">
       <Filter>Main</Filter>
     </ClInclude>
   </ItemGroup>

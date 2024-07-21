@@ -1,5 +1,4 @@
 #include "pch.h"
-#include "ClientPacketHandler.h"
 #include "ClientSession.h"
 #include "Player.h"
 #include "Room.h"
@@ -16,45 +15,49 @@ bool ClientPacketHandler::Handle_C_LOGIN(PacketSessionRef& session, Protocol::C_
 {
 	ClientSessionRef clientSession = static_pointer_cast<ClientSession>(session);
 
-	// TODO : 정합성 체크
-
+	// TODO: 웹 서버 거쳐서 인증하는 과정 추가
+	// TODO: DB 에서 계정 정보 읽어오기
 	Protocol::S_LOGIN loginPkt;
+
+	for (int32 i = 0; i < 3; i++)
+	{
+		Protocol::ActorInfo* playerCharacterInfo = loginPkt.add_playercharacters();
+
+		// 위치 임시 값 세팅
+		Protocol::Position position;
+		position.set_x(0);
+		position.set_y(0);
+		position.set_z(0);
+
+		// 회전 임시 값 세팅
+		Protocol::Rotation rotation;
+		rotation.set_x(0);
+		rotation.set_y(0);
+		rotation.set_z(0);
+
+		// 스케일 임시 값 세팅
+		Protocol::Scale scale;
+		scale.set_x(1);
+		scale.set_y(1);
+		scale.set_z(1);
+
+		Protocol::Transform transform;
+		*transform.mutable_position() = position;
+		*transform.mutable_rotation() = rotation;
+		*transform.mutable_scale() = scale;
+
+
+		*playerCharacterInfo->mutable_transform() = transform;
+
+		auto tempPlayer = std::make_shared<Player>();
+		tempPlayer->SetActorInfo(*playerCharacterInfo);
+		tempPlayer->SetOwnerSession(clientSession);
+		clientSession->AddPaleyrRef(tempPlayer);
+	}
+
 	loginPkt.set_success(true);
 
-	// TODO: ID 발급 개선필요한가?
-	static Atomic<uint64> idGenerator = 1;
-
-	// TODO: DB에서 플레이어 정보 가져오기 + 메모리에 올리기
-	{
-		auto player = loginPkt.add_playercharacters();
-		player->set_name(u8"ss"); // TODO: C++17까진 이렇게 해도 되는데, 20부터 protobuff와 같이 쓰려면 변환을 해야한다. C++20 이후 추가되는 문법 보면서 이 부분 어떻게 할 지 고민
-		player->set_type(Protocol::PLAYER_TYPE_KNIGHT);
-
-		PlayerRef playerRef = myMakeShared<Player>();
-		playerRef->playerId = idGenerator++;
-		playerRef->name = player->name();
-		playerRef->type = player->type();
-		playerRef->ownerSession = clientSession;
-
-		clientSession->_players.push_back(playerRef);
-	}
-
-	{
-		auto player = loginPkt.add_playercharacters();
-		player->set_name(u8"ss");
-		player->set_type(Protocol::PLAYER_TYPE_KNIGHT);
-
-		PlayerRef playerRef = myMakeShared<Player>();
-		playerRef->playerId = idGenerator++;
-		playerRef->name = player->name();
-		playerRef->type = player->type();
-		playerRef->ownerSession = clientSession;
-
-		clientSession->_players.push_back(playerRef);
-	}
-
-	auto sendBuffer = ClientPacketHandler::MakeSendBuffer(loginPkt);
-	session->Send(sendBuffer);
+	clientSession->SendPacket(loginPkt);
 
 	return true;
 }
@@ -67,18 +70,17 @@ bool ClientPacketHandler::Handle_C_ENTER_GAME(PacketSessionRef& session, Protoco
 
 	// TODO : 아래 부분 RoomManager를 통한 로직으로 변경 필요
 
-	PlayerRef player = clientSession->_players[index];
-	clientSession->_currentPlayer = player;
-	clientSession->_room = std::make_shared<Room>();
+	PlayerRef player = clientSession->GetPlayerRef(index);
+	clientSession->SetCurrentPlayer(player);
+	clientSession->SetRoom(std::make_shared<Room>());
 
-	auto room = clientSession->_room.lock();
+	auto room = clientSession->GetRoomRef();
 	if (room)
 	{
 		room->PushJob(&Room::Enter, player);
 		Protocol::S_ENTER_GAME enterGamePkt;
 		enterGamePkt.set_success(true);
-		auto sendBuffer = ClientPacketHandler::MakeSendBuffer(enterGamePkt);
-		clientSession->_currentPlayer->ownerSession->Send(sendBuffer);
+		clientSession->SendPacket(enterGamePkt);
 	}
 
 	return true;

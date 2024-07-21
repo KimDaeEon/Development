@@ -5,18 +5,10 @@
 
 void Room::Enter(PlayerRef player)
 {
-	_players[player->playerId] = player;
+	_players[player->GetActorInfo().gameid()] = player;
 }
 
 void Room::Leave(PlayerRef player)
 {
-	_players.erase(player->playerId);
-}
-
-void Room::Broadcast(SendBufferRef sendBuffer)
-{
-	for (auto& [playerId, player]: _players)
-	{
-		player->ownerSession->Send(sendBuffer);
-	}
+	_players.erase(player->GetActorInfo().gameid());
 }

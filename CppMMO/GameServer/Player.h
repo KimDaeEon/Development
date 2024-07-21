@@ -1,9 +1,15 @@
 #pragma once
-struct Player
+class Player
 {
-	uint64					playerId = 0;
-	string					name;
-	Protocol::ActorType		type = Protocol::PLAYER_TYPE_NONE;
-	ClientSessionRef		ownerSession; // cycle 발생 유의
+public:
+	void SetActorInfo(const Protocol::ActorInfo& actorInfo);
+	const Protocol::ActorInfo& GetActorInfo() const;
+
+	void SetOwnerSession(ClientSessionRef session);
+	ClientSessionRef GetOwnerSession() const;
+
+private:
+	Protocol::ActorInfo		_actorInfo;
+	ClientSessionRef		_ownerSession; // cycle 발생 유의
 };
 
