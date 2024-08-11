@@ -25,10 +25,10 @@ public:
 	void Clear()
 	{
 		WRITE_LOCK;
-		_items = myQueue<T>();
+		_items = std::queue<T>();
 	}
 
-	void PopAll(OUT myVector<T>& items)
+	void PopAll(OUT std::vector<T>& items)
 	{
 		WRITE_LOCK;
 		while (!_items.empty())
@@ -38,5 +38,5 @@ public:
 	}
 private:
 	USE_LOCK;
-	myQueue<T> _items;
+	std::queue<T> _items;
 };

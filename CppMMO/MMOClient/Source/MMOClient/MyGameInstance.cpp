@@ -6,13 +6,17 @@
 #include "Serialization/ArrayWriter.h"
 #include "SocketSubsystem.h" // 플랫폼 독립적인 소켓 시스템을 위한 인터페이스 제공
 #include "PacketSession.h"
-#include "ServerPacketHandler.h"
 
 void UMyGameInstance::Init()
 {
 	Super::Init();
 
 	ServerPacketHandler::Init();
+}
+
+bool UMyGameInstance::CheckSocketConnection()
+{
+	return Socket == nullptr || GameServerSession == nullptr;
 }
 
 void UMyGameInstance::ConnectToGameServer()
@@ -57,7 +61,7 @@ void UMyGameInstance::DisconnectFromGameServer()
 
 void UMyGameInstance::HandleRecvPacket()
 {
-	if (Socket == nullptr || GameServerSession == nullptr)
+	if (CheckSocketConnection())
 		return;
 
 	GameServerSession->HandleRecvPackets();
@@ -65,8 +69,48 @@ void UMyGameInstance::HandleRecvPacket()
 
 void UMyGameInstance::SendPacket(SendBufferRef SendBuf)
 {
-	if (Socket == nullptr || GameServerSession == nullptr)
+	if (CheckSocketConnection())
 		return;
 
-	GameServerSession->SendPacket(SendBuf);
+	GameServerSession->RegisterSend(SendBuf);
+}
+
+void UMyGameInstance::HandleSpawn(const Protocol::ActorInfo& actor)
+{
+	if (CheckSocketConnection())
+	{
+		return;
+	}
+
+	auto* world = GetWorld();
+	if (world == nullptr)
+	{
+		return;
+	}	
+
+	const uint64 id = actor.gameid();
+
+	// TODO: 나중에 몬스터는 다른 분기를 태워서 처리 필요
+	// 중복 생성 방지
+	if(PlayerMap.Find(id) != nullptr)
+	{
+		return;
+	}
+
+	FVector spawnLocation(actor.transform().position().x(), actor.transform().position().y(), actor.transform().position().z());
+	AActor* addedActor = world->SpawnActor(PlayerClass, &spawnLocation); 
+	PlayerMap.Add(actor.gameid(), addedActor);
+}
+
+void UMyGameInstance::HandleSpawn(const Protocol::S_ENTER_GAME& enterGamePkt)
+{
+	HandleSpawn(enterGamePkt.playercharacter());
+}
+
+void UMyGameInstance::HandleSpawn(const Protocol::S_SPAWN& spawnPkt)
+{
+	for (auto& actor : spawnPkt.actors())
+	{
+		HandleSpawn(actor);
+	}
 }

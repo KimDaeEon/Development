@@ -2,6 +2,7 @@
 #include "ClientSession.h"
 #include "ClientSessionManager.h"
 #include "Room.h"
+#include "Player.h"
 
 void ClientSession::OnConnected()
 {
@@ -14,7 +15,7 @@ void ClientSession::OnDisconnected()
 
 	if (_currentPlayer)
 	{
-		if (auto room = _room.lock())
+		if (auto room = _currentPlayer->GetRoom())
 		{
 			room->PushJob(&Room::Leave, _currentPlayer);
 		}

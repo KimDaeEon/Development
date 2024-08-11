@@ -19,7 +19,14 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void HandleRecvPackets();
 
-	void SendPacket(SendBufferRef SendBuffer);
+	template<typename T>
+	void SendPacket(T& pkt)
+	{
+		SendBufferRef SendBuffer = ServerPacketHandler::MakeSendBuffer(pkt);
+		RegisterSend(SendBuffer);
+	}
+
+	void RegisterSend(SendBufferRef SendBuffer);
 
 public:
 	class FSocket* Socket;

@@ -49,7 +49,7 @@ private:
 	void		Execute();
 
 protected:
-	LockQueue<JobRef>	_jobs;
+	LockQueue<JobRef>	_jobs; // TODO: 추후 MyQueue 쓰게 변경 필요
 	Atomic<int32>		_jobCount = { 0 };
 };
 

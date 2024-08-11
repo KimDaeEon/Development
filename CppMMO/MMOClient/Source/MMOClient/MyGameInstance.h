@@ -18,6 +18,8 @@ class MMOCLIENT_API UMyGameInstance : public UGameInstance
 public:
 	virtual void Init() override;
 
+	bool CheckSocketConnection();
+
 	UFUNCTION(BlueprintCallable)
 	void ConnectToGameServer();
 
@@ -28,6 +30,18 @@ public:
 	void HandleRecvPacket();
 
 	void SendPacket(SendBufferRef SendBuf);
+
+public:
+	void HandleSpawn(const Protocol::ActorInfo& player);
+	void HandleSpawn(const Protocol::S_ENTER_GAME& enterGamePkt);
+	void HandleSpawn(const Protocol::S_SPAWN& spawnPkt);
+
+
+public:
+	// 아래처럼 해줘야 블루 프린트에서 골라서 넣어줄 수 있다고 한다.
+	UPROPERTY(EditAnywhere)
+	TSubclassOf<AActor> PlayerClass;
+	TMap<uint64, AActor*> PlayerMap;
 
 public:
 	// Network

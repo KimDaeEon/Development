@@ -51,7 +51,7 @@ void PacketSession::HandleRecvPackets()
 	}
 }
 
-void PacketSession::SendPacket(SendBufferRef SendBuffer)
+void PacketSession::RegisterSend(SendBufferRef SendBuffer)
 {
 	SendPacketQueue.Enqueue(SendBuffer);
 }

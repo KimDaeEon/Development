@@ -42,18 +42,7 @@ public:
 		return _currentPlayer;
 	}
 
-	void SetRoom(weak_ptr<class Room> room)
-	{
-		_room = room;
-	}
-
-	shared_ptr<class Room> GetRoomRef()
-	{
-		return _room.lock();
-	}
-
 private:
 	myVector<PlayerRef> _players;
 	PlayerRef _currentPlayer;
-	weak_ptr<class Room> _room;
 };
