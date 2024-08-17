@@ -10,6 +10,7 @@ void Room::HandleEnterGame(ClientSessionRef clientSession, PlayerRef player)
 		return;
 	}
 
+	// TODO: 이 아래 부분 실패했을 때에 Enum 추가해서 결과 주는 것으로 변경
 	if (Enter(player) == false)
 	{
 		return;
@@ -47,6 +48,7 @@ void Room::HandleLeaveGame(ClientSessionRef clientSession, PlayerRef player)
 		return;
 	}
 
+	// TODO: 이 아래 부분 실패했을 때에 Enum 추가해서 결과 주는 것으로 변경
 	if (Leave(player) == false)
 	{
 		return;
