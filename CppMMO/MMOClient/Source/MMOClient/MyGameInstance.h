@@ -36,6 +36,9 @@ public:
 	void HandleSpawn(const Protocol::S_ENTER_GAME& enterGamePkt);
 	void HandleSpawn(const Protocol::S_SPAWN& spawnPkt);
 
+	void HandleDespawn(uint64 gameId);
+	void HandleDespawn(const Protocol::S_DESPAWN& despawnPkt);
+
 
 public:
 	// 아래처럼 해줘야 블루 프린트에서 골라서 넣어줄 수 있다고 한다.

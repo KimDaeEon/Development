@@ -10,8 +10,10 @@ class Room : public JobQueue
 private:
 	// Job에서 실행되는 함수
 	void HandleEnterGame(ClientSessionRef clientSession, PlayerRef player);
-	void Enter(PlayerRef player);
-	void Leave(PlayerRef player);
+	void HandleLeaveGame(ClientSessionRef clientSession, PlayerRef player);
+
+	bool Enter(PlayerRef player);
+	bool Leave(PlayerRef player);
 	
 	template<typename T>
 	void Broadcast(T pkt)

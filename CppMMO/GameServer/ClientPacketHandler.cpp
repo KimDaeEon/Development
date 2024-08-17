@@ -102,6 +102,28 @@ bool ClientPacketHandler::Handle_C_ENTER_GAME(PacketSessionRef& session, Protoco
 
 bool ClientPacketHandler::Handle_C_LEAVE_GAME(PacketSessionRef& session, Protocol::C_LEAVE_GAME& pkt)
 {
+	ClientSessionRef clientSession = static_pointer_cast<ClientSession>(session);
+
+	PlayerRef player = clientSession->GetCurrentPlayer();
+	if (player == nullptr)
+	{
+		return false;
+	}
+
+	RoomRef room = player->GetRoom();
+	if (room == nullptr)
+	{
+		return false;
+	}
+
+	if (room)
+	{
+		room->PushJob([room, clientSession, player]()
+			{
+				room->HandleLeaveGame(clientSession, player);
+			});
+	}
+
 	return true;
 }
 

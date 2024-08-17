@@ -41,6 +41,11 @@ bool ServerPacketHandler::Handle_S_ENTER_GAME(PacketSessionRef& session, Protoco
 
 bool ServerPacketHandler::Handle_S_LEAVE_GAME(PacketSessionRef& session, Protocol::S_LEAVE_GAME& pkt)
 {
+	if (auto* gameInstance = Cast<UMyGameInstance>(GWorld->GetGameInstance()))
+	{
+		// TODO : 게임 종료 처리 및 로비 이동
+	}
+
 	return true;
 }
 
@@ -56,6 +61,14 @@ bool ServerPacketHandler::Handle_S_SPAWN(PacketSessionRef& session, Protocol::S_
 
 bool ServerPacketHandler::Handle_S_DESPAWN(PacketSessionRef& session, Protocol::S_DESPAWN& pkt)
 {
+	if (auto* gameInstance = Cast<UMyGameInstance>(GWorld->GetGameInstance()))
+	{
+		for (auto& gameId : pkt.actorids())
+		{
+			gameInstance->HandleDespawn(gameId);
+		}
+	}
+
 	return true;
 }
 

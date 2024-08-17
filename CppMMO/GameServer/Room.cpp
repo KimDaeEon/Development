@@ -5,7 +5,15 @@
 
 void Room::HandleEnterGame(ClientSessionRef clientSession, PlayerRef player)
 {
-	Enter(player);
+	if (player == nullptr)
+	{
+		return;
+	}
+
+	if (Enter(player) == false)
+	{
+		return;
+	}
 
 	Protocol::S_ENTER_GAME enterGamePkt;
 	enterGamePkt.set_success(true);
@@ -32,12 +40,70 @@ void Room::HandleEnterGame(ClientSessionRef clientSession, PlayerRef player)
 	}
 }
 
-void Room::Enter(PlayerRef player)
+void Room::HandleLeaveGame(ClientSessionRef clientSession, PlayerRef player)
 {
-	_players[player->GetActorInfo().gameid()] = player;
+	if (player == nullptr)
+	{
+		return;
+	}
+
+	if (Leave(player) == false)
+	{
+		return;
+	}
+
+	const uint64 gameId = player->GetActorInfo().gameid();
+	auto session = player->GetOwnerSession();
+
+	// 퇴장 사실을 자기 자신에게 알린다.
+	{
+		Protocol::S_LEAVE_GAME leaveGamePkt;
+		
+		if (session)
+		{
+			session->SendPacket(leaveGamePkt);
+		}
+	}
+
+	{
+		Protocol::S_DESPAWN despawnPkt;
+		despawnPkt.add_actorids(gameId);
+		Broadcast(despawnPkt);
+
+		if (session)
+		{
+			session->SendPacket(despawnPkt);
+		}
+	}
+
 }
 
-void Room::Leave(PlayerRef player)
+bool Room::Enter(PlayerRef player)
 {
-	_players.erase(player->GetActorInfo().gameid());
+	int64 gameId = player->GetActorInfo().gameid();
+	if (_players.find(gameId) != _players.end())
+	{
+		return false;
+	}
+
+	_players[gameId] = player;
+	// TODO: 아래 문제 없을 것 같은데, 혹시 모르니 추후 다시 확인
+	_players[gameId]->SetRoom(std::static_pointer_cast<Room>(shared_from_this()));
+
+	return true;
+}
+
+bool Room::Leave(PlayerRef player)
+{
+	uint64 gameId = player->GetActorInfo().gameid();
+	if (_players.find(gameId) == _players.end())
+	{
+		return false;
+	}
+
+	PlayerRef erasedPlayer = _players[gameId];
+	erasedPlayer->SetRoom(nullptr);
+	_players.erase(gameId);
+
+	return true;
 }
