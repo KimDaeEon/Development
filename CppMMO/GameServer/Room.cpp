@@ -16,9 +16,13 @@ void Room::HandleEnterGame(ClientSessionRef clientSession, PlayerRef player)
 		return;
 	}
 
-	Protocol::S_ENTER_GAME enterGamePkt;
-	enterGamePkt.set_success(true);
-	clientSession->SendPacket(enterGamePkt);
+	// 입장 사실을 자기 자신에게 알린다.
+	{
+		Protocol::S_ENTER_GAME enterGamePkt;
+		enterGamePkt.mutable_playercharacter()->CopyFrom(player->GetActorInfo());
+		enterGamePkt.set_success(true);
+		clientSession->SendPacket(enterGamePkt);
+	}
 
 	// 기존 입장한 플레이어 목록을 자신에게 알린다.
 	{
@@ -55,15 +59,14 @@ void Room::HandleLeaveGame(ClientSessionRef clientSession, PlayerRef player)
 	}
 
 	const uint64 gameId = player->GetActorInfo().gameid();
-	auto session = player->GetOwnerSession();
 
 	// 퇴장 사실을 자기 자신에게 알린다.
 	{
 		Protocol::S_LEAVE_GAME leaveGamePkt;
 		
-		if (session)
+		if (clientSession)
 		{
-			session->SendPacket(leaveGamePkt);
+			clientSession->SendPacket(leaveGamePkt);
 		}
 	}
 
@@ -72,12 +75,29 @@ void Room::HandleLeaveGame(ClientSessionRef clientSession, PlayerRef player)
 		despawnPkt.add_actorids(gameId);
 		Broadcast(despawnPkt);
 
-		if (session)
+		if (clientSession)
 		{
-			session->SendPacket(despawnPkt);
+			clientSession->SendPacket(despawnPkt);
 		}
 	}
 
+}
+
+void Room::HandleMove(ClientSessionRef clientSession, PlayerRef player, const Protocol::C_MOVE& pkt)
+{
+	const uint64 gameId = player->GetActorInfo().gameid();
+
+	// TODO: 움직임 검증 로직 추가 필요
+	player->SetActorInfo(pkt.actorinfo());
+
+	{
+		Protocol::S_MOVE movePkt;
+		auto* actorInfo = movePkt.mutable_actorinfo();
+		actorInfo->CopyFrom(player->GetActorInfo());
+
+		cout << actorInfo->DebugString() << endl;
+		Broadcast(movePkt);
+	}
 }
 
 bool Room::Enter(PlayerRef player)

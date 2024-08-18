@@ -6,6 +6,7 @@
 #include "Serialization/ArrayWriter.h"
 #include "SocketSubsystem.h" // 플랫폼 독립적인 소켓 시스템을 위한 인터페이스 제공
 #include "PacketSession.h"
+#include "MyMMOClientPlayer.h"
 
 void UMyGameInstance::Init()
 {
@@ -85,7 +86,7 @@ void UMyGameInstance::SendPacket(SendBufferRef SendBuf)
 	GameServerSession->RegisterSend(SendBuf);
 }
 
-void UMyGameInstance::HandleSpawn(const Protocol::ActorInfo& actor)
+void UMyGameInstance::HandleSpawn(const Protocol::ActorInfo& actor, bool isMine)
 {
 	if (CheckSocketConnection())
 	{
@@ -108,20 +109,39 @@ void UMyGameInstance::HandleSpawn(const Protocol::ActorInfo& actor)
 	}
 
 	FVector spawnLocation(actor.transform().position().x(), actor.transform().position().y(), actor.transform().position().z());
-	AActor* addedActor = world->SpawnActor(PlayerClass, &spawnLocation);
-	PlayerMap.Add(actor.gameid(), addedActor);
+
+
+	if (isMine)
+	{
+		auto* playerController = UGameplayStatics::GetPlayerController(this, 0);
+		AMyMMOClientPlayer* player = Cast<AMyMMOClientPlayer>(playerController->GetPawn());
+		if (player == nullptr)
+		{
+			return;
+		}
+
+		player->SetActorInfo(&actor);
+		MyPlayer = player;
+		PlayerMap.Add(id, player);
+	}
+	else
+	{
+		AMMOClientPlayer* addedOtherPlayer = Cast<AMMOClientPlayer>(world->SpawnActor(OtherPlayerClass, &spawnLocation));
+		addedOtherPlayer->SetActorInfo(&actor);
+		PlayerMap.Add(id, addedOtherPlayer);
+	}
 }
 
 void UMyGameInstance::HandleSpawn(const Protocol::S_ENTER_GAME& enterGamePkt)
 {
-	HandleSpawn(enterGamePkt.playercharacter());
+	HandleSpawn(enterGamePkt.playercharacter(), true);
 }
 
 void UMyGameInstance::HandleSpawn(const Protocol::S_SPAWN& spawnPkt)
 {
 	for (auto& actor : spawnPkt.actors())
 	{
-		HandleSpawn(actor);
+		HandleSpawn(actor, false);
 	}
 }
 
@@ -138,13 +158,13 @@ void UMyGameInstance::HandleDespawn(uint64 gameId)
 		return;
 	}
 
-	AActor** actor = PlayerMap.Find(gameId);
-	if (actor == nullptr)
+	AMMOClientPlayer** player = PlayerMap.Find(gameId);
+	if (player == nullptr)
 	{
 		return;
 	}
 
-	world->DestroyActor(*actor);
+	world->DestroyActor(*player);
 
 	PlayerMap.Remove(gameId);
 }
@@ -155,4 +175,34 @@ void UMyGameInstance::HandleDespawn(const Protocol::S_DESPAWN& despawnPkt)
 	{
 		HandleDespawn(gameId);
 	}
+}
+
+void UMyGameInstance::HandleMove(const Protocol::S_MOVE& movePkt)
+{
+	if (CheckSocketConnection())
+	{
+		return;
+	}
+
+	auto* world = GetWorld();
+	if (world == nullptr)
+	{
+		return;
+	}
+
+	const uint64 gameId = movePkt.actorinfo().gameid();
+
+	AMMOClientPlayer** player = PlayerMap.Find(gameId);
+	if (player == nullptr)
+	{
+		return;
+	}
+
+	// TODO: 아래에 IsMyPlayer 왜 작동 안하는지 모르겠다.. 추후에 다시 확인 필요
+	//if ((*player)->IsMyPlayer())
+	if (MyPlayer->GetActorInfo()->gameid() == gameId)
+	{
+		return;
+	}
+	(*player)->SetActorInfo(&movePkt.actorinfo());
 }

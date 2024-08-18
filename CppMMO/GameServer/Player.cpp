@@ -4,7 +4,7 @@
 
 void Player::SetActorInfo(const Protocol::ActorInfo& actorInfo)
 {
-	_actorInfo = actorInfo;
+	_actorInfo.CopyFrom(actorInfo);
 }
 
 const Protocol::ActorInfo& Player::GetActorInfo() const

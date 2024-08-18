@@ -19,6 +19,7 @@ struct PacketHeader
 };
 
 #include "ServerPacketHandler.h"
+#include "PacketSession.h"
 #include "MyGameInstance.h"
 #include "Kismet/GameplayStatics.h"
 #include "Engine/World.h"

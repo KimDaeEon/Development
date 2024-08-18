@@ -31,7 +31,7 @@ bool ClientPacketHandler::Handle_C_LOGIN(PacketSessionRef& session, Protocol::C_
 		Protocol::Position position;
 		position.set_x(gameId * 100);
 		position.set_y(gameId * 100);
-		position.set_z(gameId * 100);
+		position.set_z(100);
 
 		// 회전 임시 값 세팅
 		Protocol::Rotation rotation;
@@ -123,6 +123,34 @@ bool ClientPacketHandler::Handle_C_LEAVE_GAME(PacketSessionRef& session, Protoco
 				room->HandleLeaveGame(clientSession, player);
 			});
 	}
+
+	return true;
+}
+
+bool ClientPacketHandler::Handle_C_MOVE(PacketSessionRef& session, Protocol::C_MOVE& pkt)
+{
+	ClientSessionRef clientSession = static_pointer_cast<ClientSession>(session);
+
+	PlayerRef player = clientSession->GetCurrentPlayer();
+	if (player == nullptr)
+	{
+		return false;
+	}
+
+	RoomRef room = player->GetRoom();
+	if (room == nullptr)
+	{
+		return false;
+	}
+
+	if (room)
+	{
+		room->PushJob([room, clientSession, player, pkt]()
+			{
+				room->HandleMove(clientSession, player, pkt);
+			});
+	}
+
 
 	return true;
 }

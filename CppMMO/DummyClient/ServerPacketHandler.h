@@ -26,21 +26,24 @@ public:
 		PKT_C_LEAVE_GAME = 1004,
 		PKT_S_LEAVE_GAME = 1005,
 		PKT_S_SPAWN = 1006,
-		PKT_S_DESPAWN = 1007,
-		PKT_C_CHAT = 1008,
-		PKT_S_CHAT = 1009,
+		PKT_C_MOVE = 1007,
+		PKT_S_MOVE = 1008,
+		PKT_S_DESPAWN = 1009,
+		PKT_C_CHAT = 1010,
+		PKT_S_CHAT = 1011,
 	};
 
 public:
 	static bool Handle_INVALID(PacketSessionRef& session, BYTE* buffer, int32 len);
 
 	// Protocol.proto와 연동되어 자동 생성
-	static bool Handle_S_LOGIN(PacketSessionRef& session, Protocol::S_LOGIN&pkt);
-	static bool Handle_S_ENTER_GAME(PacketSessionRef& session, Protocol::S_ENTER_GAME&pkt);
-	static bool Handle_S_LEAVE_GAME(PacketSessionRef& session, Protocol::S_LEAVE_GAME&pkt);
-	static bool Handle_S_SPAWN(PacketSessionRef& session, Protocol::S_SPAWN&pkt);
-	static bool Handle_S_DESPAWN(PacketSessionRef& session, Protocol::S_DESPAWN&pkt);
-	static bool Handle_S_CHAT(PacketSessionRef& session, Protocol::S_CHAT&pkt);
+	static bool Handle_S_LOGIN(PacketSessionRef& session, Protocol::S_LOGIN& pkt);
+	static bool Handle_S_ENTER_GAME(PacketSessionRef& session, Protocol::S_ENTER_GAME& pkt);
+	static bool Handle_S_LEAVE_GAME(PacketSessionRef& session, Protocol::S_LEAVE_GAME& pkt);
+	static bool Handle_S_SPAWN(PacketSessionRef& session, Protocol::S_SPAWN& pkt);
+	static bool Handle_S_MOVE(PacketSessionRef& session, Protocol::S_MOVE& pkt);
+	static bool Handle_S_DESPAWN(PacketSessionRef& session, Protocol::S_DESPAWN& pkt);
+	static bool Handle_S_CHAT(PacketSessionRef& session, Protocol::S_CHAT& pkt);
 
 public:
 	static void Init()
@@ -67,6 +70,10 @@ public:
 		{
 			return HandlePacket<Protocol::S_SPAWN>(Handle_S_SPAWN, session, buffer, len);
 		};
+		GPacketHandler[PKT_S_MOVE] = [](PacketSessionRef& session, BYTE* buffer, int32 len)
+		{
+			return HandlePacket<Protocol::S_MOVE>(Handle_S_MOVE, session, buffer, len);
+		};
 		GPacketHandler[PKT_S_DESPAWN] = [](PacketSessionRef& session, BYTE* buffer, int32 len)
 		{
 			return HandlePacket<Protocol::S_DESPAWN>(Handle_S_DESPAWN, session, buffer, len);
@@ -88,6 +95,7 @@ public:
 	static SendBufferRef MakeSendBuffer(Protocol::C_LOGIN& pkt) { return MakeSendBuffer(pkt, PKT_C_LOGIN); }
 	static SendBufferRef MakeSendBuffer(Protocol::C_ENTER_GAME& pkt) { return MakeSendBuffer(pkt, PKT_C_ENTER_GAME); }
 	static SendBufferRef MakeSendBuffer(Protocol::C_LEAVE_GAME& pkt) { return MakeSendBuffer(pkt, PKT_C_LEAVE_GAME); }
+	static SendBufferRef MakeSendBuffer(Protocol::C_MOVE& pkt) { return MakeSendBuffer(pkt, PKT_C_MOVE); }
 	static SendBufferRef MakeSendBuffer(Protocol::C_CHAT& pkt) { return MakeSendBuffer(pkt, PKT_C_CHAT); }
 
 private:

@@ -9,7 +9,7 @@ public class MMOClient : ModuleRules
 		PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs;
 	
 		// 아래 쪽에 Sockets 같은 것들 추가해줘야지 FSocket 같은 기능 쓸 수 있다.
-		PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore", "Sockets", "Networking" });
+		PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore", "Sockets", "Networking", "EnhancedInput" });
 
 		PrivateDependencyModuleNames.AddRange(new string[] { "ProtobufLib" });
 
@@ -17,6 +17,7 @@ public class MMOClient : ModuleRules
 		{
             "MMOClient",
             "MMOClient/Network",
+			"MMOClient/Game",
 		});
 
 		// Uncomment if you are using Slate UI

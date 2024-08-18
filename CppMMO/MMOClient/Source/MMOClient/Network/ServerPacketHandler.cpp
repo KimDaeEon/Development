@@ -33,7 +33,7 @@ bool ServerPacketHandler::Handle_S_ENTER_GAME(PacketSessionRef& session, Protoco
 {
 	if(auto* GameInstance = Cast<UMyGameInstance>(GWorld->GetGameInstance()))
 	{
-		GameInstance->HandleSpawn(pkt.playercharacter());
+		GameInstance->HandleSpawn(pkt);
 	}
 
 	return true;
@@ -54,6 +54,16 @@ bool ServerPacketHandler::Handle_S_SPAWN(PacketSessionRef& session, Protocol::S_
 	if (auto* GameInstance = Cast<UMyGameInstance>(GWorld->GetGameInstance()))
 	{
 		GameInstance->HandleSpawn(pkt);
+	}
+
+	return true;
+}
+
+bool ServerPacketHandler::Handle_S_MOVE(PacketSessionRef& session, Protocol::S_MOVE& pkt)
+{
+	if (auto* GameInstance = Cast<UMyGameInstance>(GWorld->GetGameInstance()))
+	{
+		GameInstance->HandleMove(pkt);
 	}
 
 	return true;

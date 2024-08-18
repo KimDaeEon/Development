@@ -29,7 +29,7 @@ public:
 
 	// Protocol.proto와 연동되어 자동 생성
 	{%- for pkt in parser.recv_pkt %}
-	static bool Handle_{{pkt.name}}(PacketSessionRef& session, Protocol::{{pkt.name}}&pkt);
+	static bool Handle_{{pkt.name}}(PacketSessionRef& session, Protocol::{{pkt.name}}& pkt);
 	{%- endfor %}
 
 public:

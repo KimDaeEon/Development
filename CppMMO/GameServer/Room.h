@@ -11,6 +11,7 @@ private:
 	// Job에서 실행되는 함수
 	void HandleEnterGame(ClientSessionRef clientSession, PlayerRef player);
 	void HandleLeaveGame(ClientSessionRef clientSession, PlayerRef player);
+	void HandleMove(ClientSessionRef clientSession, PlayerRef player, const Protocol::C_MOVE& pkt);
 
 	bool Enter(PlayerRef player);
 	bool Leave(PlayerRef player);

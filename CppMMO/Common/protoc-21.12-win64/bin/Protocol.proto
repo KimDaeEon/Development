@@ -45,6 +45,16 @@ message S_SPAWN
 	repeated ActorInfo actors = 1;
 }
 
+message C_MOVE
+{
+	ActorInfo actorInfo = 1;
+}
+
+message S_MOVE
+{
+	ActorInfo actorInfo = 1;
+}
+
 message S_DESPAWN
 {
 	repeated uint64 actorIds = 1;
