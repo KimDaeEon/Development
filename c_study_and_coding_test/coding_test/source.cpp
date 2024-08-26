@@ -2377,7 +2377,7 @@ namespace kko
 			string makeFormatString(int hour, int minute)
 			{
 				char temp[6] = "";
-				sprintf(temp, "%02d:%02d", hour, minute);
+				sprintf_s(temp, sizeof(temp), "%02d:%02d", hour, minute);
 				return string(temp);
 			}
 
