@@ -3990,33 +3990,33 @@ void show(const c& container)
 	}
 }
 
-int main()
-{
-	//cout << kko_tech::intern_2022::one::solution({ "TR", "RT", "TR" }, { 7,1,3 }) << endl;
-	//cout << kko_tech::intern_2022::two::solution({ 1,1 }, { 1,5 });
-	//cout << kko_tech::intern_2022::three::solution(0, 0, { {0, 0, 2, 1, 2}, {4, 5, 3, 1, 2}, {4, 11, 4, 0, 2}, {10, 4, 0, 4, 2} });
-	//BJ::DP::makeOne::main();
-	//vector<int> answer = kko_tech::intern_2021::two::solution({ {"POOOP", "OXXOX", "OPXPX", "OOXOX", "POXXP"}, {"POOPX", "OXPXP", "PXXXO", "OXXXO", "OOOPP"}, {"PXOPX", "OXOXP", "OXPOX", "OXXOP", "PXPOX"}, {"OOOXX", "XOOOX", "OOOXX", "OXOOX", "OOOOO"}, {"PXPXP", "XPXPX", "PXPXP", "XPXPX", "PXPXP"} });
-	//string  a = "asd";
-	//a = regex_replace(a, regex("asd"), "bcd");
-
-	//show(kko_tech::intern_2023::one::solution({1, 3, 4, 5, 8, 2, 1, 4, 5, 9, 5}, "right"));
-
-	//cout << kko_tech::intern_2023::two_temp::solution({ 19, 78, 27, 18, 20 }, 25);
-
-	//cout << kko_tech::intern_2023::three::solution({ 3, 8, 11, 7 });
-
-	//cout << Introduction::Babbling::solution({ "ayaye", "uuuma", "ye", "yemawoo", "ayaa" });
-
-	//cout << Introduction::StringSliding::solution("atat", "tata");
-
-	//Introduction::FromAtoB::solution("olleh", "hello");
-
-	//cout << DFS_BFS::GameMapShortestDistance::solution({{1, 0, 1, 1, 1}, {1, 0, 1, 0, 1}, {1, 0, 1, 1, 1}, {1, 1, 1, 0, 1}, {0, 0, 0, 0, 1}} );
-
-	//cout << DFS_BFS::ItemPickUp::solution({ { 2,2,5,5 }, { 1,3,6,4 }, { 3,1,4,6 } }, 1, 4, 6, 3) << endl;
-
-	cout << Introduction::AlienDictionary::solution({ "z", "d", "x" }, { "def", "dww", "dzx", "loveaw" });
-	return 0;
-}
-
+//int main()
+//{
+//	//cout << kko_tech::intern_2022::one::solution({ "TR", "RT", "TR" }, { 7,1,3 }) << endl;
+//	//cout << kko_tech::intern_2022::two::solution({ 1,1 }, { 1,5 });
+//	//cout << kko_tech::intern_2022::three::solution(0, 0, { {0, 0, 2, 1, 2}, {4, 5, 3, 1, 2}, {4, 11, 4, 0, 2}, {10, 4, 0, 4, 2} });
+//	//BJ::DP::makeOne::main();
+//	//vector<int> answer = kko_tech::intern_2021::two::solution({ {"POOOP", "OXXOX", "OPXPX", "OOXOX", "POXXP"}, {"POOPX", "OXPXP", "PXXXO", "OXXXO", "OOOPP"}, {"PXOPX", "OXOXP", "OXPOX", "OXXOP", "PXPOX"}, {"OOOXX", "XOOOX", "OOOXX", "OXOOX", "OOOOO"}, {"PXPXP", "XPXPX", "PXPXP", "XPXPX", "PXPXP"} });
+//	//string  a = "asd";
+//	//a = regex_replace(a, regex("asd"), "bcd");
+//
+//	//show(kko_tech::intern_2023::one::solution({1, 3, 4, 5, 8, 2, 1, 4, 5, 9, 5}, "right"));
+//
+//	//cout << kko_tech::intern_2023::two_temp::solution({ 19, 78, 27, 18, 20 }, 25);
+//
+//	//cout << kko_tech::intern_2023::three::solution({ 3, 8, 11, 7 });
+//
+//	//cout << Introduction::Babbling::solution({ "ayaye", "uuuma", "ye", "yemawoo", "ayaa" });
+//
+//	//cout << Introduction::StringSliding::solution("atat", "tata");
+//
+//	//Introduction::FromAtoB::solution("olleh", "hello");
+//
+//	//cout << DFS_BFS::GameMapShortestDistance::solution({{1, 0, 1, 1, 1}, {1, 0, 1, 0, 1}, {1, 0, 1, 1, 1}, {1, 1, 1, 0, 1}, {0, 0, 0, 0, 1}} );
+//
+//	//cout << DFS_BFS::ItemPickUp::solution({ { 2,2,5,5 }, { 1,3,6,4 }, { 3,1,4,6 } }, 1, 4, 6, 3) << endl;
+//
+//	cout << Introduction::AlienDictionary::solution({ "z", "d", "x" }, { "def", "dww", "dzx", "loveaw" });
+//	return 0;
+//}
+//
