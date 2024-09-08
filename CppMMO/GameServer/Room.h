@@ -7,6 +7,9 @@ class Room : public JobQueue
 	friend class ClientSession;
 	friend class JobQueue;
 
+public:
+		RoomRef GetRoomRef();
+
 private:
 	// Job에서 실행되는 함수
 	void HandleEnterGame(ClientSessionRef clientSession, PlayerRef player);

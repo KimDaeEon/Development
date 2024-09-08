@@ -110,7 +110,7 @@ bool Room::Enter(PlayerRef player)
 
 	_players[gameId] = player;
 	// TODO: 아래 문제 없을 것 같은데, 혹시 모르니 추후 다시 확인
-	_players[gameId]->SetRoom(std::static_pointer_cast<Room>(shared_from_this()));
+	_players[gameId]->SetRoom(GetRoomRef());
 
 	return true;
 }
@@ -128,4 +128,9 @@ bool Room::Leave(PlayerRef player)
 	_players.erase(gameId);
 
 	return true;
+}
+
+RoomRef Room::GetRoomRef()
+{
+	return static_pointer_cast<Room>(shared_from_this());
 }
