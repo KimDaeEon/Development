@@ -18,15 +18,21 @@ public:
 	AMMOClientPlayer();
 	virtual ~AMMOClientPlayer();
 
+	bool IsMyPlayer() const;
+
 	void SetActorInfo(const Protocol::ActorInfo* actorInfo);
 	Protocol::ActorInfo* GetActorInfo() const { return ActorInfo; };
 
-	bool IsMyPlayer() const;
+	void SetTargetActorInfo(const Protocol::ActorInfo* actorInfo);
+
+	void SetMoveState(Protocol::MoveState moveState);
+	Protocol::MoveState GetMoveState() const { return ActorInfo->movestate(); }
 
 protected:
 	virtual void BeginPlay() override;
 	virtual void Tick(float DeltaTime) override;
 
 protected:
-	Protocol::ActorInfo* ActorInfo;
+	Protocol::ActorInfo* ActorInfo; 
+	Protocol::ActorInfo* TargetActorInfo; 
 };

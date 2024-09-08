@@ -38,4 +38,5 @@ message ActorInfo
 	string name = 2;
 	Transform transform = 3;
 	ActorType type = 4;
+	MoveState moveState = 5;
 }

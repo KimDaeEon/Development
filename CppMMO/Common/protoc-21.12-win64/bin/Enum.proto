@@ -11,3 +11,11 @@ enum ActorType
 	MONSTER_TYPE_KNIGHT = 4;
 	MONSTER_TYPE_MAGE = 5;
 }
+
+enum MoveState
+{
+	MOVE_STATE_NONE = 0;
+	MOVE_STATE_IDLE = 1;
+	MOVE_STATE_MOVE = 2;
+	MOVE_STATE_JUMP = 3;
+}

@@ -127,6 +127,7 @@ void UMyGameInstance::HandleSpawn(const Protocol::ActorInfo& actor, bool isMine)
 	else
 	{
 		AMMOClientPlayer* addedOtherPlayer = Cast<AMMOClientPlayer>(world->SpawnActor(OtherPlayerClass, &spawnLocation));
+
 		addedOtherPlayer->SetActorInfo(&actor);
 		PlayerMap.Add(id, addedOtherPlayer);
 	}
@@ -197,12 +198,12 @@ void UMyGameInstance::HandleMove(const Protocol::S_MOVE& movePkt)
 	{
 		return;
 	}
-
-	// TODO: 아래에 IsMyPlayer 왜 작동 안하는지 모르겠다.. 추후에 다시 확인 필요
-	//if ((*player)->IsMyPlayer())
-	if (MyPlayer->GetActorInfo()->gameid() == gameId)
+	
+	if ((*player)->IsMyPlayer())
 	{
 		return;
 	}
-	(*player)->SetActorInfo(&movePkt.actorinfo());
+
+	//(*player)->SetActorInfo(&movePkt.actorinfo());
+	(*player)->SetTargetActorInfo(&movePkt.actorinfo());
 }

@@ -38,8 +38,15 @@ protected:
 	void Look(const FInputActionValue& Value);
 
 protected:
-	const float MOVE_PACKET_SEND_INTERVAL = 0.1f;
+	const float MOVE_PACKET_SEND_INTERVAL = 0.05f;
 	float MovePacketSendTimer = MOVE_PACKET_SEND_INTERVAL;
+
+	FVector2D DesiredInputMovementVector = FVector2D::ZeroVector;
+	FVector2D LastInputMovementVector = FVector2D::ZeroVector; // 이전 인풋 방향 체크용
+
+	FVector DesiredMoveDirection = FVector::ZeroVector;
+	float DesiredYaw = 0.0f;
+
 
 protected:
 	/** Camera boom positioning the camera behind the character */

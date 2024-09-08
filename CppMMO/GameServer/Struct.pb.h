@@ -905,6 +905,7 @@ class ActorInfo final :
     kTransformFieldNumber = 3,
     kGameIdFieldNumber = 1,
     kTypeFieldNumber = 4,
+    kMoveStateFieldNumber = 5,
   };
   // string name = 2;
   void clear_name();
@@ -956,6 +957,15 @@ class ActorInfo final :
   void _internal_set_type(::Protocol::ActorType value);
   public:
 
+  // .Protocol.MoveState moveState = 5;
+  void clear_movestate();
+  ::Protocol::MoveState movestate() const;
+  void set_movestate(::Protocol::MoveState value);
+  private:
+  ::Protocol::MoveState _internal_movestate() const;
+  void _internal_set_movestate(::Protocol::MoveState value);
+  public:
+
   // @@protoc_insertion_point(class_scope:Protocol.ActorInfo)
  private:
   class _Internal;
@@ -968,6 +978,7 @@ class ActorInfo final :
     ::Protocol::Transform* transform_;
     uint64_t gameid_;
     int type_;
+    int movestate_;
     mutable ::PROTOBUF_NAMESPACE_ID::internal::CachedSize _cached_size_;
   };
   union { Impl_ _impl_; };
@@ -1628,6 +1639,26 @@ inline void ActorInfo::_internal_set_type(::Protocol::ActorType value) {
 inline void ActorInfo::set_type(::Protocol::ActorType value) {
   _internal_set_type(value);
   // @@protoc_insertion_point(field_set:Protocol.ActorInfo.type)
+}
+
+// .Protocol.MoveState moveState = 5;
+inline void ActorInfo::clear_movestate() {
+  _impl_.movestate_ = 0;
+}
+inline ::Protocol::MoveState ActorInfo::_internal_movestate() const {
+  return static_cast< ::Protocol::MoveState >(_impl_.movestate_);
+}
+inline ::Protocol::MoveState ActorInfo::movestate() const {
+  // @@protoc_insertion_point(field_get:Protocol.ActorInfo.moveState)
+  return _internal_movestate();
+}
+inline void ActorInfo::_internal_set_movestate(::Protocol::MoveState value) {
+  
+  _impl_.movestate_ = value;
+}
+inline void ActorInfo::set_movestate(::Protocol::MoveState value) {
+  _internal_set_movestate(value);
+  // @@protoc_insertion_point(field_set:Protocol.ActorInfo.moveState)
 }
 
 #ifdef __GNUC__

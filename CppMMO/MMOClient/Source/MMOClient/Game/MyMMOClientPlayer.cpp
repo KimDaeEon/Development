@@ -11,6 +11,7 @@
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
 #include "MMOClient.h"
+#include <Kismet/KismetMathLibrary.h>
 
 AMyMMOClientPlayer::AMyMMOClientPlayer()
 {
@@ -79,6 +80,7 @@ void AMyMMOClientPlayer::SetupPlayerInputComponent(class UInputComponent* Player
 
 		//Moving
 		EnhancedInputComponent->BindAction(MoveAction, ETriggerEvent::Triggered, this, &AMyMMOClientPlayer::Move);
+		EnhancedInputComponent->BindAction(MoveAction, ETriggerEvent::Completed, this, &AMyMMOClientPlayer::Move);
 
 		//Looking
 		EnhancedInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &AMyMMOClientPlayer::Look);
@@ -91,9 +93,28 @@ void AMyMMOClientPlayer::SetupPlayerInputComponent(class UInputComponent* Player
 void AMyMMOClientPlayer::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+	
+	// 갑작스럽게 Send를 해야할 때가 있다. ex) 방향 전환, 점프 등..
+	bool SendImmediately = false;
+
+	if (LastInputMovementVector != DesiredInputMovementVector)
+	{
+		SendImmediately = true;
+		LastInputMovementVector = DesiredInputMovementVector;
+	}
+
+	// State 변경
+	if (DesiredInputMovementVector.IsZero())
+	{
+		SetMoveState(Protocol::MoveState::MOVE_STATE_IDLE);
+	}
+	else
+	{
+		SetMoveState(Protocol::MoveState::MOVE_STATE_MOVE);
+	}
 
 	MovePacketSendTimer -= DeltaTime;
-	if (MovePacketSendTimer <= 0.0f)
+	if (MovePacketSendTimer <= 0.0f || SendImmediately)
 	{
 		MovePacketSendTimer = MOVE_PACKET_SEND_INTERVAL;
 		// TODO: Send Move Packet
@@ -121,12 +142,13 @@ void AMyMMOClientPlayer::Tick(float DeltaTime)
 void AMyMMOClientPlayer::Move(const FInputActionValue& Value)
 {
 	// input is a Vector2D
-	FVector2D MovementVector = Value.Get<FVector2D>();
+	FVector2D inputMovementVector = Value.Get<FVector2D>();
 
 	if (Controller != nullptr)
 	{
 		// find out which way is forward
-		const FRotator Rotation = Controller->GetControlRotation();
+		const FRotator Rotation = Controller->GetControlRotation(); // 이 부분이 카메라 방향인 것이 중요하다. ActorRotation을 안쓰는 점을 잘 염두해서 보자.
+		//const FRotator Rotation = GetActorRotation(); <- 이렇게 하면 안됨
 		const FRotator YawRotation(0, Rotation.Yaw, 0);
 
 		// get forward vector
@@ -136,8 +158,21 @@ void AMyMMOClientPlayer::Move(const FInputActionValue& Value)
 		const FVector RightDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
 
 		// add movement 
-		AddMovementInput(ForwardDirection, MovementVector.Y);
-		AddMovementInput(RightDirection, MovementVector.X);
+		AddMovementInput(ForwardDirection, inputMovementVector.Y);
+		AddMovementInput(RightDirection, inputMovementVector.X);
+
+		{
+			DesiredInputMovementVector = inputMovementVector;
+
+			DesiredMoveDirection = FVector::ZeroVector;
+			DesiredMoveDirection += ForwardDirection * inputMovementVector.Y;
+			DesiredMoveDirection += RightDirection * inputMovementVector.X;
+			DesiredMoveDirection.Normalize();
+
+			const FVector location = GetActorLocation();
+			FRotator rotator = UKismetMathLibrary::FindLookAtRotation(location, location + DesiredMoveDirection);
+			DesiredYaw = rotator.Yaw;
+		}
 	}
 }
 
