@@ -126,7 +126,28 @@ void DoWorkerJob(ServerServiceRef& service)
 	}
 }
 
-// Data Source=DESKTOP-9IA022F;Initial Catalog=TestDB;User ID=sa;Password=********;Connect Timeout=30;Encrypt=False;TrustServerCertificate=False;ApplicationIntent=ReadWrite;MultiSubnetFailover=False
+
+//struct temp
+//{
+//	char  a[1024 * 1024];
+//};
+//
+//void TestPerformance(int iterations)
+//{
+//	ObjectPool<temp> pool;
+//	auto start = std::chrono::high_resolution_clock::now();
+//
+//	for (int i = 0; i < iterations; i++)
+//	{
+//		auto memory = pool.Pop();  // 메모리 할당 (또는 풀에서 가져옴)
+//		pool.Push(memory);           // 사용 후 메모리 반환
+//	}
+//
+//	auto end = std::chrono::high_resolution_clock::now();
+//	std::chrono::duration<double> elapsed = end - start;
+//	std::cout << "Native C++ MemoryPool: " << elapsed.count() << " seconds for " << iterations << " iterations." << std::endl;
+//}
+
 int main()
 {
 	ASSERT_CRASH(GDBConnectionPool->Connect(1,
