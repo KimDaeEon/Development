@@ -17329,3 +17329,7 @@ CppMMO/MMOClient/Saved/
 CppMMO/MMOClient/Binaries/
 c_study_and_coding_test/c_study/x64/
 CSharpStudy/obj/
+CSharpStudy/bin/
+CSharpStudy/CLRTest/CLRTest/obj/
+CSharpStudy/x64/
+CSharpStudy/CLRTest/CLRTest/x64/

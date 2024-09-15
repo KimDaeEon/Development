@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <TargetFramework>net5.0</TargetFramework>
+    <TargetFramework>net8.0-windows</TargetFramework>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
@@ -15,6 +15,10 @@
 
   <ItemGroup>
     <PackageReference Include="Google.Apis.Core" Version="1.58.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="CLRTest\CLRTest\CLRTest.vcxproj" />
   </ItemGroup>
 
 </Project>

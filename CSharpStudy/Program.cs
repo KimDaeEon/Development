@@ -13,6 +13,8 @@ using LINQ.CreateComposableAPIsForSequences;
 using LINQ.AvoidModifyingBoundVariables;
 using System.Diagnostics;
 using System.Threading.Tasks;
+using System.Runtime.InteropServices;
+using System.Buffers;
 
 namespace CSharpStudy
 {
@@ -144,7 +146,7 @@ namespace CSharpStudy
         {
             public new void foo() 
             {
-                Console.WriteLine("d1 foo()");
+                Console.WriteLine("new d1 foo()");
             }
         }
         
@@ -152,23 +154,43 @@ namespace CSharpStudy
         {
             public override void foo() 
             {
-                Console.WriteLine("d2 foo()");
+                Console.WriteLine("override d2 foo()");
             }
         }
+        #endregion
+
+        #region ResourceManagementTest
+        public class ManagedResource
+        {
+            public byte[] a;
+
+            public ManagedResource()
+            {
+                // 1MB 크기의 배열을 초기화
+                a = new byte[1024 * 1024];
+                Console.WriteLine("ManagedResource 생성자 호출됨");
+            }
+        }
+
+        [StructLayout(LayoutKind.Sequential)]
+        public struct UnmanagedResource
+        {
+            [MarshalAs(UnmanagedType.ByValArray, SizeConst = 1024 * 1024)]
+            public byte[] field1;
+        }
+
         #endregion
 
         static void Main(string[] args)
         {
             #region new vs override
-            // 아래 코드를 실행해보면 override와 new의 차이를 알 수 있다.
-            b t1 = new d1();
-            b t2 = new d2();
+            //// 아래 코드를 실행해보면 override와 new의 차이를 알 수 있다.
+            //b t1 = new d1();
+            //b t2 = new d2();
 
-            t1.foo();
-            t2.foo();
+            //t1.foo();
+            //t2.foo();
             #endregion
-
-            List<int> a;
 
             // 예외 필터의 다른 활용 예를 살펴보자
             #region Leverage Side Effects in Exception Filters
@@ -335,6 +357,31 @@ namespace CSharpStudy
             //        }
             //    }
             //}
+            #endregion
+
+            #region ResourceManagementTest
+            //int iterations = 10000;
+
+            //// ObjectPool을 이용해 SomeResource를 관리
+            //ObjectPool<ManagedResource> resourcePool = new ObjectPool<ManagedResource>(10);
+
+            //// 시간 측정을 위한 Stopwatch 시작
+            //Stopwatch stopwatch = Stopwatch.StartNew();
+
+            //for (int i = 0; i < iterations; i++)
+            //{
+            //    // 풀에서 객체를 가져옴 (Pop)
+            //    ManagedResource resource = resourcePool.Pop();
+
+            //    // 사용 후 객체를 풀에 반환 (Push)
+            //    resourcePool.Push(resource);
+            //}
+
+            //// 시간 측정 종료
+            //stopwatch.Stop();
+
+            //Console.WriteLine($"C# Object pool test completed in {stopwatch.Elapsed.TotalSeconds} seconds.");
+
             #endregion
         }
         static void TestResourceBag()

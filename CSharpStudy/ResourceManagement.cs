@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
@@ -14,7 +15,7 @@ namespace ResourceManagement
 
     // ref struct는 struct를 stack에만 할당하게 하는 제약을 주기 위해 만들어졌다.
     // 자세한 정보는 링크로.. https://learn.microsoft.com/en-us/dotnet/csharp/language-reference/builtin-types/ref-struct
-    public unsafe ref struct NativeMemory<T> where T : unmanaged 
+    public unsafe ref struct NativeMemory<T> where T : unmanaged
     {
         int _size;
         IntPtr _ptr;
@@ -37,7 +38,7 @@ namespace ResourceManagement
 
         public void Dispose()
         {
-            if(_ptr == IntPtr.Zero)
+            if (_ptr == IntPtr.Zero)
             {
                 return;
             }
@@ -129,6 +130,48 @@ namespace ResourceManagement
         {
             // 비관리 리소스 정리
             Dispose(false);
+        }
+    }
+
+    public class ObjectPool<T> where T : class, new()
+    {
+        private readonly Stack<T> pool;
+        private readonly object lockObj = new object();
+
+        // 생성자에서 초기 객체를 풀에 넣음
+        public ObjectPool(int initialCapacity)
+        {
+            pool = new Stack<T>(initialCapacity);
+
+            for (int i = 0; i < initialCapacity; i++)
+            {
+                pool.Push(new T()); // 초기 객체 생성 후 풀에 저장
+            }
+        }
+
+        // 풀에서 객체를 가져오는 메서드 (Pop)
+        public T Pop()
+        {
+            lock (lockObj)
+            {
+                if (pool.Count > 0)
+                {
+                    return pool.Pop();
+                }
+                else
+                {
+                    return new T(); // 풀에 객체가 없으면 새로 생성
+                }
+            }
+        }
+
+        // 사용한 객체를 풀에 반환하는 메서드 (Push)
+        public void Push(T obj)
+        {
+            lock (lockObj)
+            {
+                pool.Push(obj); // 객체를 풀에 반환
+            }
         }
     }
 }
