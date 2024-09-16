@@ -21,7 +21,7 @@
 // ------------------------
 //			Lock
 // ------------------------
-// 2024-09-15 std::mutex 보다 성능상 이슈가 있어서 폐기
+// 2024-09-16 std::mutex 보다 성능상 이슈가 있어서 폐기
 //#define USE_MANY_LOCKS(count)	Lock _locks[count];
 //#define USE_LOCK				USE_MANY_LOCKS(1)
 //#define READ_LOCK_IDX(idx)		ReadLockGuard readLockGuard_##idx(_locks[idx], typeid(this).name());
