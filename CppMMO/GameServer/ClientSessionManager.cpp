@@ -6,19 +6,19 @@ ClientSessionManager GClientSessionManager;
 
 void ClientSessionManager::Add(ClientSessionRef session)
 {
-	//WRITE_LOCK;
+	LockGuard lg(_lock);
 	_sessions.insert(session);
 }
 
 void ClientSessionManager::Remove(ClientSessionRef session)
 {
-	WRITE_LOCK;
+	LockGuard lg(_lock);
 	_sessions.erase(session);
 }
 
 void ClientSessionManager::Broadcast(SendBufferRef sendBuffer)
 {
-	WRITE_LOCK;
+	LockGuard lg(_lock);
 	for (ClientSessionRef session : _sessions)
 	{
 		if (session)

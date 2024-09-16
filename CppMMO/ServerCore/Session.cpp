@@ -23,8 +23,6 @@ void Session::Send(SendBufferRef sendBuffer)
 		return;
 	}
 	
-	bool isRegisterSend = false;
-
 	// WSASend는 thread-safe가 아니여서 여러 스레드에서 Send를 호출할 수 있기에 lock으로 안전함을 보장해줘야 한다.
 	// 그렇다면 Recv는 thread-safe 하지 않냐가 궁금할 수 있는데, Recv도 thread-safe 하지 않다.
 	// 그런데 Recv는 현재 코드에서 lock을 잡지 않는다. 한 세션에서 Recv를 여러 스레드에서 호출하지 않기 때문이다.
@@ -32,21 +30,15 @@ void Session::Send(SendBufferRef sendBuffer)
 	// https://stackoverflow.com/questions/28770789/is-calling-wsasend-and-wsarecv-from-two-threads-safe-when-using-iocp
 	{
 		// WRITE_LOCK을 걸어주면서 _sendQueue에 데이터를 넣어준다.
-		WRITE_LOCK;
+		std::lock_guard<std::recursive_mutex> lg(_mutex);
 
 		_sendQueue.push(sendBuffer);
 
 		// 처음 Send를 할 수 있는 녀석은 Send까지 처리한다. isSendRegistered를 획득하지 못한 녀석들은 _sendQueue에 push만 해준다.
 		if (_isSendRegistered.exchange(true) == false)
 		{
-			isRegisterSend = true;
+			RegisterSend();
 		}
-	}
-
-	// 이렇게 RegisterSend를 바깥으로 빼줘서 WRITE_LOCK 부분이 너무 길어지지 않게 한다.
-	if (isRegisterSend)
-	{
-		RegisterSend();
 	}
 }
 
@@ -63,7 +55,7 @@ void Session::RegisterSend()
 	// 보낼 데이터를 sendEvent에 등록
 	{
 		// _sendQueue에 여러 스레드가 접근하는 상황 고려해서 lock을 걸어준다.
-		WRITE_LOCK;
+		std::lock_guard<std::recursive_mutex> lg(_mutex);
 
 		int32 writeSize = 0;
 		while (_sendQueue.empty() == false)
@@ -317,7 +309,7 @@ void Session::ProcessSend(int32 numOfBytes)
 	// 컨텐츠 코드에서 오버로딩
 	OnSend(numOfBytes);
 
-	WRITE_LOCK;
+	std::lock_guard<std::recursive_mutex> lg(_mutex);
 	if (_sendQueue.empty()) // TODO: 이거 LockFreeQueue로 바꾸고 위에 WRITE_LOCK 지우는 것 고려해보기
 	{
 		_isSendRegistered.store(false);

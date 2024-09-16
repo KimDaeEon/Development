@@ -5,13 +5,13 @@ class LockQueue
 public:
 	void Push(T item)
 	{
-		WRITE_LOCK;
+		LockGuard lg(_mutex);
 		_items.push(item);
 	}
 
 	T Pop()
 	{
-		WRITE_LOCK;
+		LockGuard lg(_mutex);
 		if (_items.empty())
 		{
 			return T();
@@ -24,19 +24,22 @@ public:
 
 	void Clear()
 	{
-		WRITE_LOCK;
+		LockGuard lg(_mutex);
 		_items = std::queue<T>();
 	}
 
 	void PopAll(OUT std::vector<T>& items)
 	{
-		WRITE_LOCK;
+		LockGuard lg(_mutex);
 		while (!_items.empty())
 		{
-			items.push_back(Pop());
+			auto item = _items.front();
+			items.push_back(item);
+			_items.pop();
 		}
 	}
+
 private:
-	USE_LOCK;
+	Mutex _mutex;
 	std::queue<T> _items;
 };

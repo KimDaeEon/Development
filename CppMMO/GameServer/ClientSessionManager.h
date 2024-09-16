@@ -12,7 +12,7 @@ public:
 	void Broadcast(SendBufferRef sendBuffer);
 
 private:
-	USE_LOCK;
+	Mutex _lock;
 	std::set<ClientSessionRef> _sessions;
 };
 

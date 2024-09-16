@@ -19,7 +19,7 @@ void Service::CloseService()
 
 void Service::Broadcast(SendBufferRef sendBuffer)
 {
-	WRITE_LOCK;
+	LockGuard lg(_mutex);
 	for (const auto& session : _sessions)
 	{
 		session->Send(sendBuffer);
@@ -41,14 +41,14 @@ SessionRef Service::CreateSession()
 
 void Service::AddSession(SessionRef session)
 {
-	WRITE_LOCK;
+	LockGuard lg(_mutex);
 	_sessionCount++;
 	_sessions.insert(session);	
 }
 
 void Service::ReleaseSession(SessionRef session)
 {
-	WRITE_LOCK;
+	LockGuard lg(_mutex);
 	ASSERT_CRASH(_sessions.erase(session) != 0);
 	_sessionCount--;
 }

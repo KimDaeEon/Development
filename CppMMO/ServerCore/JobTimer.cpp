@@ -10,7 +10,7 @@ void JobTimer::Reserve(uint64 tickAfter, weak_ptr<JobQueue> owner, JobRef job)
 	const uint64 tickToBeExecuted = ::GetTickCount64() + tickAfter;
 	JobData* jobData = ObjectPool<JobData>::Pop(owner, job);
 
-	WRITE_LOCK; // JobTimer는 전역으로 사용될 것이기에 락을 걸어준다.
+	LockGuard lg(_mutex);
 	_items.push(JobTimerItem{ tickToBeExecuted, jobData });
 }
 
@@ -24,7 +24,7 @@ void JobTimer::Distribute(uint64 now)
 
 	myVector<JobTimerItem> itemsToBeExecuted;
 	{
-		WRITE_LOCK;
+		LockGuard lg(_mutex);
 
 		while (_items.empty() == false)
 		{
@@ -55,7 +55,7 @@ void JobTimer::Distribute(uint64 now)
 
 void JobTimer::Clear()
 {
-	WRITE_LOCK;
+	LockGuard lg(_mutex);
 
 	while (_items.empty() == false)
 	{

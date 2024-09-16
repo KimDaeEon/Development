@@ -15,7 +15,7 @@ DBConnectionPool::~DBConnectionPool()
 
 bool DBConnectionPool::Connect(int32 connectionCount, const WCHAR* connectionString)
 {
-	WRITE_LOCK;
+	LockGuard lock(_mutex);
 
 	// 데이터 베이스 관리하기 위한 환경 핸들 할당
 	if (::SQLAllocHandle(SQL_HANDLE_ENV, SQL_NULL_HANDLE, OUT & _hEnv) != SQL_SUCCESS)
@@ -45,7 +45,7 @@ bool DBConnectionPool::Connect(int32 connectionCount, const WCHAR* connectionStr
 
 void DBConnectionPool::Clear()
 {
-	WRITE_LOCK;
+	LockGuard lock(_mutex);
 
 	if (_hEnv != SQL_NULL_HANDLE)
 	{
@@ -63,7 +63,7 @@ void DBConnectionPool::Clear()
 
 DBConnection* DBConnectionPool::Pop()
 {
-	WRITE_LOCK;
+	LockGuard lock(_mutex);
 
 	if (_connections.empty())
 	{
@@ -78,6 +78,6 @@ DBConnection* DBConnectionPool::Pop()
 
 void DBConnectionPool::Push(DBConnection* connection)
 {
-	WRITE_LOCK;
+	LockGuard lock(_mutex);
 	_connections.push_back(connection);
 }

@@ -66,7 +66,7 @@ private:
 	void				HandleError(int32 errorCode);
 
 private:
-	USE_LOCK;
+	std::recursive_mutex	_mutex;
 
 	weak_ptr<Service>		_service; // 서버가 떠 있다면 이건 항상 있을테니 굳이 nullptr 체크는 안하고 사용
 	SOCKET					_socket = { INVALID_SOCKET };

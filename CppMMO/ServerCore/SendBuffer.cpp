@@ -94,7 +94,7 @@ SendBufferRef SendBufferManager::Open(uint32 size)
 SendBufferChunkRef SendBufferManager::Pop()
 {
 	{
-		WRITE_LOCK;
+		LockGuard lg(_mutex);
 		if (_sendBufferChunks.empty() == false)
 		{
 			SendBufferChunkRef sendBufferChunk = _sendBufferChunks.back();
@@ -108,7 +108,7 @@ SendBufferChunkRef SendBufferManager::Pop()
 
 void SendBufferManager::Push(SendBufferChunkRef buffer)
 {
-	WRITE_LOCK;
+	LockGuard lg(_mutex);
 	_sendBufferChunks.push_back(buffer);
 }
 

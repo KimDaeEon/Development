@@ -17,7 +17,7 @@ using Atomic		= std::atomic<T>; // using의 좋은 점은 template과도 함꼐 쓸 수 있�
 using Mutex			= std::mutex; // 나중에 다른 mutex를 쓰고 싶으면 이를 통해 바꾼다.
 using CondVar		= std::condition_variable;
 using UniqueLock	= std::unique_lock<std::mutex>;
-using LockGuard		= std::lock_guard <std::mutex>;  
+using LockGuard		= std::lock_guard <Mutex>;  
 
 // shared_ptr 전부 다 타이밍하기 귀찮으므로 아래와 같이 타입으로 만들어둔다.
 // 객체이름Ref 형식으로 shared_ptr 축약형 타입이 만들어진다.

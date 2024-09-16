@@ -18,7 +18,7 @@ public:
 private:
 	void			Clear();
 
-	USE_LOCK;
+	Mutex 						_mutex;
 	SQLHENV						_hEnv = SQL_NULL_HANDLE; // SQL Handle Environment
 	myVector<DBConnection*>		_connections;
 };

@@ -69,6 +69,6 @@ private:
 	static void			PushGlobal(SendBufferChunk* buffer);
 
 private:
-	USE_LOCK;
-	myVector<SendBufferChunkRef> _sendBufferChunks; // vector지만 stack의 용도로 쓰인다.
+	Mutex							_mutex;
+	myVector<SendBufferChunkRef>	_sendBufferChunks; // vector지만 stack의 용도로 쓰인다.
 };

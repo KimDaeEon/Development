@@ -44,7 +44,7 @@ public:
 	IocpCoreRef		GetIocpCore() { return _iocpCore; }
 
 protected:
-	USE_LOCK;
+	Mutex				_mutex;
 
 	ServiceType			_type;
 	NetworkAddress		_netAddress = {};

@@ -36,7 +36,7 @@ public:
 	void Clear();
 
 private:
-	USE_LOCK;
+	Mutex							_mutex;
 	myPriorityQueue<JobTimerItem>	_items;
 	Atomic<bool>					_distributing = false;
 };
