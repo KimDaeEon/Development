@@ -49,7 +49,6 @@ public:
 	MemoryHeader*	Pop();
 
 private:
-	//USE_LOCK;
 	SLIST_HEADER			_header; // Lock-Free Stack을 관리하는 구조체
 	int32					_allocSize = 0;
 	atomic<int32>			_usedCount = 0; // 메모리풀에 할당된 메모리 블록 중 사용되는 갯수

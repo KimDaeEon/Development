@@ -49,6 +49,5 @@ private:
 	}
 
 private:
-	USE_LOCK;
 	unordered_map<uint64, PlayerRef> _players;
 };
