@@ -199,12 +199,19 @@ CALL $(SolutionDir)Common\storedProcedures\GenStoredProcedures.bat</Command>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="Actor.cpp" />
+    <ClCompile Include="AIComponent.cpp" />
     <ClCompile Include="ClientPacketHandler.cpp" />
+    <ClCompile Include="Component.cpp" />
     <ClCompile Include="ConcurrentQueue.cpp" />
     <ClCompile Include="ConcurrentStack.cpp" />
+    <ClCompile Include="Entity.cpp" />
     <ClCompile Include="GameServer.cpp" />
     <ClCompile Include="ClientSession.cpp" />
     <ClCompile Include="ClientSessionManager.cpp" />
+    <ClCompile Include="Item.cpp" />
+    <ClCompile Include="Monster.cpp" />
+    <ClCompile Include="Obstacle.cpp" />
     <ClCompile Include="pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
@@ -212,22 +219,38 @@ CALL $(SolutionDir)Common\storedProcedures\GenStoredProcedures.bat</Command>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="Player.cpp" />
+    <ClCompile Include="Projectile.cpp" />
+    <ClCompile Include="QuestComponent.cpp" />
     <ClCompile Include="Room.cpp" />
+    <ClCompile Include="SkillComponent.cpp" />
+    <ClCompile Include="StatusComponent.cpp" />
     <ClCompile Include="Utils.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Common\protoc-21.12-win64\bin\Enum.pb.h" />
     <ClInclude Include="..\Common\protoc-21.12-win64\bin\Protocol.pb.h" />
     <ClInclude Include="..\Common\protoc-21.12-win64\bin\Struct.pb.h" />
+    <ClInclude Include="Actor.h" />
+    <ClInclude Include="AIComponent.h" />
     <ClInclude Include="ClientPacketHandler.h" />
+    <ClInclude Include="Component.h" />
+    <ClInclude Include="ComponentEvent.h" />
     <ClInclude Include="ConcurrentQueue.h" />
     <ClInclude Include="ConcurrentStack.h" />
     <ClInclude Include="ClientSession.h" />
     <ClInclude Include="ClientSessionManager.h" />
+    <ClInclude Include="Entity.h" />
     <ClInclude Include="GeneratedStoredProcedures.h" />
+    <ClInclude Include="Item.h" />
+    <ClInclude Include="Monster.h" />
+    <ClInclude Include="Obstacle.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="Player.h" />
+    <ClInclude Include="Projectile.h" />
+    <ClInclude Include="QuestComponent.h" />
     <ClInclude Include="Room.h" />
+    <ClInclude Include="SkillComponent.h" />
+    <ClInclude Include="StatusComponent.h" />
     <ClInclude Include="Utils.h" />
   </ItemGroup>
   <ItemGroup>

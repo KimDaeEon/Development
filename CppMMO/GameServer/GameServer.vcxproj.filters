@@ -19,6 +19,12 @@
     <Filter Include="Main\DB">
       <UniqueIdentifier>{919162b2-0813-4fda-8ad1-16278d25c0c3}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Contents\Component">
+      <UniqueIdentifier>{aeb65ca8-650a-4674-b160-d24b5c7e9e32}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Contents\Entity">
+      <UniqueIdentifier>{2f17ca34-d122-45e3-b687-46daa06b37ec}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="GameServer.cpp">
@@ -48,16 +54,51 @@
     <ClCompile Include="ClientPacketHandler.cpp">
       <Filter>Main</Filter>
     </ClCompile>
-    <ClCompile Include="Player.cpp">
-      <Filter>Contents</Filter>
-    </ClCompile>
     <ClCompile Include="Room.cpp">
       <Filter>Contents</Filter>
     </ClCompile>
     <ClCompile Include="pch.cpp">
       <Filter>Main</Filter>
     </ClCompile>
-    <ClCompile Include="Utils.cpp" />
+    <ClCompile Include="Component.cpp">
+      <Filter>Contents\Component</Filter>
+    </ClCompile>
+    <ClCompile Include="QuestComponent.cpp">
+      <Filter>Contents\Component</Filter>
+    </ClCompile>
+    <ClCompile Include="StatusComponent.cpp">
+      <Filter>Contents\Component</Filter>
+    </ClCompile>
+    <ClCompile Include="Actor.cpp">
+      <Filter>Contents\Entity</Filter>
+    </ClCompile>
+    <ClCompile Include="Entity.cpp">
+      <Filter>Contents\Entity</Filter>
+    </ClCompile>
+    <ClCompile Include="Item.cpp">
+      <Filter>Contents\Entity</Filter>
+    </ClCompile>
+    <ClCompile Include="Monster.cpp">
+      <Filter>Contents\Entity</Filter>
+    </ClCompile>
+    <ClCompile Include="Obstacle.cpp">
+      <Filter>Contents\Entity</Filter>
+    </ClCompile>
+    <ClCompile Include="Player.cpp">
+      <Filter>Contents\Entity</Filter>
+    </ClCompile>
+    <ClCompile Include="Projectile.cpp">
+      <Filter>Contents\Entity</Filter>
+    </ClCompile>
+    <ClCompile Include="SkillComponent.cpp">
+      <Filter>Contents\Component</Filter>
+    </ClCompile>
+    <ClCompile Include="Utils.cpp">
+      <Filter>Utils</Filter>
+    </ClCompile>
+    <ClCompile Include="AIComponent.cpp">
+      <Filter>Contents\Component</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ConcurrentStack.h">
@@ -87,16 +128,54 @@
     <ClInclude Include="Room.h">
       <Filter>Contents</Filter>
     </ClInclude>
-    <ClInclude Include="Player.h">
-      <Filter>Contents</Filter>
-    </ClInclude>
     <ClInclude Include="GeneratedStoredProcedures.h">
       <Filter>Main\DB</Filter>
     </ClInclude>
     <ClInclude Include="pch.h">
       <Filter>Main</Filter>
     </ClInclude>
-    <ClInclude Include="Utils.h" />
+    <ClInclude Include="Component.h">
+      <Filter>Contents\Component</Filter>
+    </ClInclude>
+    <ClInclude Include="QuestComponent.h">
+      <Filter>Contents\Component</Filter>
+    </ClInclude>
+    <ClInclude Include="StatusComponent.h">
+      <Filter>Contents\Component</Filter>
+    </ClInclude>
+    <ClInclude Include="Projectile.h">
+      <Filter>Contents\Entity</Filter>
+    </ClInclude>
+    <ClInclude Include="Actor.h">
+      <Filter>Contents\Entity</Filter>
+    </ClInclude>
+    <ClInclude Include="Entity.h">
+      <Filter>Contents\Entity</Filter>
+    </ClInclude>
+    <ClInclude Include="Item.h">
+      <Filter>Contents\Entity</Filter>
+    </ClInclude>
+    <ClInclude Include="Monster.h">
+      <Filter>Contents\Entity</Filter>
+    </ClInclude>
+    <ClInclude Include="Obstacle.h">
+      <Filter>Contents\Entity</Filter>
+    </ClInclude>
+    <ClInclude Include="Player.h">
+      <Filter>Contents\Entity</Filter>
+    </ClInclude>
+    <ClInclude Include="SkillComponent.h">
+      <Filter>Contents\Component</Filter>
+    </ClInclude>
+    <ClInclude Include="ComponentEvent.h">
+      <Filter>Contents\Component</Filter>
+    </ClInclude>
+    <ClInclude Include="Utils.h">
+      <Filter>Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="AIComponent.h">
+      <Filter>Contents\Component</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\Common\protoc-21.12-win64\bin\GenPackets.bat">

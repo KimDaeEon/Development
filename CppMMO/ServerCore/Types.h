@@ -1,6 +1,11 @@
 #pragma once
 #include <mutex>
 #include <atomic>
+#include <tuple>
+#include <type_traits>
+#include <variant>
+#include <functional>
+#include <string>
 
 using BYTE = unsigned char;
 using int8 = __int8;
@@ -33,5 +38,10 @@ MAKE_SHARED_PTR_TYPE(SendBuffer);
 MAKE_SHARED_PTR_TYPE(SendBufferChunk);
 MAKE_SHARED_PTR_TYPE(Job);
 MAKE_SHARED_PTR_TYPE(JobQueue);
+
+MAKE_SHARED_PTR_TYPE(Entity);
+MAKE_SHARED_PTR_TYPE(Actor);
+MAKE_SHARED_PTR_TYPE(Monster);
+MAKE_SHARED_PTR_TYPE(Item);
 
 //#define _STOMP // TODO: 추후 이거 해제하고 테스트 필요. MemoryPoolManager::Allocate에서 문제 발생 중임
