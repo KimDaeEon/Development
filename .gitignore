@@ -17333,3 +17333,9 @@ CSharpStudy/bin/
 CSharpStudy/CLRTest/CLRTest/obj/
 CSharpStudy/x64/
 CSharpStudy/CLRTest/CLRTest/x64/
+*.xml
+CSharpMMO/AccountServer/obj/
+CSharpMMO/AccountServer/bin/
+CSharpMMO/DummyClient/bin/
+CSharpMMO/DummyClient/obj/
+CSharpMMO/SharedDB/obj/
