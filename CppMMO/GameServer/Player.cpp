@@ -2,14 +2,15 @@
 #include "Room.h"
 #include "Player.h"
 
+// TOOD: 아래 EntityInfo 관련 내용으로 수정 필요
 void Player::SetActorInfo(const Protocol::ActorInfo& actorInfo)
 {
-	_actorInfo.CopyFrom(actorInfo);
+	//_playerEntityInfo.CopyFrom(actorInfo);
 }
 
 const Protocol::ActorInfo& Player::GetActorInfo() const
 {
-	return _actorInfo;
+	return _playerEntityInfo;
 }
 
 void Player::SetOwnerSession(ClientSessionRef session)

@@ -32,11 +32,105 @@ message Transform
 }
 
 
+// --------------------------------
+//			   Entity
+// --------------------------------
+message MoveInfo
+{
+	Transform transform = 1;
+	MoveState moveState = 2;
+}
+
+message StatInfo
+{
+	uint64 level = 1;
+	uint64 hp = 2;
+	uint64 mp = 3;
+	uint64 attack = 4;
+	uint64 defense = 5;
+	uint64 speed = 6;
+	uint64 currentExp = 7;
+}
+
+message EntityInfo
+{
+	uint64 gameId = 1; // 할당되지 않으면 0, 할당되면 1 이상의 값, 현재 습득된 Item 인 경우 0으로 할당
+	MoveInfo moveInfo = 2;
+	StatInfo statInfo = 3;
+
+	oneof EntityType
+	{
+		ActorInfo actorInfo = 4;
+		ItemInfo itemInfo = 5;
+		ProjectileInfo projectileInfo = 6;
+		ObstacleInfo obstacleInfo = 7;
+	}
+}	
+
+
+// --------------------------------
+//			    Item
+// --------------------------------
+message OwnedItemInfo
+{
+	uint64 dbId = 1;
+	uint64 slotNum = 2;
+}
+
+message ItemInfo
+{
+	OwnedItemInfo ownedItemInfo = 1;
+	uint64 templateId = 2;
+	oneof ItemCategory
+	{
+		WeaponType weaponType = 3;
+		ArmorType armorType = 4;
+		AccessoryType accessoryType = 5;
+		ConsumableType consumableType = 6;
+	}
+}
+
+
+// --------------------------------
+//			    Actor
+// --------------------------------
 message ActorInfo
 {
-	uint64 gameId = 1; // 메모리 상에서 발급받는 id로 설정, dbId와는 달라야 한다. 몬스터같은 경우 templateId(datasheetId)만, 사용자 캐릭터의 경우 dbId, gameId 모두 부여.
+	oneof ActorType
+	{
+		PlayerInfo playerInfo = 1;
+		MonsterInfo monsterInfo = 2;
+	}
+}
+
+message MonsterInfo
+{
+	ActorInfo actorInfo = 1;
+	MonsterType type = 2;
+}
+
+message PlayerInfo
+{
+	ActorInfo actorInfo = 1;
 	string name = 2;
-	Transform transform = 3;
-	ActorType type = 4;
-	MoveState moveState = 5;
+	// TODO: 추후 퀘스트 정보 추가
+}
+
+
+// --------------------------------
+//			 Proejctile
+// --------------------------------
+// TODO: Projectile 내부 정보 기획 좀 더 고민해보고 정하자.
+message ProjectileInfo
+{
+	uint64 ownerGameId = 1;
+	uint64 templateId = 2;
+}
+
+// --------------------------------
+//			 Obstacle
+// --------------------------------
+message ObstacleInfo
+{
+	uint64 templateId = 1;
 }

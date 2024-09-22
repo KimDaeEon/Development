@@ -1,21 +1,76 @@
 syntax = "proto3";
 package Protocol; // Protocol이라는 namespace 이름을 지어준 것
 
-enum ActorType
-{
-	PLAYER_TYPE_NONE = 0;
-	PLAYER_TYPE_KNIGHT = 1;
-	PLAYER_TYPE_MAGE = 2;
-
-	MONSTER_TYPE_NONE = 3;
-	MONSTER_TYPE_KNIGHT = 4;
-	MONSTER_TYPE_MAGE = 5;
-}
-
+// MoveInfo 관련
 enum MoveState
 {
 	MOVE_STATE_NONE = 0;
 	MOVE_STATE_IDLE = 1;
 	MOVE_STATE_MOVE = 2;
 	MOVE_STATE_JUMP = 3;
+}
+
+
+// --------------------------------
+//			    Item
+// --------------------------------
+// 무기 종류
+enum WeaponType
+{
+    WEAPON_TYPE_NONE = 0;
+    WEAPON_TYPE_TWO_HANDED_SWORD = 1; // 양손 검
+    WEAPON_TYPE_ONE_HANDED_SWORD = 2; // 한손 검
+    WEAPON_TYPE_BOW = 3;              // 활
+    WEAPON_TYPE_STAFF = 4;            // 지팡이
+    WEAPON_TYPE_DAGGER = 5;           // 단검
+}
+
+// 방어구 종류
+enum ArmorType
+{
+    ARMOR_TYPE_NONE = 0;
+    ARMOR_TYPE_CHESTPLATE = 1;  // 가슴 보호구 (갑옷)
+    ARMOR_TYPE_HELMET = 2;      // 헬멧
+    ARMOR_TYPE_SHIELD = 3;      // 방패
+    ARMOR_TYPE_GLOVES = 4;      // 장갑
+    ARMOR_TYPE_BOOTS = 5;       // 신발
+}
+
+// 장신구 종류
+enum AccessoryType
+{
+    ACCESSORY_TYPE_NONE = 0;
+    ACCESSORY_TYPE_RING = 1;      // 반지
+    ACCESSORY_TYPE_NECKLACE = 2;  // 목걸이
+    ACCESSORY_TYPE_EARRING = 3;   // 귀걸이
+}
+
+// 소모품 종류
+enum ConsumableType
+{
+    CONSUMABLE_TYPE_NONE = 0;
+    CONSUMABLE_TYPE_WEAPON_ENHANCEMENT_SCROLL = 1;    // 무기 강화서
+    CONSUMABLE_TYPE_ARMOR_ENHANCEMENT_SCROLL = 2;     // 방어구 강화서
+    CONSUMABLE_TYPE_ACCESSORY_ENHANCEMENT_SCROLL = 3; // 장신구 강화서
+    CONSUMABLE_TYPE_STAT_BUFF = 4;                    // Stat 버프
+    CONSUMABLE_TYPE_TELEPORTATION_SCROLL = 5;         // 위치 이동서
+}
+
+
+// --------------------------------
+//			    Actor
+// --------------------------------
+enum PlayerType
+{
+	PLAYER_TYPE_NONE = 0;
+	PLAYER_TYPE_KNIGHT = 1;
+	PLAYER_TYPE_MAGE = 2;
+	PLAYER_TYPE_ARCHER = 3;
+}
+
+enum MonsterType
+{
+	MONSTER_TYPE_NONE = 0;
+	MONSTER_TYPE_NORMAL = 1;
+	MONSTER_TYPE_BOSS = 2;
 }

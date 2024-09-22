@@ -7,25 +7,21 @@ using ActorComponentsPack = SkillComponent;
 class Actor : public Entity
 {
 public:
-    Actor()
-        : Entity(), _actorComponents(CreateComponents<ActorComponentsPack>())
-    {
-    }
+	Actor();
 
-
-    template <typename T>
-    T& GetComponent()
-    {
-        if constexpr (is_one_of<T, ActorComponentsPack>)
-        {
-            return _actorComponents.GetComponent<T>();
-        }
-        else
-        {
-            return Entity::GetComponent<T>();
-        }
-    }
+	template <typename T>
+	T& GetComponent()
+	{
+		if constexpr (is_one_of<T, ActorComponentsPack>)
+		{
+			return _actorComponents.GetComponent<T>();
+		}
+		else
+		{
+			return Entity::GetComponent<T>();
+		}
+	}
 
 protected:
-    Composite<ActorComponentsPack> _actorComponents;
+	Composite<ActorComponentsPack> _actorComponents;
 };

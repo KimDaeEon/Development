@@ -8,4 +8,10 @@ public:
 	virtual void Notify(const EventData& message) override;
 
 	virtual void OnNotify(const EventData& message) override;
+
+	const Protocol::StatInfo& GetStatInfo() const { return _statInfo; }
+	void SetStatInfo(const Protocol::StatInfo& statInfo) { _statInfo = statInfo; }
+
+private:
+	Protocol::StatInfo _statInfo;
 };
