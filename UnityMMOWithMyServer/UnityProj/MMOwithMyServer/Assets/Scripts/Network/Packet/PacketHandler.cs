@@ -41,6 +41,11 @@ class PacketHandler
     {
         S_Login loginPacket = (S_Login)packet;
         Debug.Log($"{loginPacket}");
+        if(loginPacket.LoginOk == false)
+        {
+            Debug.Log("Login Failed");
+            return;
+        }
 
         // TODO: 로비 UI에서 캐릭터 보여주고, 선택하도록
         if (loginPacket.Players == null || loginPacket.Players.Count == 0)
