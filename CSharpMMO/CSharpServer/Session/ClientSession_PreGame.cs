@@ -95,7 +95,7 @@ namespace CSharpServer
                     // TODO: 토큰 기한 체크도 데이터로 빼서 공통으로 들고있게 해야한다.
                     if (tokenDb == null || tokenDb.Token != loginPacket.Token || tokenDb.ExpiredDatetime < DateTime.UtcNow)
                     {
-                        S_Login resLoginPacket = new S_Login() { LoginOk = true };
+                        S_Login resLoginPacket = new S_Login() { LoginOk = false };
                         Send(resLoginPacket);
                         return;
                     }

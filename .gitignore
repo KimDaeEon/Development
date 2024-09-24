@@ -17339,3 +17339,6 @@ CSharpMMO/AccountServer/bin/
 CSharpMMO/DummyClient/bin/
 CSharpMMO/DummyClient/obj/
 CSharpMMO/SharedDB/obj/
+CSharpForCMS/BlazorApp/obj/
+CSharpForCMS/EFCore_Practice/obj/
+CSharpForCMS/HelloBlazorServer/obj/
