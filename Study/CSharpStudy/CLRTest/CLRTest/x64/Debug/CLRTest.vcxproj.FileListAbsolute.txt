@@ -1,0 +1,5 @@
+C:\GitForGame\Development\CSharpStudy\x64\Debug\Ijwhost.dll
+C:\GitForGame\Development\CSharpStudy\x64\Debug\CLRTest.deps.json
+C:\GitForGame\Development\CSharpStudy\x64\Debug\CLRTest.runtimeconfig.json
+C:\GitForGame\Development\CSharpStudy\CLRTest\CLRTest\x64\Debug\CLRTest.sourcelink.json
+C:\GitForGame\Development\CSharpStudy\CLRTest\CLRTest\x64\Debug\CLRTest.genruntimeconfig.cache

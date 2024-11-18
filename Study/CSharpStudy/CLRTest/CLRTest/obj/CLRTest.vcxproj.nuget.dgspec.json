@@ -1,0 +1,71 @@
+{
+  "format": 1,
+  "restore": {
+    "C:\\GitForGame\\Development\\CSharpStudy\\CLRTest\\CLRTest\\CLRTest.vcxproj": {}
+  },
+  "projects": {
+    "C:\\GitForGame\\Development\\CSharpStudy\\CLRTest\\CLRTest\\CLRTest.vcxproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "C:\\GitForGame\\Development\\CSharpStudy\\CLRTest\\CLRTest\\CLRTest.vcxproj",
+        "projectName": "CLRTest",
+        "projectPath": "C:\\GitForGame\\Development\\CSharpStudy\\CLRTest\\CLRTest\\CLRTest.vcxproj",
+        "packagesPath": "C:\\Users\\eo956\\.nuget\\packages\\",
+        "outputPath": "C:\\GitForGame\\Development\\CSharpStudy\\CLRTest\\CLRTest\\obj\\",
+        "projectStyle": "PackageReference",
+        "configFilePaths": [
+          "C:\\Users\\eo956\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
+        ],
+        "originalTargetFrameworks": [
+          "net8.0"
+        ],
+        "sources": {
+          "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
+          "C:\\Program Files\\dotnet\\library-packs": {},
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "net8.0-windows7.0": {
+            "targetAlias": "net8.0",
+            "projectReferences": {}
+          }
+        },
+        "restoreAuditProperties": {
+          "enableAudit": "true",
+          "auditLevel": "low",
+          "auditMode": "direct"
+        }
+      },
+      "frameworks": {
+        "net8.0-windows7.0": {
+          "targetAlias": "net8.0",
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48",
+            "net481"
+          ],
+          "assetTargetFallback": true,
+          "secondaryFramework": "native",
+          "warn": true,
+          "downloadDependencies": [
+            {
+              "name": "Microsoft.Windows.SDK.NET.Ref",
+              "version": "[10.0.22621.34, 10.0.22621.34]"
+            }
+          ],
+          "frameworkReferences": {
+            "Microsoft.NETCore.App": {
+              "privateAssets": "all"
+            }
+          },
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.400/PortableRuntimeIdentifierGraph.json"
+        }
+      }
+    }
+  }
+}
