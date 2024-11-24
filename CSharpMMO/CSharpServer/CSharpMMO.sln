@@ -1,9 +1,9 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.32228.343
+# Visual Studio Version 17
+VisualStudioVersion = 17.11.35303.130
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CSharpServer", "CSharpServer.csproj", "{C76F0613-A858-4927-9F42-E64D2E530CD7}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GameServer", "GameServer.csproj", "{C76F0613-A858-4927-9F42-E64D2E530CD7}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ServerCore", "..\ServerCore\ServerCore.csproj", "{CDFB1EEA-328D-4FAA-BF7F-7F57DF67A0FA}"
 EndProject
@@ -15,7 +15,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DummyClient", "..\DummyClie
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AccountServer", "..\AccountServer\AccountServer.csproj", "{A62CB4AF-5E49-4ABF-ACE5-692D1099E2E0}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SharedDB", "..\SharedDB\SharedDB.csproj", "{E19A94D1-C4E7-44DE-BB48-2FE8972DBBFE}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SharedDB", "..\SharedDB\SharedDB.csproj", "{E19A94D1-C4E7-44DE-BB48-2FE8972DBBFE}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

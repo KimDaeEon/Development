@@ -14,19 +14,22 @@ namespace ServerCore
     {
         Func<Session> _sessionFactory;
 
-        public void Connect(IPEndPoint endPoint, Func<Session> sessionFactory)
+        public void Connect(IPEndPoint endPoint, Func<Session> sessionFactory, int count = 1)
         {
-            Socket socket = new Socket(endPoint.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
-            _sessionFactory = sessionFactory;
+            for (int i = 0; i < count; i++)
+            {
+                Socket socket = new Socket(endPoint.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
+                _sessionFactory = sessionFactory;
 
-            SocketAsyncEventArgs args = new SocketAsyncEventArgs();
-            args.Completed += OnConnectCompleted;
-            args.RemoteEndPoint = endPoint;
-            args.UserToken = socket; // 소켓을 args 내부에 저장, 연결 별로 독립적인 socket 사용을 위한 것
+                SocketAsyncEventArgs args = new SocketAsyncEventArgs();
+                args.Completed += OnConnectCompleted;
+                args.RemoteEndPoint = endPoint;
+                args.UserToken = socket; // 소켓을 args 내부에 저장, 연결 별로 독립적인 socket 사용을 위한 것
 
-            // 더미 클라이언트 테스트 시에 동시에 1000개의 접속 요청을 보내면 접속이 누락되는데 그러한 상황을 막기 위한 것
-            Thread.Sleep(3);
-            RegisterConnect(args);
+                // 더미 클라이언트 테스트 시에 동시에 1000개의 접속 요청을 보내면 접속이 누락되는데 그러한 상황을 막기 위한 것
+                Thread.Sleep(3);
+                RegisterConnect(args);
+            }
         }
 
         void RegisterConnect(SocketAsyncEventArgs args)

@@ -24,3 +24,4 @@ C:\GitForGame\Development\CSharpMMO\SharedDB\obj\Debug\netcoreapp3.1\SharedDB.cs
 C:\GitForGame\Development\CSharpMMO\SharedDB\obj\Debug\netcoreapp3.1\SharedDB.dll
 C:\GitForGame\Development\CSharpMMO\SharedDB\obj\Debug\netcoreapp3.1\SharedDB.pdb
 C:\GitForGame\Development\CSharpMMO\SharedDB\obj\Debug\netcoreapp3.1\SharedDB.genruntimeconfig.cache
+C:\GitForGame\Development\CSharpMMO\SharedDB\obj\Debug\netcoreapp3.1\SharedDB.sourcelink.json

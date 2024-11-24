@@ -13,10 +13,8 @@ namespace ServerCore
         int _readPos = 0;
         int _writePos = 0;
 
-        // 지금 들어온 데이터 크기
-        public int DataSize { get { return _writePos - _readPos; } } 
+        public int ReceviedDataSize { get { return _writePos - _readPos; } } 
         
-        // 현재 버퍼에 남은 크기
         public int FreeSize { get { return  _buffer.Count - _writePos; } } 
 
         public RecvBuffer(int bufferSize)
@@ -26,7 +24,7 @@ namespace ServerCore
 
         public ArraySegment<byte> ReadSegment
         {
-            get { return new ArraySegment<byte>(_buffer.Array, _buffer.Offset + _readPos, DataSize); }
+            get { return new ArraySegment<byte>(_buffer.Array, _buffer.Offset + _readPos, ReceviedDataSize); }
         }
 
         public ArraySegment<byte> WriteSegment
@@ -36,8 +34,8 @@ namespace ServerCore
 
         public void Clean()
         {
-            int dataSize = DataSize;
-            if (dataSize == 0)
+            int receivedDataSize = ReceviedDataSize;
+            if (receivedDataSize == 0)
             {
                 // 앞으로 읽어와야할 데이터가 없으면 커서 위치 리셋
                 _readPos = _writePos = 0;
@@ -45,17 +43,17 @@ namespace ServerCore
             else
             {
                 // 남은 데이터를 시작 위치로 복사, 커서 이동
-                Array.Copy(_buffer.Array, _buffer.Offset + _readPos, _buffer.Array, _buffer.Offset, dataSize);
+                Array.Copy(_buffer.Array, _buffer.Offset + _readPos, _buffer.Array, _buffer.Offset, receivedDataSize);
                 _readPos = 0;
-                _writePos = dataSize;
+                _writePos = receivedDataSize;
             }
         }
 
         public bool OnRead(int numOfBytes)
         {
-            if (numOfBytes > DataSize)
+            if (numOfBytes > ReceviedDataSize)
             {
-                Console.WriteLine("Error on "+ MethodBase.GetCurrentMethod().Name);
+                //Console.WriteLine("Error on "+ MethodBase.GetCurrentMethod().Name);
                 return false;
             }
             _readPos += numOfBytes;
@@ -66,7 +64,7 @@ namespace ServerCore
         {
             if(numOfBytes > FreeSize)
             {
-                Console.WriteLine("Error on "+ MethodBase.GetCurrentMethod().Name);
+                //Console.WriteLine("Error on "+ MethodBase.GetCurrentMethod().Name);
                 return false;
             }
             _writePos += numOfBytes;

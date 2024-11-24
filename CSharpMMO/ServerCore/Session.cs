@@ -16,7 +16,6 @@ namespace ServerCore
         public sealed override int OnRecv(ArraySegment<byte> buffer)
         {
             int processedLen = 0;
-            int processedPacketCount = 0;
 
             while (true)
             {
@@ -36,7 +35,6 @@ namespace ServerCore
                 // 받은 패킷에 대한 처리(조립)
                 // 중요한 것은 ArraySegment 는 struct stack 에 할당된다. 그래서 new 도 상관없음.
                 OnRecvPacket(new ArraySegment<byte>(buffer.Array, buffer.Offset, dataSize));
-                processedPacketCount++;
 
                 // 버퍼에서 처리된 것만큼 Offset 뒤로 밀어주고, Count 를 줄여준다.
                 processedLen += dataSize;
@@ -58,8 +56,8 @@ namespace ServerCore
 
         SocketAsyncEventArgs _recvArgs = new SocketAsyncEventArgs();
         SocketAsyncEventArgs _sendArgs = new SocketAsyncEventArgs(); // 보낼 때마다 생성하기 보다는 맴버로 갖도록
+        
         List<ArraySegment<byte>> _pendingList = new List<ArraySegment<byte>>(); // 패킷 송신 대기 중인 데이터
-
         Queue<ArraySegment<byte>> _sendQueue = new Queue<ArraySegment<byte>>();
 
         object _lock = new object();
@@ -75,6 +73,7 @@ namespace ServerCore
             {
                 _sendQueue.Clear();
                 _pendingList.Clear();
+                _socket?.Dispose();
             }
         }
         public void Start(Socket socket)
@@ -82,10 +81,10 @@ namespace ServerCore
             _socket = socket;
 
             // 수신 콜백 설정
-            _recvArgs.Completed += new EventHandler<SocketAsyncEventArgs>(OnRecvCompleted);
-
+            _recvArgs.Completed += OnRecvCompleted;
+            
             // 송신 콜백 설정
-            _sendArgs.Completed += new EventHandler<SocketAsyncEventArgs>(OnSendCompleted);
+            _sendArgs.Completed += OnSendCompleted;
 
             RegisterRecv();
         }
@@ -246,7 +245,7 @@ namespace ServerCore
 
                     // 컨텐츠 쪽으로 데이터를 넘겨주고 얼마나 처리했는지 받는다.
                     int processedBytes = OnRecv(_recvBuffer.ReadSegment);
-                    if (processedBytes < 0 || _recvBuffer.DataSize < processedBytes)
+                    if (processedBytes < 0 || _recvBuffer.ReceviedDataSize < processedBytes)
                     {
                         Disconnect();
                         return;

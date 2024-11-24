@@ -57,25 +57,26 @@ namespace ServerCore
         // 하지만, 힙 영역에 있는 메모리를 여기서 건드리게 되면 이를 염두한 조치를 취해야 한다.
         void OnAcceptCompleted(object sender, SocketAsyncEventArgs args)
         {
-            if (args.SocketError == SocketError.Success)
+            try
             {
-                Session session = _sessionFactory.Invoke();
-                session.Start(args.AcceptSocket);
-                session.OnConnected(args.AcceptSocket.RemoteEndPoint);
+                if (args.SocketError == SocketError.Success)
+                {
+                    Session session = _sessionFactory.Invoke();
+                    session.Start(args.AcceptSocket);
+                    session.OnConnected(args.AcceptSocket.RemoteEndPoint);
+                }
+                else
+                {
+                    Console.WriteLine(args.SocketError.ToString());
+                }
             }
-            else
+            catch (Exception ex)
             {
-                Console.WriteLine(args.SocketError.ToString());
+                Console.WriteLine(ex);
             }
 
             // OnAcceptCompleted 작업이 끝났으면 다시 다음 연결 작업에 대한 처리를 해준다.
             RegisterAccept(args);
-        }
-
-        public Socket Accept()
-        {
-            _listenSocket.AcceptAsync();
-            return _listenSocket.Accept();
         }
     }
 }
