@@ -1,0 +1,42 @@
+{
+  "monsters": [
+    {
+      "templateId": "1",
+      "name": "그림자",
+      "stat": {
+        "level": "1",
+        "maxHp": "100",
+        "attack": "10",
+        "speed": "5.0",
+        "totalExp": "10"
+      },
+      "rewards": [
+        {
+          "itemTemplateId": "1",
+          "probability": "150", // 10퍼센트 확률로 떨군다. 확률은 현재 1000분율
+          "count":  1
+        },
+        {
+          "itemTemplateId": "2",
+          "probability": "150",
+          "count": 1
+        },
+        {
+          "itemTemplateId": "100",
+          "probability": "150",
+          "count": 1
+        },
+        {
+          "itemTemplateId": "101",
+          "probability": "150",
+          "count": 1
+        },
+        {
+          "itemTemplateId": "200",
+          "probability": "400",
+          "count": 5
+        }
+      ]
+    }
+  ]
+}

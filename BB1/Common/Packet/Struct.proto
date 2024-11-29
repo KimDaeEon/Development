@@ -1,0 +1,13 @@
+syntax = "proto3";
+
+package Protocol;
+// import "google/protobuf/timestamp.proto"; 
+option csharp_namespace = "Google.Protobuf.Protocol";
+
+import public "Enum.proto";
+
+message RoomInfo 
+{
+	int32 roomId = 1;
+	int32 mapId = 2;
+}

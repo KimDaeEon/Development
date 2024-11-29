@@ -17342,3 +17342,9 @@ CSharpMMO/SharedDB/obj/
 CSharpForCMS/BlazorApp/obj/
 CSharpForCMS/EFCore_Practice/obj/
 CSharpForCMS/HelloBlazorServer/obj/
+/BB1/Server/GameServer/Packet/Generated/Enum.cs
+/BB1/Server/GameServer/Packet/Generated/GameServerPacketManager.cs
+/BB1/Server/GameServer/Packet/Generated/Protocol.cs
+/BB1/Server/GameServer/Packet/Generated/Struct.cs
+bin/
+obj/
