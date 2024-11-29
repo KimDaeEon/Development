@@ -7,11 +7,12 @@ using System.Threading.Tasks;
 
 namespace GameServer.DB.EFCore
 {
+    // TODO: 아래 DB 키들 Sequence나 접두사 붙여서 저장하도록 변경, 추후 서버 통합까지 고려해서
     [Table("Character")]
     public class CharacterDb
     {
         // Convention : [클래스]Id 으로 명명하면 PK
-        public int CharDbId { get; set; }
+        public int Id { get; set; }
         public long AccountDbId { get; set; }
         public DateTime CreateDate { get; private set; }
     }
@@ -21,7 +22,7 @@ namespace GameServer.DB.EFCore
     public class ItemDb
     {
         // Convention : [클래스]Id 으로 명명하면 PK
-        public long ItemDbId { get; set; }
+        public long Id { get; set; }
         public int TemplateId { get; set; }
         public int EquipSlot { get; set; }
         public long AccountDbId { get; set; }
