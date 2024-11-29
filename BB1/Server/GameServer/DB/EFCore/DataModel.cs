@@ -11,7 +11,7 @@ namespace GameServer.DB.EFCore
     public class CharacterDb
     {
         // Convention : [클래스]Id 으로 명명하면 PK
-        public int HeroDbId { get; set; }
+        public int CharDbId { get; set; }
         public long AccountDbId { get; set; }
         public DateTime CreateDate { get; private set; }
     }

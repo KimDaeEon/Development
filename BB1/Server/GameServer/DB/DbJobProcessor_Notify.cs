@@ -15,14 +15,34 @@ namespace GameServer.DB
     {
         public static void TestDB()
         {
-            CharacterDb charDb = new CharacterDb();
-            charDb.AccountDbId = new Random().Next(0, 100);
-
-            using (GameDbContext db = new GameDbContext())
+            try
             {
-                db.Add(charDb);
-                db.SaveChangesEx();
+                using (var context = new GameDbContext())
+                {
+                    Console.WriteLine("일단 Using 은 들어옴");
+                    if (context.Database.CanConnect())
+                    {
+                        Console.WriteLine("DB 연결 성공");
+                    }
+                    else
+                    {
+                        Console.WriteLine("DB 연결 실패");
+                    }
+                }
             }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"DB 연결 실패: {ex.Message}");
+            }
+
+            //CharacterDb charDb = new CharacterDb();
+            //charDb.AccountDbId = new Random().Next(0, 100);
+
+            //using (GameDbContext db = new GameDbContext())
+            //{
+            //    db.Add(charDb);
+            //    db.SaveChangesEx();
+            //}
         }
 
         //public static void EquipItemNotify(Player player, Item item)

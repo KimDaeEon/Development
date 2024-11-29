@@ -4,23 +4,23 @@ package Protocol;
 // import "google/protobuf/timestamp.proto"; 
 option csharp_namespace = "Google.Protobuf.Protocol";
 
-enum ECreatureState 
+enum EActorState 
 {
-	ECREATURE_STATE_IDLE = 0;
-	ECREATURE_STATE_MOVING = 1;
-	ECREATURE_STATE_SKILL = 2;
-	ECREATURE_STATE_DEAD = 3;
+	ACTOR_STATE_IDLE = 0;
+	ACTOR_STATE_MOVING = 1;
+	ACTOR_STATE_SKILL = 2;
+	ACTOR_STATE_DEAD = 3;
 }
 
 enum EMoveDir
 {
-	EMOVE_DIR_NONE = 0;
-	EMOVE_DIR_UP = 1;
-	EMOVE_DIR_DOWN = 2;
-	EMOVE_DIR_LEFT = 3;
-	EMOVE_DIR_RIGHT = 4;
-	EMOVE_DIR_UP_LEFT = 5;
-	EMOVE_DIR_UP_RIGHT = 6;
-	EMOVE_DIR_DOWN_LEFT = 7;
-	EMOVE_DIR_DOWN_RIGHT = 8;
+	MOVE_DIR_NONE = 0;
+	MOVE_DIR_UP = 1;
+	MOVE_DIR_DOWN = 2;
+	MOVE_DIR_LEFT = 3;
+	MOVE_DIR_RIGHT = 4;
+	MOVE_DIR_UP_LEFT = 5;
+	MOVE_DIR_UP_RIGHT = 6;
+	MOVE_DIR_DOWN_LEFT = 7;
+	MOVE_DIR_DOWN_RIGHT = 8;
 }
