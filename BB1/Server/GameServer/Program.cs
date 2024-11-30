@@ -49,7 +49,7 @@ namespace Server
             IPEndPoint endPoint = new IPEndPoint(ipAddr, ConfigManager.Config.port);
             _listener.Init(endPoint, () => { return SessionManager.Instance.Generate(); });
 
-            Console.WriteLine("Listening...");
+            Console.WriteLine("Listening on " + endPoint);
 
             // GameDbTask
             {

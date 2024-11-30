@@ -1,0 +1,37 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bbb281ee3bf0b054c82ac2347e9e782c, type: 3}
+  m_Name: UI
+  m_EditorClassIdentifier: 
+  m_GroupName: UI
+  m_Data:
+    m_SerializedData: []
+  m_GUID: 418890f90cfd9e8469846f470f09831d
+  m_SerializeEntries:
+  - m_GUID: bff952442e109b24fa77cb0647517106
+    m_Address: Assets/@Resources/Prefabs/UI/Scene/UI_Joystick.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Preload
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 0702c4efd7a40404a9d4c55e01945061
+    m_Address: Assets/@Resources/Prefabs/UI/Scene/UI_GameScene.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Preload
+    FlaggedDuringContentUpdateRestriction: 0
+  m_ReadOnly: 0
+  m_Settings: {fileID: 11400000, guid: 0e7a2d412f7e3374faa3875fd68ce2c8, type: 2}
+  m_SchemaSet:
+    m_Schemas:
+    - {fileID: 11400000, guid: 7f2f2a65c668b99438cdba6e655ebfe3, type: 2}
+    - {fileID: 11400000, guid: 96454899c4205fa41b1a56c0526ef828, type: 2}
