@@ -64,33 +64,33 @@ public abstract class UI_Base : MonoBehaviour
         return ret;
     }
 
-    public static void BindEvent(GameObject go, Action<PointerEventData> action = null, Define.ETouchEvent type = Define.ETouchEvent.Click)
+    public static void BindEvent(GameObject go, Action<PointerEventData> action = null, CustomEnum.ETouchEvent type = CustomEnum.ETouchEvent.Click)
     {
         UI_EventHandler evt = Utils.GetOrAddComponent<UI_EventHandler>(go);
 
         switch (type)
         {
-            case Define.ETouchEvent.Click:
+            case CustomEnum.ETouchEvent.Click:
                 evt.OnClickHandler -= action;
                 evt.OnClickHandler += action;
                 break;
-            case Define.ETouchEvent.PointerDown:
+            case CustomEnum.ETouchEvent.PointerDown:
                 evt.OnPointerDownHandler -= action;
                 evt.OnPointerDownHandler += action;
                 break;
-            case Define.ETouchEvent.PointerUp:
+            case CustomEnum.ETouchEvent.PointerUp:
                 evt.OnPointerUpHandler -= action;
                 evt.OnPointerUpHandler += action;
                 break;
-            case Define.ETouchEvent.Drag:
+            case CustomEnum.ETouchEvent.Drag:
                 evt.OnDragHandler -= action;
                 evt.OnDragHandler += action;
                 break;
-            case Define.ETouchEvent.BeginDrag:
+            case CustomEnum.ETouchEvent.BeginDrag:
                 evt.OnBeginDragHandler -= action;
                 evt.OnBeginDragHandler += action;
                 break;
-            case Define.ETouchEvent.EndDrag:
+            case CustomEnum.ETouchEvent.EndDrag:
                 evt.OnEndDragHandler -= action;
                 evt.OnEndDragHandler += action;
                 break;

@@ -24,9 +24,10 @@ public class ServerSession : PacketSession
 	{
 		Debug.Log($"OnConnected : {endPoint}");
 
-		PacketManager.Instance.CustomHandler = (s, m, i) =>
+		// 여기서 CustomHandler를 등록해줘서 패킷이 처리가 되면 PacketQueue에 담아두도록 한다.
+		PacketManager.Instance.CustomHandler = (session, id, message) =>
 		{
-			PacketQueue.Instance.Push(this, i, m);
+			PacketQueue.Instance.Push(this, id, message);
 		};
 	}
 

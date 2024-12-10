@@ -16,9 +16,10 @@ public class CertificateWhore : CertificateHandler
 
 public class WebManager
 {
+    // TODO: 아래 부분도 Config로 빼서 웹 서버용 URL 넣을 수 있도록 해야할 듯
     public string BaseUrl { get; set; }
     public string ip = "127.0.0.1";
-    public int port = 7777;
+    public int port = 8888;
     
     public void Init()
     {
@@ -48,7 +49,7 @@ public class WebManager
         if (string.IsNullOrEmpty(BaseUrl))
             Init();
 
-        // http://127.0.0.1:7777/test/hello
+        // ipAddress/test/hello
         string sendUrl = $"{BaseUrl}/{url}";
 
         byte[] jsonBytes = null;
@@ -60,10 +61,10 @@ public class WebManager
 
         using (var uwr = new UnityWebRequest(sendUrl, method))
         {
-            uwr.uploadHandler = new UploadHandlerRaw(jsonBytes);
-            uwr.downloadHandler = new DownloadHandlerBuffer();
-            uwr.certificateHandler = new CertificateWhore();
-            uwr.SetRequestHeader("Content-Type", "application/json");
+            uwr.uploadHandler = new UploadHandlerRaw(jsonBytes); // 요청 데이터 서버로 전송하는 역할
+            uwr.downloadHandler = new DownloadHandlerBuffer(); // 서버로 부터 응답 데이터를 수신하는 역할
+            uwr.certificateHandler = new CertificateWhore(); // SSL 인증 관련
+            uwr.SetRequestHeader("Content-Type", "application/json"); // Json 포맷으로 웹 요청을 보낸다고 지정
 
             yield return uwr.SendWebRequest();
 

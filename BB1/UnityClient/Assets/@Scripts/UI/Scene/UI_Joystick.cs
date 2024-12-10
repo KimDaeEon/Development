@@ -1,6 +1,6 @@
 using UnityEngine;
 using UnityEngine.EventSystems;
-using static Define;
+using static CustomEnum;
 
 public class UI_Joystick : UI_Scene
 {

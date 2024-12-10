@@ -34,9 +34,9 @@ public class MapEditor : MonoBehaviour
                     {
                         TileBase tile = tm.GetTile(new Vector3Int(x, y, 0));
                         if (tile != null)
-                            writer.Write(Define.MAP_TOOL_NONE);
+                            writer.Write(CustomEnum.MAP_TOOL_NONE);
                         else
-                            writer.Write(Define.MAP_TOOL_WALL);
+                            writer.Write(CustomEnum.MAP_TOOL_WALL);
                     }
                     writer.WriteLine();
                 }

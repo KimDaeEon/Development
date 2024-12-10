@@ -5,10 +5,10 @@ public class SceneManagerEx
 {
     public BaseScene CurrentScene { get { return GameObject.FindObjectOfType<BaseScene>(); } }
 
-    public void LoadScene(Define.EScene type, Transform parents = null)
+    public void LoadScene(CustomEnum.EScene type, Transform parents = null)
     {
         Managers.Clear();
-        SceneManager.LoadScene(GetSceneName(type));
+        SceneManager.LoadScene(GetSceneNameByEnum(type));
         //switch (CurrentScene.SceneType)
         //{
         //    case Define.Scene.TitleScene:
@@ -29,9 +29,9 @@ public class SceneManagerEx
 
     }
 
-    private string GetSceneName(Define.EScene type)
+    private string GetSceneNameByEnum(CustomEnum.EScene type)
     {
-        string name = System.Enum.GetName(typeof(Define.EScene), type);
+        string name = System.Enum.GetName(typeof(CustomEnum.EScene), type);
         return name;
     }
 

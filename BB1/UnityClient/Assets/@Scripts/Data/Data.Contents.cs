@@ -1,13 +1,13 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
-using static Define;
+using static CustomEnum;
 
 namespace Data
 {
-    #region CreatureData
+    #region ActorData
     [Serializable]
-    public class CreatureData
+    public class ActorData
     {
         public int TemplateId;
         public string NameTextID;
@@ -32,14 +32,14 @@ namespace Data
     }
 
     [Serializable]
-    public class CreatureDataLoader : ILoader<int, CreatureData>
+    public class ActorDataLoader : ILoader<int, ActorData>
     {
-        public List<CreatureData> creatures = new List<CreatureData>();
-        public Dictionary<int, CreatureData> MakeDict()
+        public List<ActorData> actors = new List<ActorData>();
+        public Dictionary<int, ActorData> MakeDict()
         {
-            Dictionary<int, CreatureData> dict = new Dictionary<int, CreatureData>();
-            foreach (CreatureData creature in creatures)
-                dict.Add(creature.TemplateId, creature);
+            Dictionary<int, ActorData> dict = new Dictionary<int, ActorData>();
+            foreach (ActorData actor in actors)
+                dict.Add(actor.TemplateId, actor);
             return dict;
         }
 

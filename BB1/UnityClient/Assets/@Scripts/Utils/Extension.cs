@@ -11,7 +11,7 @@ public static class Extension
         return Utils.GetOrAddComponent<T>(go);
     }
 
-    public static void BindEvent(this GameObject go, Action<PointerEventData> action = null, Define.ETouchEvent type = Define.ETouchEvent.Click)
+    public static void BindEvent(this GameObject go, Action<PointerEventData> action = null, CustomEnum.ETouchEvent type = CustomEnum.ETouchEvent.Click)
     {
         UI_Base.BindEvent(go, action, type);
     }
@@ -21,18 +21,18 @@ public static class Extension
         return go != null && go.activeSelf;
     }
    
-    public static void MakeMask(this ref LayerMask mask, List<Define.ELayer> list)
+    public static void MakeMask(this ref LayerMask mask, List<CustomEnum.ELayer> list)
     {
-        foreach (Define.ELayer layer in list)
+        foreach (CustomEnum.ELayer layer in list)
             mask |= (1 << (int)layer);
     }
 
-    public static void AddLayer(this ref LayerMask mask, Define.ELayer layer)
+    public static void AddLayer(this ref LayerMask mask, CustomEnum.ELayer layer)
     {
         mask |= (1 << (int)layer);
     }
 
-    public static void RemoveLayer(this ref LayerMask mask, Define.ELayer layer)
+    public static void RemoveLayer(this ref LayerMask mask, CustomEnum.ELayer layer)
     {
         mask &= ~(1 << (int)layer);
     }

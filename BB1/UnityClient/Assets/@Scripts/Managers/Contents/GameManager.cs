@@ -4,7 +4,7 @@ using System.IO;
 using System.Linq;
 using Data;
 using UnityEngine;
-using static Define;
+using static CustomEnum;
 using Object = UnityEngine.Object;
 using Random = UnityEngine.Random;
 

@@ -13,7 +13,7 @@ public class TitleScene : BaseScene
     {
         base.Awake();
 
-        SceneType = Define.EScene.TitleScene;
+        SceneType = CustomEnum.EScene.TitleScene;
         Screen.sleepTimeout = SleepTimeout.NeverSleep;
         Application.targetFrameRate = 60;
         QualitySettings.vSyncCount = 0;  

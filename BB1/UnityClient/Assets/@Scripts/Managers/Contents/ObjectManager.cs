@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
-using static Define;
+using static CustomEnum;
 
 public class ObjectManager
 {
@@ -15,7 +15,7 @@ public class ObjectManager
         return root.transform;
     }
 
-    public Transform HeroRoot { get { return GetRootTransform("@Heroes"); } }
+    public Transform ChracterRoot { get { return GetRootTransform("@Characters"); } }
     public Transform MonsterRoot { get { return GetRootTransform("@Monsters"); } }
     public Transform ProjectileRoot { get { return GetRootTransform("@Projectiles"); } }
     public Transform EnvRoot { get { return GetRootTransform("@Envs"); } }

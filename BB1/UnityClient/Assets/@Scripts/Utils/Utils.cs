@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Net;
 using UnityEngine;
-using static Define;
+using static CustomEnum;
 using Object = UnityEngine.Object;
 using Random = UnityEngine.Random;
 

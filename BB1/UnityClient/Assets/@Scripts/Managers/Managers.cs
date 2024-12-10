@@ -1,11 +1,12 @@
 ﻿using UnityEngine;
 
+// 매니저 클래스 관리 + Update 같은 Unity 종속적 함수를 묶어서 실행하기 위한 클래스
 public class Managers : MonoBehaviour
 {
 	public static bool Initialized { get; set; }
 
-	private static Managers s_instance; // 유일성이 보장된다
-    public static Managers Instance { get { Init(); return s_instance; } } // 유일한 매니저를 갖고온다
+	private static Managers s_instance;
+    public static Managers Instance { get { Init(); return s_instance; } }
 
     #region Contents
 
@@ -40,8 +41,8 @@ public class Managers : MonoBehaviour
     #endregion
 
     #region Language
-    private static Define.ELanguage _language = Define.ELanguage.Korean;
-    public static Define.ELanguage Language
+    private static CustomEnum.ELanguage _language = CustomEnum.ELanguage.Korean;
+    public static CustomEnum.ELanguage Language
     {
         get { return _language; }
         set
@@ -54,17 +55,17 @@ public class Managers : MonoBehaviour
     {
         switch (_language)
         {
-            case Define.ELanguage.Korean:
+            case CustomEnum.ELanguage.Korean:
                 break;
-            case Define.ELanguage.English:
+            case CustomEnum.ELanguage.English:
                 break;
-            case Define.ELanguage.French:
+            case CustomEnum.ELanguage.French:
                 break;
-            case Define.ELanguage.SimplifiedChinese:
+            case CustomEnum.ELanguage.SimplifiedChinese:
                 break;
-            case Define.ELanguage.TraditionalChinese:
+            case CustomEnum.ELanguage.TraditionalChinese:
                 break;
-            case Define.ELanguage.Japanese:
+            case CustomEnum.ELanguage.Japanese:
                 break;
         }
 
@@ -76,8 +77,7 @@ public class Managers : MonoBehaviour
     {
         if (s_instance == null && Initialized == false)
         {
-            Initialized = true;
-
+            // 활성화된 Scene에서 이름이 @Managers인 객체를 찾는다.
 			GameObject go = GameObject.Find("@Managers");
             if (go == null)
             {
@@ -88,8 +88,10 @@ public class Managers : MonoBehaviour
             DontDestroyOnLoad(go);
             s_instance = go.GetComponent<Managers>();
             s_instance._sound.Init();
-        }		
-	}
+
+            Initialized = true;
+        }
+    }
 
 	public void Update()
 	{

@@ -1,7 +1,7 @@
 using System.Linq;
 using Data;
 using UnityEngine;
-using static Define;
+using static CustomEnum;
 
 public class UI_GameScene : UI_Scene
 {

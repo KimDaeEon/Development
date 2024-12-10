@@ -40,7 +40,6 @@ internal class Pool
         return _pool.Get();
     }
 
-    #region Funcs
 
     private GameObject OnCreate()
     {
@@ -65,7 +64,7 @@ internal class Pool
     {
         GameObject.Destroy(go);
     }
-    #endregion
+  
 }
 
 public class PoolManager

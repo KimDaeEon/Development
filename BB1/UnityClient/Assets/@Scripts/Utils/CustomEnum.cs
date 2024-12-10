@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using static Utils;
 
-public class Define
+public class CustomEnum
 {
     public const char MAP_TOOL_WALL = '0';
     public const char MAP_TOOL_NONE = '1';

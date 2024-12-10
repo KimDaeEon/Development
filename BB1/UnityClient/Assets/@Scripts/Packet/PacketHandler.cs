@@ -7,7 +7,7 @@ using UnityEngine;
 using System.Net;
 using System;
 using System.Linq;
-using static Define;
+using static CustomEnum;
 
 class PacketHandler
 {

@@ -34,10 +34,10 @@ class PacketManager
 		Register();
 	}}
 
-	Dictionary<ushort, Action<PacketSession, ArraySegment<byte>, ushort>> _onRecv = new Dictionary<ushort, Action<PacketSession, ArraySegment<byte>, ushort>>();
-	Dictionary<ushort, Action<PacketSession, IMessage>> _handler = new Dictionary<ushort, Action<PacketSession, IMessage>>();
+	Dictionary<ushort, Action<PacketSession, ArraySegment<byte>, ushort>> _packetCreatorMap = new Dictionary<ushort, Action<PacketSession, ArraySegment<byte>, ushort>>();
+	Dictionary<ushort, Action<PacketSession, IMessage>> _packetHandlerMap = new Dictionary<ushort, Action<PacketSession, IMessage>>();
 		
-	public Action<PacketSession, IMessage, ushort> CustomHandler {{ get; set; }}
+	public Action<PacketSession, ushort, IMessage> CustomHandler {{ get; set; }}
 
 	public void Register()
 	{{{1}
@@ -53,7 +53,7 @@ class PacketManager
 		count += 2;
 
 		Action<PacketSession, ArraySegment<byte>, ushort> action = null;
-		if (_onRecv.TryGetValue(id, out action))
+		if (_packetCreatorMap.TryGetValue(id, out action))
 			action.Invoke(session, buffer, id);
 	}}
 
@@ -64,12 +64,12 @@ class PacketManager
 
 		if (CustomHandler != null)
 		{{
-			CustomHandler.Invoke(session, pkt, id);
+			CustomHandler.Invoke(session, id, pkt);
 		}}
 		else
 		{{
 			Action<PacketSession, IMessage> action = null;
-			if (_handler.TryGetValue(id, out action))
+			if (_packetHandlerMap.TryGetValue(id, out action))
 				action.Invoke(session, pkt);
 		}}
 	}}
@@ -77,7 +77,7 @@ class PacketManager
 	public Action<PacketSession, IMessage> GetPacketHandler(ushort id)
 	{{
 		Action<PacketSession, IMessage> action = null;
-		if (_handler.TryGetValue(id, out action))
+		if (_packetHandlerMap.TryGetValue(id, out action))
 			return action;
 		return null;
 	}}
@@ -86,8 +86,8 @@ class PacketManager
         // {0} 패킷 이름
         public static string packetHandlerFormat =
 @"		
-		_onRecv.Add((ushort)MsgId.{0}, MakePacket<{0}>);
-		_handler.Add((ushort)MsgId.{0}, PacketHandler.{0}Handler);";
+		_packetCreatorMap.Add((ushort)MsgId.{0}, MakePacket<{0}>);
+		_packetHandlerMap.Add((ushort)MsgId.{0}, PacketHandler.{0}Handler);";
 
         // {0} 패킷 이름
         // {1} ID

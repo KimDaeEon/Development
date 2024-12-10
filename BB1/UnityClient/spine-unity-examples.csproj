@@ -63,7 +63,6 @@
     <Compile Include="Assets\ThirdParty\Spine Examples\Scripts\Sample Components\SkeletonUtility Modules\SkeletonUtilityKinematicShadow.cs" />
     <Compile Include="Assets\ThirdParty\Spine Examples\Scripts\Sample Components\Legacy\AtlasRegionAttacher.cs" />
     <Compile Include="Assets\ThirdParty\Spine Examples\Other Examples\Animation Tester\SpineAnimationTesterTool.cs" />
-    <Compile Include="Assets\ThirdParty\Spine Examples\Scripts\HeroEffectsHandlerExample.cs" />
     <Compile Include="Assets\ThirdParty\Spine Examples\Scripts\Sample Components\Ghost\SkeletonGhostRenderer.cs" />
     <Compile Include="Assets\ThirdParty\Spine Examples\Scripts\Mix and Match Character Customize\EquipSystemExample.cs" />
     <Compile Include="Assets\ThirdParty\Spine Examples\Scripts\HurtFlashEffect.cs" />
@@ -96,6 +95,7 @@
     <Compile Include="Assets\ThirdParty\Spine Examples\Scripts\Sample Components\SkeletonUtility Modules\SkeletonUtilityGroundConstraint.cs" />
     <Compile Include="Assets\ThirdParty\Spine Examples\Scripts\AttackSpineboy.cs" />
     <Compile Include="Assets\ThirdParty\Spine Examples\Scripts\FootSoldierExample.cs" />
+    <Compile Include="Assets\ThirdParty\Spine Examples\Scripts\ChracterEffectHandlerExample.cs" />
     <Compile Include="Assets\ThirdParty\Spine Examples\Scripts\MaterialReplacementExample.cs" />
     <Compile Include="Assets\ThirdParty\Spine Examples\Scripts\Getting Started Scripts\TransitionDictionaryExample.cs" />
     <Compile Include="Assets\ThirdParty\Spine Examples\Scripts\SpineboyPoleGraphic.cs" />

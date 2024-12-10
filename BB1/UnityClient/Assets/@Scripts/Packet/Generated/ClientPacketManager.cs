@@ -22,15 +22,15 @@ class PacketManager
 		Register();
 	}
 
-	Dictionary<ushort, Action<PacketSession, ArraySegment<byte>, ushort>> _onRecv = new Dictionary<ushort, Action<PacketSession, ArraySegment<byte>, ushort>>();
-	Dictionary<ushort, Action<PacketSession, IMessage>> _handler = new Dictionary<ushort, Action<PacketSession, IMessage>>();
+	Dictionary<ushort, Action<PacketSession, ArraySegment<byte>, ushort>> _packetCreatorMap = new Dictionary<ushort, Action<PacketSession, ArraySegment<byte>, ushort>>();
+	Dictionary<ushort, Action<PacketSession, IMessage>> _packetHandlerMap = new Dictionary<ushort, Action<PacketSession, IMessage>>();
 		
-	public Action<PacketSession, IMessage, ushort> CustomHandler { get; set; }
+	public Action<PacketSession, ushort, IMessage> CustomHandler { get; set; }
 
 	public void Register()
 	{		
-		_onRecv.Add((ushort)MsgId.S_Connected, MakePacket<S_Connected>);
-		_handler.Add((ushort)MsgId.S_Connected, PacketHandler.S_ConnectedHandler);
+		_packetCreatorMap.Add((ushort)MsgId.S_Connected, MakePacket<S_Connected>);
+		_packetHandlerMap.Add((ushort)MsgId.S_Connected, PacketHandler.S_ConnectedHandler);
 	}
 
 	public void OnRecvPacket(PacketSession session, ArraySegment<byte> buffer)
@@ -43,7 +43,7 @@ class PacketManager
 		count += 2;
 
 		Action<PacketSession, ArraySegment<byte>, ushort> action = null;
-		if (_onRecv.TryGetValue(id, out action))
+		if (_packetCreatorMap.TryGetValue(id, out action))
 			action.Invoke(session, buffer, id);
 	}
 
@@ -54,12 +54,12 @@ class PacketManager
 
 		if (CustomHandler != null)
 		{
-			CustomHandler.Invoke(session, pkt, id);
+			CustomHandler.Invoke(session, id, pkt);
 		}
 		else
 		{
 			Action<PacketSession, IMessage> action = null;
-			if (_handler.TryGetValue(id, out action))
+			if (_packetHandlerMap.TryGetValue(id, out action))
 				action.Invoke(session, pkt);
 		}
 	}
@@ -67,7 +67,7 @@ class PacketManager
 	public Action<PacketSession, IMessage> GetPacketHandler(ushort id)
 	{
 		Action<PacketSession, IMessage> action = null;
-		if (_handler.TryGetValue(id, out action))
+		if (_packetHandlerMap.TryGetValue(id, out action))
 			return action;
 		return null;
 	}

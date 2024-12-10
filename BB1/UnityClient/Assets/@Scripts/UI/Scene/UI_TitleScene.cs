@@ -4,9 +4,10 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Net;
 using UnityEngine;
-using static Define;
+using static CustomEnum;
 using Object = UnityEngine.Object;
 
+// TODO: 아래에 UI랑 네트워크, 로직 코드들 섞여 있는데 Unity 관련 내용 좀 더 찾아보고 UI랑 분리하는 방식으로 로직 배치하기
 public class UI_TitleScene : UI_Scene
 {
 	private enum GameObjects
@@ -82,7 +83,7 @@ public class UI_TitleScene : UI_Scene
 		// Load 시작
 		State = TitleSceneState.AssetLoading;
 
-		Managers.Resource.LoadAllAsync<Object>("Preload", (key, count, totalCount) =>
+		Managers.Resource.LoadAllDataAsync<Object>("Preload", (key, count, totalCount) =>
 		{
             GetText((int)Texts.StatusText).text = $"TODO 로딩중 : {key} {count}/{totalCount}";
 

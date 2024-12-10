@@ -28,8 +28,8 @@ public class ResourceManager
 
         return false;
     }
-    
-    public T Load<T>(string key) where T : Object
+
+    public T Get<T>(string key) where T : Object
     {
         if (_resources.TryGetValue(key, out Object resource))
         {
@@ -52,7 +52,7 @@ public class ResourceManager
 
     public GameObject Instantiate(string key, Transform parent = null, bool pooling = false)
     {
-        GameObject prefab = Load<GameObject>($"{key}");
+        GameObject prefab = Get<GameObject>($"{key}");
         if (prefab == null)
         {
             Debug.LogError($"Failed to load prefab : {key}");
@@ -60,7 +60,9 @@ public class ResourceManager
         }
 
         if (pooling)
+        {
             return Managers.Pool.Pop(prefab);
+        }
 
         GameObject go = Object.Instantiate(prefab, parent);
 
@@ -80,20 +82,31 @@ public class ResourceManager
     }
 
     #endregion
- 
+
     #region Addressable
 
-    public void LoadAsync<T>(string key, Action<T> callback = null) where T : UnityEngine.Object
+    public void LoadDataAsync<T>(string key, Action<T> callback = null) where T : UnityEngine.Object
     {
         //스프라이트인 경우 하위객체의 이름으로 로드하면 스프라이트로 로딩이 됌
         string loadKey = key;
         if (key.Contains(".sprite"))
+        {
+            // Addressable에서 복합 리소스에 대해서, [name]을 사용하여 특정 하위 항목에 접근 가능
+            // Characters.sprite (Sprite Atlas)
+            // ├── Player(하위 Sprite)
+            // ├── Enemy(하위 Sprite)
+
+            // var atlasHandle = Addressables.LoadAssetAsync<SpriteAtlas>("Characters.sprite"); 인 경우 전체 Sprite Atlas 로드
+            // var spriteHandle = Addressables.LoadAssetAsync<Sprite>("Characters.sprite[Player]"); 인 경우 Atlas 내부의 Player Sprite를 로드
+
+            // 복합 리소스 종류
+            // Sprite Atlas[Sprite], Prefab[Child], Animator Controller[Animation Clip], Audio Mixer[Audio Group], Text Asset or JSON[JSON key], Material[SomeTexture]
             loadKey = $"{key}[{key.Replace(".sprite", "")}]";
+        }
 
         var asyncOperation = Addressables.LoadAssetAsync<T>(loadKey);
         asyncOperation.Completed += (op) =>
         {
-            // 캐시 확인.
             if (_resources.TryGetValue(key, out Object resource))
             {
                 callback?.Invoke(op.Result);
@@ -105,7 +118,7 @@ public class ResourceManager
         };
     }
 
-    public void LoadAllAsync<T>(string label, Action<string, int, int> callback) where T : UnityEngine.Object
+    public void LoadAllDataAsync<T>(string label, Action<string, int, int> callback) where T : UnityEngine.Object
     {
         var opHandle = Addressables.LoadResourceLocationsAsync(label, typeof(T));
         opHandle.Completed += (op) =>
@@ -118,15 +131,15 @@ public class ResourceManager
             {
                 if (result.PrimaryKey.Contains(".sprite"))
                 {
-                    LoadAsync<Sprite>(result.PrimaryKey, (obj) =>
+                    LoadDataAsync<Sprite>(result.PrimaryKey, (obj) =>
                     {
                         loadCount++;
                         callback?.Invoke(result.PrimaryKey, loadCount, totalCount);
                     });
                 }
                 else
-                { 
-                    LoadAsync<T>(result.PrimaryKey, (obj) =>
+                {
+                    LoadDataAsync<T>(result.PrimaryKey, (obj) =>
                     {
                         loadCount++;
                         callback?.Invoke(result.PrimaryKey, loadCount, totalCount);

@@ -31,7 +31,7 @@ using UnityEngine;
 using UnityEngine.Events;
 
 namespace Spine.Unity.Examples {
-	public class HeroEffectsHandlerExample : MonoBehaviour {
+	public class ChracterEffectHandlerExample : MonoBehaviour {
 		public BasicPlatformerController eventSource;
 		public UnityEvent OnJump, OnLand, OnHardLand;
 
