@@ -6,6 +6,116 @@ option csharp_namespace = "Google.Protobuf.Protocol";
 
 import public "Enum.proto";
 
+message Position
+{
+	sint64 x = 1;
+	sint64 y = 2;
+	sint64 z = 3;
+}
+
+// --------------------------------
+//			   Entity
+// --------------------------------
+message MoveInfo
+{
+	Position Position = 1;
+	EActorState actorState = 2;
+}
+
+message StatInfo
+{
+	uint64 level = 1;
+	uint64 hp = 2;
+	uint64 mp = 3;
+	uint64 attack = 4;
+	uint64 defense = 5;
+	uint64 speed = 6;
+	uint64 currentExp = 7;
+}
+
+message EntityInfo
+{
+	uint64 gameId = 1; // 할당되지 않으면 0, 할당되면 1 이상의 값, 현재 습득된 Item 인 경우 0으로 할당
+	MoveInfo moveInfo = 2;
+	StatInfo statInfo = 3;
+
+	oneof EntityType
+	{
+		ActorInfo actorInfo = 4;
+		ItemInfo itemInfo = 5;
+		ProjectileInfo projectileInfo = 6;
+		ObstacleInfo obstacleInfo = 7;
+	}
+}	
+
+
+// --------------------------------
+//			    Item
+// --------------------------------
+message OwnedItemInfo
+{
+	uint64 dbId = 1;
+	uint64 slotNum = 2;
+}
+
+message ItemInfo
+{
+	OwnedItemInfo ownedItemInfo = 1;
+	uint64 dataSheetId = 2;
+	oneof ItemCategory
+	{
+		EWeaponType weaponType = 3;
+		EArmorType armorType = 4;
+		EAccessoryType accessoryType = 5;
+		EConsumableType consumableType = 6;
+	}
+}
+
+
+// --------------------------------
+//			    Actor
+// --------------------------------
+message ActorInfo
+{
+	oneof ActorType
+	{
+		CharacterInfo characterInfo = 1;
+		MonsterInfo monsterInfo = 2;
+	}
+}
+
+message MonsterInfo
+{
+	ActorInfo actorInfo = 1;
+	EMonsterType type = 2;
+}
+
+message CharacterInfo
+{
+	ActorInfo actorInfo = 1;
+	string name = 2;
+	// TODO: 추후 퀘스트 정보 추가
+}
+
+
+// --------------------------------
+//			 Proejctile
+// --------------------------------
+// TODO: Projectile 내부 정보 기획 좀 더 고민해보고 정하자.
+message ProjectileInfo
+{
+	uint64 ownerGameId = 1;
+	uint64 dataSheetId = 2;
+}
+
+// --------------------------------
+//			 Obstacle
+// --------------------------------
+message ObstacleInfo
+{
+	uint64 dataSheetId = 1;
+}
+
 message RoomInfo 
 {
 	int32 roomId = 1;

@@ -15,3 +15,35 @@ message C_Test
 {
 	int32 v = 1;
 }
+
+message C_LeaveGame
+{
+}
+
+message S_LeaveGame
+{
+	EResult result = 1;
+}
+
+message C_EnterGame
+{
+	uint64 charDbId = 1; // 접속할 캐릭터 Id
+}
+
+// 자기만 받음
+message S_EnterGame
+{
+	EResult result = 1;
+	EntityInfo myCharInfo = 2;
+}
+
+message S_Spawn
+{
+	EResult result = 1;
+	repeated EntityInfo entityInfos = 2;
+}
+
+message S_Despawn
+{
+	repeated uint64 gameIds = 1;
+}

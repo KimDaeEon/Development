@@ -24,23 +24,49 @@ namespace Google.Protobuf.Protocol {
     static EnumReflection() {
       byte[] descriptorData = global::System.Convert.FromBase64String(
           string.Concat(
-            "CgpFbnVtLnByb3RvEghQcm90b2NvbCpoCgtFQWN0b3JTdGF0ZRIUChBBQ1RP",
-            "Ul9TVEFURV9JRExFEAASFgoSQUNUT1JfU1RBVEVfTU9WSU5HEAESFQoRQUNU",
-            "T1JfU1RBVEVfU0tJTEwQAhIUChBBQ1RPUl9TVEFURV9ERUFEEAMqxgEKCEVN",
-            "b3ZlRGlyEhEKDU1PVkVfRElSX05PTkUQABIPCgtNT1ZFX0RJUl9VUBABEhEK",
-            "DU1PVkVfRElSX0RPV04QAhIRCg1NT1ZFX0RJUl9MRUZUEAMSEgoOTU9WRV9E",
-            "SVJfUklHSFQQBBIUChBNT1ZFX0RJUl9VUF9MRUZUEAUSFQoRTU9WRV9ESVJf",
-            "VVBfUklHSFQQBhIWChJNT1ZFX0RJUl9ET1dOX0xFRlQQBxIXChNNT1ZFX0RJ",
-            "Ul9ET1dOX1JJR0hUEAhCG6oCGEdvb2dsZS5Qcm90b2J1Zi5Qcm90b2NvbGIG",
-            "cHJvdG8z"));
+            "CgpFbnVtLnByb3RvEghQcm90b2NvbCoiCgdFUmVzdWx0EgsKB1NVQ0NFU1MQ",
+            "ABIKCgZGQUlMRUQQASpoCgtFQWN0b3JTdGF0ZRIUChBBQ1RPUl9TVEFURV9J",
+            "RExFEAASFgoSQUNUT1JfU1RBVEVfTU9WSU5HEAESFQoRQUNUT1JfU1RBVEVf",
+            "U0tJTEwQAhIUChBBQ1RPUl9TVEFURV9ERUFEEAMqxgEKCEVNb3ZlRGlyEhEK",
+            "DU1PVkVfRElSX05PTkUQABIPCgtNT1ZFX0RJUl9VUBABEhEKDU1PVkVfRElS",
+            "X0RPV04QAhIRCg1NT1ZFX0RJUl9MRUZUEAMSEgoOTU9WRV9ESVJfUklHSFQQ",
+            "BBIUChBNT1ZFX0RJUl9VUF9MRUZUEAUSFQoRTU9WRV9ESVJfVVBfUklHSFQQ",
+            "BhIWChJNT1ZFX0RJUl9ET1dOX0xFRlQQBxIXChNNT1ZFX0RJUl9ET1dOX1JJ",
+            "R0hUEAgqVQoMRU1vbnN0ZXJUeXBlEhUKEU1PTlNURVJfVFlQRV9OT05FEAAS",
+            "FwoTTU9OU1RFUl9UWVBFX05PUk1BTBABEhUKEU1PTlNURVJfVFlQRV9CT1NT",
+            "EAIqqwEKC0VXZWFwb25UeXBlEhQKEFdFQVBPTl9UWVBFX05PTkUQABIgChxX",
+            "RUFQT05fVFlQRV9UV09fSEFOREVEX1NXT1JEEAESIAocV0VBUE9OX1RZUEVf",
+            "T05FX0hBTkRFRF9TV09SRBACEhMKD1dFQVBPTl9UWVBFX0JPVxADEhUKEVdF",
+            "QVBPTl9UWVBFX1NUQUZGEAQSFgoSV0VBUE9OX1RZUEVfREFHR0VSEAUqlwEK",
+            "CkVBcm1vclR5cGUSEwoPQVJNT1JfVFlQRV9OT05FEAASGQoVQVJNT1JfVFlQ",
+            "RV9DSEVTVFBMQVRFEAESFQoRQVJNT1JfVFlQRV9IRUxNRVQQAhIVChFBUk1P",
+            "Ul9UWVBFX1NISUVMRBADEhUKEUFSTU9SX1RZUEVfR0xPVkVTEAQSFAoQQVJN",
+            "T1JfVFlQRV9CT09UUxAFKnsKDkVBY2Nlc3NvcnlUeXBlEhcKE0FDQ0VTU09S",
+            "WV9UWVBFX05PTkUQABIXChNBQ0NFU1NPUllfVFlQRV9SSU5HEAESGwoXQUND",
+            "RVNTT1JZX1RZUEVfTkVDS0xBQ0UQAhIaChZBQ0NFU1NPUllfVFlQRV9FQVJS",
+            "SU5HEAMqgwIKD0VDb25zdW1hYmxlVHlwZRIYChRDT05TVU1BQkxFX1RZUEVf",
+            "Tk9ORRAAEi0KKUNPTlNVTUFCTEVfVFlQRV9XRUFQT05fRU5IQU5DRU1FTlRf",
+            "U0NST0xMEAESLAooQ09OU1VNQUJMRV9UWVBFX0FSTU9SX0VOSEFOQ0VNRU5U",
+            "X1NDUk9MTBACEjAKLENPTlNVTUFCTEVfVFlQRV9BQ0NFU1NPUllfRU5IQU5D",
+            "RU1FTlRfU0NST0xMEAMSHQoZQ09OU1VNQUJMRV9UWVBFX1NUQVRfQlVGRhAE",
+            "EigKJENPTlNVTUFCTEVfVFlQRV9URUxFUE9SVEFUSU9OX1NDUk9MTBAFQhuq",
+            "AhhHb29nbGUuUHJvdG9idWYuUHJvdG9jb2xiBnByb3RvMw=="));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
           new pbr::FileDescriptor[] { },
-          new pbr::GeneratedClrTypeInfo(new[] {typeof(global::Google.Protobuf.Protocol.EActorState), typeof(global::Google.Protobuf.Protocol.EMoveDir), }, null, null));
+          new pbr::GeneratedClrTypeInfo(new[] {typeof(global::Google.Protobuf.Protocol.EResult), typeof(global::Google.Protobuf.Protocol.EActorState), typeof(global::Google.Protobuf.Protocol.EMoveDir), typeof(global::Google.Protobuf.Protocol.EMonsterType), typeof(global::Google.Protobuf.Protocol.EWeaponType), typeof(global::Google.Protobuf.Protocol.EArmorType), typeof(global::Google.Protobuf.Protocol.EAccessoryType), typeof(global::Google.Protobuf.Protocol.EConsumableType), }, null, null));
     }
     #endregion
 
   }
   #region Enums
+  /// <summary>
+  /// 클라이언트가 보낸 요청에 대해서는 무조건 EResult를 S_에 삽입
+  /// </summary>
+  public enum EResult {
+    [pbr::OriginalName("SUCCESS")] Success = 0,
+    [pbr::OriginalName("FAILED")] Failed = 1,
+  }
+
   public enum EActorState {
     [pbr::OriginalName("ACTOR_STATE_IDLE")] ActorStateIdle = 0,
     [pbr::OriginalName("ACTOR_STATE_MOVING")] ActorStateMoving = 1,
@@ -58,6 +84,115 @@ namespace Google.Protobuf.Protocol {
     [pbr::OriginalName("MOVE_DIR_UP_RIGHT")] MoveDirUpRight = 6,
     [pbr::OriginalName("MOVE_DIR_DOWN_LEFT")] MoveDirDownLeft = 7,
     [pbr::OriginalName("MOVE_DIR_DOWN_RIGHT")] MoveDirDownRight = 8,
+  }
+
+  public enum EMonsterType {
+    [pbr::OriginalName("MONSTER_TYPE_NONE")] MonsterTypeNone = 0,
+    [pbr::OriginalName("MONSTER_TYPE_NORMAL")] MonsterTypeNormal = 1,
+    [pbr::OriginalName("MONSTER_TYPE_BOSS")] MonsterTypeBoss = 2,
+  }
+
+  /// <summary>
+  /// --------------------------------
+  ///			    Item
+  /// --------------------------------
+  /// 무기 종류
+  /// </summary>
+  public enum EWeaponType {
+    [pbr::OriginalName("WEAPON_TYPE_NONE")] WeaponTypeNone = 0,
+    /// <summary>
+    /// 양손 검
+    /// </summary>
+    [pbr::OriginalName("WEAPON_TYPE_TWO_HANDED_SWORD")] WeaponTypeTwoHandedSword = 1,
+    /// <summary>
+    /// 한손 검
+    /// </summary>
+    [pbr::OriginalName("WEAPON_TYPE_ONE_HANDED_SWORD")] WeaponTypeOneHandedSword = 2,
+    /// <summary>
+    /// 활
+    /// </summary>
+    [pbr::OriginalName("WEAPON_TYPE_BOW")] WeaponTypeBow = 3,
+    /// <summary>
+    /// 지팡이
+    /// </summary>
+    [pbr::OriginalName("WEAPON_TYPE_STAFF")] WeaponTypeStaff = 4,
+    /// <summary>
+    /// 단검
+    /// </summary>
+    [pbr::OriginalName("WEAPON_TYPE_DAGGER")] WeaponTypeDagger = 5,
+  }
+
+  /// <summary>
+  /// 방어구 종류
+  /// </summary>
+  public enum EArmorType {
+    [pbr::OriginalName("ARMOR_TYPE_NONE")] ArmorTypeNone = 0,
+    /// <summary>
+    /// 가슴 보호구 (갑옷)
+    /// </summary>
+    [pbr::OriginalName("ARMOR_TYPE_CHESTPLATE")] ArmorTypeChestplate = 1,
+    /// <summary>
+    /// 헬멧
+    /// </summary>
+    [pbr::OriginalName("ARMOR_TYPE_HELMET")] ArmorTypeHelmet = 2,
+    /// <summary>
+    /// 방패
+    /// </summary>
+    [pbr::OriginalName("ARMOR_TYPE_SHIELD")] ArmorTypeShield = 3,
+    /// <summary>
+    /// 장갑
+    /// </summary>
+    [pbr::OriginalName("ARMOR_TYPE_GLOVES")] ArmorTypeGloves = 4,
+    /// <summary>
+    /// 신발
+    /// </summary>
+    [pbr::OriginalName("ARMOR_TYPE_BOOTS")] ArmorTypeBoots = 5,
+  }
+
+  /// <summary>
+  /// 장신구 종류
+  /// </summary>
+  public enum EAccessoryType {
+    [pbr::OriginalName("ACCESSORY_TYPE_NONE")] AccessoryTypeNone = 0,
+    /// <summary>
+    /// 반지
+    /// </summary>
+    [pbr::OriginalName("ACCESSORY_TYPE_RING")] AccessoryTypeRing = 1,
+    /// <summary>
+    /// 목걸이
+    /// </summary>
+    [pbr::OriginalName("ACCESSORY_TYPE_NECKLACE")] AccessoryTypeNecklace = 2,
+    /// <summary>
+    /// 귀걸이
+    /// </summary>
+    [pbr::OriginalName("ACCESSORY_TYPE_EARRING")] AccessoryTypeEarring = 3,
+  }
+
+  /// <summary>
+  /// 소모품 종류
+  /// </summary>
+  public enum EConsumableType {
+    [pbr::OriginalName("CONSUMABLE_TYPE_NONE")] ConsumableTypeNone = 0,
+    /// <summary>
+    /// 무기 강화서
+    /// </summary>
+    [pbr::OriginalName("CONSUMABLE_TYPE_WEAPON_ENHANCEMENT_SCROLL")] ConsumableTypeWeaponEnhancementScroll = 1,
+    /// <summary>
+    /// 방어구 강화서
+    /// </summary>
+    [pbr::OriginalName("CONSUMABLE_TYPE_ARMOR_ENHANCEMENT_SCROLL")] ConsumableTypeArmorEnhancementScroll = 2,
+    /// <summary>
+    /// 장신구 강화서
+    /// </summary>
+    [pbr::OriginalName("CONSUMABLE_TYPE_ACCESSORY_ENHANCEMENT_SCROLL")] ConsumableTypeAccessoryEnhancementScroll = 3,
+    /// <summary>
+    /// Stat 버프
+    /// </summary>
+    [pbr::OriginalName("CONSUMABLE_TYPE_STAT_BUFF")] ConsumableTypeStatBuff = 4,
+    /// <summary>
+    /// 위치 이동서
+    /// </summary>
+    [pbr::OriginalName("CONSUMABLE_TYPE_TELEPORTATION_SCROLL")] ConsumableTypeTeleportationScroll = 5,
   }
 
   #endregion

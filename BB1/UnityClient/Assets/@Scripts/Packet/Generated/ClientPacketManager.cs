@@ -8,6 +8,12 @@ public enum MsgId
 {
 	S_Connected = 1,
 	C_Test = 2,
+	C_LeaveGame = 3,
+	S_LeaveGame = 4,
+	C_EnterGame = 5,
+	S_EnterGame = 6,
+	S_Spawn = 7,
+	S_Despawn = 8,
 }
 
 class PacketManager
@@ -30,7 +36,15 @@ class PacketManager
 	public void Register()
 	{		
 		_packetCreatorMap.Add((ushort)MsgId.S_Connected, MakePacket<S_Connected>);
-		_packetHandlerMap.Add((ushort)MsgId.S_Connected, PacketHandler.S_ConnectedHandler);
+		_packetHandlerMap.Add((ushort)MsgId.S_Connected, PacketHandler.S_ConnectedHandler);		
+		_packetCreatorMap.Add((ushort)MsgId.S_LeaveGame, MakePacket<S_LeaveGame>);
+		_packetHandlerMap.Add((ushort)MsgId.S_LeaveGame, PacketHandler.S_LeaveGameHandler);		
+		_packetCreatorMap.Add((ushort)MsgId.S_EnterGame, MakePacket<S_EnterGame>);
+		_packetHandlerMap.Add((ushort)MsgId.S_EnterGame, PacketHandler.S_EnterGameHandler);		
+		_packetCreatorMap.Add((ushort)MsgId.S_Spawn, MakePacket<S_Spawn>);
+		_packetHandlerMap.Add((ushort)MsgId.S_Spawn, PacketHandler.S_SpawnHandler);		
+		_packetCreatorMap.Add((ushort)MsgId.S_Despawn, MakePacket<S_Despawn>);
+		_packetHandlerMap.Add((ushort)MsgId.S_Despawn, PacketHandler.S_DespawnHandler);
 	}
 
 	public void OnRecvPacket(PacketSession session, ArraySegment<byte> buffer)

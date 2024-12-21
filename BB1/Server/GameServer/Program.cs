@@ -26,7 +26,7 @@ namespace Server
         {
             while (true)
             {
-                GameLogic.Instance.Update();
+                GameRoomManager.Instance.Update();
                 Thread.Sleep(0);
             }
         }

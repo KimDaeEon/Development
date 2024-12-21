@@ -16,6 +16,18 @@ class PacketHandler
     public static void C_TestHandler(PacketSession session, IMessage packet)
     {
         C_Test pkt = packet as C_Test;
-        System.Console.WriteLine(pkt.V);
+        System.Console.WriteLine(pkt);
+
+
+    }
+
+    internal static void C_EnterGameHandler(PacketSession session, IMessage message)
+    {
+        throw new NotImplementedException();
+    }
+
+    internal static void C_LeaveGameHandler(PacketSession session, IMessage message)
+    {
+        throw new NotImplementedException();
     }
 }
