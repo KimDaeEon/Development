@@ -6,14 +6,17 @@ using System.Threading.Tasks;
 
 namespace GameServer
 {
+    // 주체적으로 상호 작용
+    // 충돌 처리
     public class Actor : Entity
     {
         private EntityComposite<IEntityComponent> _actorComponents;
 
         public Actor()
         {
+            var skillComponent = new SkillComponent();
             _actorComponents = new EntityComposite<IEntityComponent>(
-                //new SkillComponent() // Actor는 SkillComponent를 포함 // TODO: SkillComponent 추가 필요
+                skillComponent
             );
         }
 

@@ -24,12 +24,15 @@ namespace GameServer
         void Update();
         void Notify(EventData message);
         void OnNotify(EventData message);
+
+        Entity Owner { get; set; } // Owner 참조
     }
 
     // 기본 EntityComponent 클래스
     public abstract class EntityComponent : IEntityComponent
     {
         private readonly List<EntityComponent> _observers = new List<EntityComponent>();
+        public Entity Owner { get; set; } // Entity 참조
 
         public abstract void Update();
         public abstract void Notify(EventData message);

@@ -12,8 +12,11 @@ namespace GameServer
 
         public Monster()
         {
+            var aiComponent = new AIComponent();
+            // TODO: 여기서 EntityInfo 로 추후에 할당할 거 있으면 할당하기.
+
             _monsterComponents = new EntityComposite<IEntityComponent>(
-                //new AIComponent() // Monster는 AIComponent를 포함 // TODO: AIComponent 추가 필요
+                aiComponent
             );
         }
 

@@ -6,6 +6,8 @@ using System.Threading.Tasks;
 
 namespace GameServer
 {
+    // 일회성 상호 작용
+    // 충돌 처리 X (Actor에 충돌 시 사라짐)
     public class Projectile : Entity
     {
         private EntityComposite<IEntityComponent> _projectileComponents;

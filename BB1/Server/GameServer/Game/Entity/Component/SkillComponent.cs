@@ -8,21 +8,21 @@ using Protocol = Google.Protobuf.Protocol;
 
 namespace GameServer
 {
-    public class StatusComponent : EntityComponent
+    public class SkillComponent : EntityComponent
     {
         public override void Update()
         {
-            Console.WriteLine("[StatusComponent] Updating status...");
+            Console.WriteLine("[SkillComponent] Updating skills...");
 
             int updatedValue = 100;
-            Console.WriteLine($"[StatusComponent] New value: {updatedValue}");
+            Console.WriteLine($"[SkillComponent] New value: {updatedValue}");
 
             NotifyObservers(new EventData { Type = EventDataType.Int, Data = updatedValue });
         }
 
         public override void Notify(EventData message)
         {
-            Console.WriteLine("[StatusComponent] Notifying observers with message.");
+            Console.WriteLine("[SkillComponent] Notifying observers with message.");
             NotifyObservers(message);
         }
 
@@ -31,16 +31,16 @@ namespace GameServer
             switch (message.Type)
             {
                 case EventDataType.Int:
-                    Console.WriteLine($"[StatusComponent] Received int message: {(int)message.Data}");
+                    Console.WriteLine($"[SkillComponent] Received int message: {(int)message.Data}");
                     break;
                 case EventDataType.Float:
-                    Console.WriteLine($"[StatusComponent] Received float message: {(float)message.Data}");
+                    Console.WriteLine($"[SkillComponent] Received float message: {(float)message.Data}");
                     break;
                 case EventDataType.String:
-                    Console.WriteLine($"[StatusComponent] Received string message: {(string)message.Data}");
+                    Console.WriteLine($"[SkillComponent] Received string message: {(string)message.Data}");
                     break;
                 default:
-                    Console.WriteLine("[StatusComponent] Unknown message type received.");
+                    Console.WriteLine("[SkillComponent] Unknown message type received.");
                     break;
             }
         }

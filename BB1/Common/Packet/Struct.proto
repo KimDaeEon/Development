@@ -36,15 +36,16 @@ message StatInfo
 message EntityInfo
 {
 	uint64 gameId = 1; // 할당되지 않으면 0, 할당되면 1 이상의 값, 현재 습득된 Item 인 경우 0으로 할당
-	MoveInfo moveInfo = 2;
-	StatInfo statInfo = 3;
+	uint64 dataSheetId = 2; // 할당되지 않으면 0, 스프라이트나 애니메이션의 기준이 되는 데이터 시트 Id
+	MoveInfo moveInfo = 3;
+	StatInfo statInfo = 4;
 
 	oneof EntityType
 	{
-		ActorInfo actorInfo = 4;
-		ItemInfo itemInfo = 5;
-		ProjectileInfo projectileInfo = 6;
-		ObstacleInfo obstacleInfo = 7;
+		ActorInfo actorInfo = 5;
+		ItemInfo itemInfo = 6;
+		ProjectileInfo projectileInfo = 7;
+		ObstacleInfo obstacleInfo = 8;
 	}
 }	
 
@@ -61,13 +62,12 @@ message OwnedItemInfo
 message ItemInfo
 {
 	OwnedItemInfo ownedItemInfo = 1;
-	uint64 dataSheetId = 2;
 	oneof ItemCategory
 	{
-		EWeaponType weaponType = 3;
-		EArmorType armorType = 4;
-		EAccessoryType accessoryType = 5;
-		EConsumableType consumableType = 6;
+		EWeaponType weaponType = 2;
+		EArmorType armorType = 3;
+		EAccessoryType accessoryType = 4;
+		EConsumableType consumableType = 5;
 	}
 }
 
@@ -86,14 +86,12 @@ message ActorInfo
 
 message MonsterInfo
 {
-	ActorInfo actorInfo = 1;
-	EMonsterType type = 2;
+	EMonsterType type = 1;
 }
 
 message CharacterInfo
 {
-	ActorInfo actorInfo = 1;
-	string name = 2;
+	string name = 1;
 	// TODO: 추후 퀘스트 정보 추가
 }
 
@@ -105,7 +103,6 @@ message CharacterInfo
 message ProjectileInfo
 {
 	uint64 ownerGameId = 1;
-	uint64 dataSheetId = 2;
 }
 
 // --------------------------------
@@ -113,7 +110,7 @@ message ProjectileInfo
 // --------------------------------
 message ObstacleInfo
 {
-	uint64 dataSheetId = 1;
+	
 }
 
 message RoomInfo 

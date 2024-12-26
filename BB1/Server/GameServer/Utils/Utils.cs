@@ -5,12 +5,19 @@ using System.Collections.Generic;
 using System.Text;
 using System.Net.Sockets;
 using System.Net;
+using System.Diagnostics;
 
-namespace Server
+namespace GameServer
 {
     public static class Utils
     {
         public static long TickCount { get { return System.Environment.TickCount64; } }
+
+        public static string GetCurrentFunctionName()
+        {
+            string caller = new StackTrace().GetFrame(1)?.GetMethod()?.Name ?? "Unknown";
+            return caller;
+        }
 
         public static IPAddress GetLocalIP()
         {

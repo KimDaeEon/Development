@@ -6,6 +6,8 @@ using System.Threading.Tasks;
 
 namespace GameServer
 {
+    // 습득 외의 상호 작용 불가
+    // 충돌 처리 없음
     public class Item : Entity
     {
         private EntityComposite<IEntityComponent> _itemComponents;
