@@ -17,6 +17,8 @@ namespace GameServer
         protected Protocol.EntityInfo _entityInfo; // 모든 Entity 관련 정보는 Entity 객체에서 관리, 각 컴포넌트는 Owner를 통해 _entityInfo에서 본인 담당 정보를 업데이트
         // 뭔가 EntityInfo에 들어갈 내용 중 서버에만 따로 필요한 것이 생긴다면 각 Component가 추가 데이터를 들고 있도록 하자.
 
+        public GameRoom Room { get; set; }
+
         public Protocol.MoveInfo MoveInfo
         {
             get

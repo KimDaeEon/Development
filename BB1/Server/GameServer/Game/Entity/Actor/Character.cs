@@ -6,11 +6,13 @@ using System.Threading.Tasks;
 
 namespace GameServer
 {
-    public class Chracter : Actor
+    // 사용자가 조종하는 Actor 이기에 Session 을 통한 통신 기능이 존재
+    public class Character : Actor
     {
+        public ClientSession Session { get; set; }
         private EntityComposite<IEntityComponent> _characterComponents;
 
-        public Chracter()
+        public Character()
         {
             var questComponent = new QuestComponent();
 
