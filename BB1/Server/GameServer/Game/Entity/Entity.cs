@@ -19,6 +19,8 @@ namespace GameServer
 
         public GameRoom Room { get; set; }
 
+        public int ExtraCells { get; protected set; } = 0; // 여러 칸을 차지하는 Entity의 경우에 사용
+
         public Protocol.MoveInfo MoveInfo
         {
             get
