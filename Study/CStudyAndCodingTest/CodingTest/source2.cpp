@@ -188,15 +188,36 @@ namespace BruteForce
 			Permute(dungeons, 0, dungeons.size() - 1, k);
 			return answer;
 		}
-
-
 	}
+}
+
+namespace ProgrammersBasicTraining
+{
+	// 등차수열의 특정한 항만 더하기
+	namespace _1
+	{
+		// included[i] 가 true인 경우 a[i+1] = a + n*d 를 다 더해서 리턴
+		int solution(int a, int d, vector<bool> included)
+		{
+			int answer = 0;
+
+			for (int i = 0; i < included.size(); i++)
+			{
+				if (included[i])
+				{
+					answer += (a + i * d);
+				}
+			}
+			return answer;
+		}
+	}
+
+
 }
 
 int main()
 {
-	vector<int> nums = { 1, 2, 3 };
-	Utils::IterativePermute(nums);
+	
 	return 0;
 }
 
