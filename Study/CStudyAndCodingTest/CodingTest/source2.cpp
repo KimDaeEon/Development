@@ -212,12 +212,114 @@ namespace ProgrammersBasicTraining
 		}
 	}
 
+	namespace _2
+	{
+		// 세 숫자가 모두 다르면 a + b + c
+		// 2개가 같고 나머지가 다른 숫자면 (a + b + c) * (a^2 + b^2 + c^2)
+		// 세 숫자가 모두 같다면 (a + b + c) * (a^2 + b^2 + c^2) * (a^3 + b^3 + c^3)
+
+		// 추가 참고: 이거 이렇게 같은 것을 찾을 때에는 Set을 활용할 수도 있음
+		int solution(int a, int b, int c)
+		{
+			int t1 = a + b + c;
+			int t2 = t1 * (a * a + b * b + c * c);
+			int t3 = t2 * (a * a * a + b * b * b + c * c * c);
+
+			if (a != b && b != c && a != c)
+			{
+				return t1;
+			}
+			// 세 숫자가 모두 같은 경우
+			else if (a = b && b == c && c == a)
+			{
+				return t3;
+			}
+			// 나머지 경우
+			else
+			{
+				return t2;
+			}
+		}
+
+		namespace _3
+		{
+			// 팩토리얼보다 전체 합 ^ 2이 작으면 1 리턴
+			int solution(vector<int> num_list)
+			{
+				int accumulatdFactorial = 1;
+				int sum = 0;
+
+				for (auto i : num_list)
+				{
+					accumulatdFactorial *= i;
+					sum += i;
+				}
+
+				return accumulatdFactorial < sum * sum;
+			}
+		}
+
+		namespace _4
+		{
+			// 호수만 순서대로 이어 붙인 수와 짝수만 순서대로 이어 붙인 수의 합 (문자열)
+			int solution(vector<int> num_list)
+			{
+				int answer = 0;
+
+				string oddString = "";
+				string evenString = "";
+
+				for (auto i : num_list)
+				{
+					if (i % 2 == 0)
+					{
+						evenString += to_string(i);
+					}
+					else
+					{
+						oddString += to_string(i);
+					}
+				}
+
+				answer = stoi(evenString) + stoi(oddString);
+
+				return answer;
+			}
+		}
+
+		namespace _5
+		{
+			// 마지막 원소가 그 전 원소보다 크면 (마지막 원소 - 그 전 원소) 추가해서 리턴
+			// 마지막 원소 <= 그 전 원소라면 (마지막 원소 * 2) 추가해서 리턴
+			vector<int> solution(vector<int> num_list)
+			{
+				int lastIdx = num_list.size() - 1;
+
+				int last = num_list[lastIdx];
+				int preLast = num_list[lastIdx - 1];
+
+				if (last > preLast)
+				{
+					num_list.push_back(last - preLast);
+				}
+				else
+				{
+					num_list.push_back(2 * last);
+				}
+
+				return num_list;
+			}
+		}
+	}
+
 
 }
 
 int main()
 {
-	
+	string a = "";
+	auto b = stoi(a);
+	cout << b << endl;
 	return 0;
 }
 
