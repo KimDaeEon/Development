@@ -151,7 +151,7 @@ namespace BruteForce
 
 
 		int answer = -1;
-		
+
 		void Permute(vector<vector<int>>& dungeons, int startLevel, int targetLevel, int k)
 		{
 			if (startLevel == targetLevel)
@@ -312,14 +312,174 @@ namespace ProgrammersBasicTraining
 		}
 	}
 
+}
 
+namespace ListTest
+{
+	struct ListNode
+	{
+		int data;
+		ListNode* next;
+
+		ListNode(int value, ListNode* next = nullptr)
+			: data(value), next(next)
+		{
+			cout << "ListNode()" << endl;
+		}
+
+		~ListNode()
+		{
+			cout << "~ListNode()" << endl;
+		}
+	};
+
+	struct MyList
+	{
+		ListNode* head = nullptr;
+		ListNode* tail = nullptr;
+		int size = 0;
+
+		ListNode* MoveToNthNode(int nth)
+		{
+			if (nth < 0 || nth >= size)
+			{
+				// 유효하지 않은 인덱스
+				return nullptr;
+			}
+
+			ListNode* cur = head;
+
+			for (int i = 0; i < nth; i++)
+			{
+				if (cur->next)
+				{
+					cur = cur->next;
+				}
+				else
+				{
+					// n 번째 있는 요소 찾지 못함
+					return nullptr;
+				}
+			}
+
+			return cur;
+		}
+
+		void Delete()
+		{
+			ListNode* cur = head;
+
+			while (cur)
+			{
+				ListNode* deletedNode = cur;
+				cur = cur->next;
+				delete deletedNode;
+				size--;
+			}
+
+			head = nullptr;
+			tail = nullptr;
+		}
+
+		bool insertAfter(ListNode* targetNode, ListNode* addedNode)
+		{
+			if (targetNode == nullptr || addedNode == nullptr)
+			{
+				return false;
+			}
+
+			if (targetNode == tail)
+			{
+				tail = addedNode;
+			}
+
+			addedNode->next = targetNode->next;
+
+			targetNode->next = addedNode;
+
+			size++;
+
+			return true;
+		}
+
+		void PushFront(ListNode* addedNode)
+		{
+			if (addedNode == nullptr)
+			{
+				return;
+			}
+
+			if (size == 0)
+			{
+				head = addedNode;
+				tail = addedNode;
+			}
+			else
+			{
+				addedNode->next = head;
+				head = addedNode;
+			}
+
+			size++;
+		}
+
+		void PushBack(ListNode* addedNode)
+		{
+			if (addedNode == nullptr)
+			{
+				return;
+			}
+
+			if (size == 0)
+			{
+				head = addedNode;
+				tail = addedNode;
+			}
+			else
+			{
+				tail->next = addedNode;
+				tail = addedNode;
+			}
+
+			size++;
+		}
+	};
+
+
+	static void TestList()
+	{
+		MyList myLi;
+
+		for (int i = 0; i < 5; i++)
+		{
+			ListNode* a = new ListNode(i, nullptr);
+			myLi.PushFront(a);
+		}
+
+		for (int i = 0; i < myLi.size; i++)
+		{
+			auto listItem = myLi.MoveToNthNode(i);
+
+			cout << listItem->data << endl;
+		}
+
+		auto temp = myLi.MoveToNthNode(myLi.size - 1);
+		auto listItem = new ListNode(111, nullptr);
+		myLi.insertAfter(temp, listItem);
+
+		for (int i = 0; i < myLi.size; i++)
+		{
+			auto listItem = myLi.MoveToNthNode(i);
+
+			cout << listItem->data << endl;
+		}
+
+		myLi.Delete();
+	}
 }
 
 int main()
 {
-	string a = "";
-	auto b = stoi(a);
-	cout << b << endl;
 	return 0;
 }
 
