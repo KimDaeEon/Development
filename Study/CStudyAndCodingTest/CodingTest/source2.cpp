@@ -310,6 +310,65 @@ namespace ProgrammersBasicTraining
 				return num_list;
 			}
 		}
+
+		namespace _6
+		{
+			// 수 조작하기 1
+			// control 문자열 "w": n = n+1, "s": n = n-1;, "d": n = n+10, "a": n = n-10
+			
+			int solution(int n, string control)
+			{
+				for (auto ch : control)
+				{
+					switch (ch)
+					{
+					case 'w':
+						n += 1;
+						break;
+
+					case 's':
+						n -= 1;
+						break;
+
+					case'd':
+						n += 10;
+						break;
+
+					case'a':
+						n -= 10;
+						break;
+					}
+				}
+
+				return n;
+			}
+		}
+
+		namespace _7
+		{
+			// 수 조작하기 2
+			// "w": +1
+			// "s": -1
+			// "d": +10
+			// "s": -10
+			unordered_map<int, char> um{ {1,'w'}, {-1, 's'}, {10, 'd'}, {-10, 'a'} };
+
+			string solution(vector<int> numLog)
+			{
+				string answer = "";
+
+				int before = numLog[0];
+				for (int i = 1; i < numLog.size(); i++)
+				{
+					int current = numLog[i];
+					int cmdNum = current - before;
+					answer.push_back(um[cmdNum]);
+					before = current;
+				}
+
+				return answer;
+			}
+		}
 	}
 
 }
@@ -482,4 +541,5 @@ int main()
 {
 	return 0;
 }
+
 
