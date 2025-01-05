@@ -368,6 +368,62 @@ namespace ProgrammersBasicTraining
 
 				return answer;
 			}
+
+			// 수열과 구간 쿼리 3
+			namespace _8
+			{
+				// query에 있는 인덱스 끼리 스왑
+				vector<int> solution(vector<int> arr, vector<vector<int>> queries)
+				{
+					for (const auto& vec : queries)
+					{
+						int idx1 = vec[0];
+						int idx2 = vec[1];
+
+						swap(arr[idx1], arr[idx2]);
+					}
+
+					return arr;
+				}
+			}
+
+			// 수열과 구간 쿼리 2
+			namespace _9
+			{
+				// 쿼리 범위에서 가장 작은 arr[i] 리턴, 없으면 -1
+				vector<int> solution(vector<int> arr, vector<vector<int>> queries)
+				{
+					vector<int> answer;
+					const int initValue = 10000;
+					for (const auto& query : queries)
+					{
+						int idx1 = query[0];
+						int idx2 = query[1];
+						int minStandard = query[2];
+
+						int temp = initValue;
+
+						for (int i = idx1; i<=idx2; i++)
+						{
+							if (arr[i] > minStandard)
+							{
+								temp = min(arr[i], temp);
+							}
+						}
+
+						if (temp == initValue)
+						{
+							answer.push_back(-1);
+						}
+						else
+						{
+							answer.push_back(temp);
+						}
+					}
+
+					return answer;
+				}
+			}
 		}
 	}
 
