@@ -315,7 +315,7 @@ namespace ProgrammersBasicTraining
 		{
 			// 수 조작하기 1
 			// control 문자열 "w": n = n+1, "s": n = n-1;, "d": n = n+10, "a": n = n-10
-			
+
 			int solution(int n, string control)
 			{
 				for (auto ch : control)
@@ -394,7 +394,8 @@ namespace ProgrammersBasicTraining
 				vector<int> solution(vector<int> arr, vector<vector<int>> queries)
 				{
 					vector<int> answer;
-					const int initValue = 10000;
+
+					const int initValue = 1000000000;
 					for (const auto& query : queries)
 					{
 						int idx1 = query[0];
@@ -403,7 +404,7 @@ namespace ProgrammersBasicTraining
 
 						int temp = initValue;
 
-						for (int i = idx1; i<=idx2; i++)
+						for (int i = idx1; i <= idx2; i++)
 						{
 							if (arr[i] > minStandard)
 							{
@@ -419,6 +420,76 @@ namespace ProgrammersBasicTraining
 						{
 							answer.push_back(temp);
 						}
+					}
+
+					return answer;
+				}
+			}
+
+			// 수열과 구간 쿼리 4
+			namespace _10
+			{
+				// 쿼리 idx 0, 1 범위의 수들에 대해서, i가 K의 배수이면 arr[i]에 1을 더한다.
+				vector<int> solution(vector<int> arr, vector<vector<int>> queries)
+				{
+					for (const auto& query : queries)
+					{
+						auto qr1 = query[0];
+						auto qr2 = query[1];
+						auto qr3 = query[2];
+
+						if (qr3 == 0)
+						{
+							continue;
+						}
+
+						for (int i = qr1; i <= qr2; i++)
+						{
+							if (i % qr3 == 0)
+							{
+								arr[i] += 1;
+							}
+						}
+					}
+					return arr;
+				}
+			}
+
+			// 배열 만들기2
+			namespace _11
+			{
+				bool IsConsistedOfOnly5or0(const string& in)
+				{
+					for (auto ch : in)
+					{
+						if (!(ch == '0' || ch == '5'))
+						{
+							return false;
+						}
+					}
+
+					return true;
+				}
+
+				// l 이상 r 이하 정수 중, 숫자 "0"과 "5"로만 이루어진 모든 정수를 오름차순으로 정렬한 배열 return, 없다면 -1 담아 리턴
+				vector<int> solution(int l, int r)
+				{
+					vector<int> answer;
+					
+					for (int i = l; i <= r; i++)
+					{
+						string temp = to_string(i);
+
+						if (IsConsistedOfOnly5or0(temp))
+						{
+							answer.push_back(i);
+						}
+					}
+
+
+					if (answer.empty())
+					{
+						answer.push_back(-1);
 					}
 
 					return answer;
@@ -595,6 +666,9 @@ namespace ListTest
 
 int main()
 {
+	int a = 1 % 0;
+
+	cout << a << endl;
 	return 0;
 }
 
