@@ -473,28 +473,28 @@ namespace ProgrammersBasicTraining
 				}
 
 				// l 이상 r 이하 정수 중, 숫자 "0"과 "5"로만 이루어진 모든 정수를 오름차순으로 정렬한 배열 return, 없다면 -1 담아 리턴
-				vector<int> solution(int l, int r)
-				{
-					vector<int> answer;
-					
-					for (int i = l; i <= r; i++)
-					{
-						string temp = to_string(i);
+				//vector<int> solution(int l, int r)
+				//{
+				//	vector<int> answer;
+				//	
+				//	for (int i = l; i <= r; i++)
+				//	{
+				//		string temp = to_string(i);
 
-						if (IsConsistedOfOnly5or0(temp))
-						{
-							answer.push_back(i);
-						}
-					}
+				//		if (IsConsistedOfOnly5or0(temp))
+				//		{
+				//			answer.push_back(i);
+				//		}
+				//	}
 
 
-					if (answer.empty())
-					{
-						answer.push_back(-1);
-					}
+				//	if (answer.empty())
+				//	{
+				//		answer.push_back(-1);
+				//	}
 
-					return answer;
-				}
+				//	return answer;
+				//}
 
 
 				// 아래는 더 빠른 풀이
@@ -799,13 +799,14 @@ namespace ListTest
 
 int main()
 {
-	stack<int> s;
+	list<int> li;
+	li.insert(++li.begin(), 2);
 
-	// Assertion 추가
-	assert(!s.empty() && "스택이 비어있습니다! pop()을 호출할 수 없습니다.");
 
-	s.pop();
-
+	for (auto i : li)
+	{
+		cout << i << endl;
+	}
 	return 0;
 }
 
