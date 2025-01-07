@@ -1,4 +1,5 @@
 #pragma once
+#include <cassert> // assert를 사용하기 위한 헤더
 #include <stdio.h>
 #include <iostream>
 #include <map>
@@ -494,6 +495,138 @@ namespace ProgrammersBasicTraining
 
 					return answer;
 				}
+
+
+				// 아래는 더 빠른 풀이
+
+				bool CheckDividedBy10AndN(int input, int n)
+				{
+					int temp = input;
+
+					// 10씩 나누면서 1의 자리 수가 모두 0 또는 n인지 확인
+					while (temp > 0)
+					{
+						int quotient = temp / 10;
+						int remainderBy10 = temp % 10;
+						int remainderBy5 = remainderBy10 % n;
+
+						if (remainderBy10 == 0 || remainderBy5 == 0)
+						{
+							temp = quotient;
+						}
+						else
+						{
+							return false;
+						}
+					}
+
+					return true;
+				}
+
+				vector<int> solution(int l, int r)
+				{
+					vector<int> answer;
+
+					for (int i = l; i <= r; i++)
+					{
+						if (CheckDividedBy10AndN(i, 5))
+						{
+							answer.push_back(i);
+						}
+					}
+
+
+					if (answer.empty())
+					{
+						answer.push_back(-1);
+					}
+
+					return answer;
+				}
+			}
+
+			// 카운트 업
+			namespace _12
+			{
+				vector<int> solution(int start_num, int end_num)
+				{
+					auto len = end_num - start_num;
+					vector<int> answer;
+					answer.reserve(len);
+
+					for (int i = start_num; i <= end_num; i++)
+					{
+						answer.push_back(i);
+					}
+
+					return answer;
+				}
+			}
+
+			// 콜라츠 수열 만들기
+			namespace _13
+			{
+				// n이 짝수일 때 2로 나눔
+				// n이 홀 수일때 3*n + 1
+				vector<int> solution(int n)
+				{
+					vector<int> answer;
+					while (true)
+					{
+						answer.push_back(n);
+
+						if (n == 1)
+						{
+							break;
+						}
+
+						if (n % 2 == 0)
+						{
+							n = n / 2;
+						}
+						else
+						{
+							n = 3 * n + 1;
+						}
+					}
+
+					return answer;
+				}
+			}
+
+			// 배열 만들기 4
+			namespace _14
+			{
+				// i = 0
+				// i < arr.size()면 반복 작업 수행
+				// stk 빈 배열, arr[i]를 stk에 추가 i=i+1
+				// stk 원소 있고, stk 마지막 원소 < arr[i], arr[i]를 stk에 추가, i=i+1
+				// stk 원소 있고, stk 마지막 원소 >= arr[i], stk 마지막 원소 stk에서 제거
+				vector<int> solution(vector<int> arr)
+				{
+					vector<int> stk;
+					for (int i = 0; i < arr.size();)
+					{
+						if (stk.empty())
+						{
+							stk.push_back(arr[i]);
+							i++;
+						}
+						else
+						{
+							if (stk.back() < arr[i])
+							{
+								stk.push_back(arr[i]);
+								i++;
+							}
+							else
+							{
+								stk.pop_back();
+							}
+						}
+					}
+					return stk;
+				}
 			}
 		}
 	}
@@ -666,9 +799,13 @@ namespace ListTest
 
 int main()
 {
-	int a = 1 % 0;
+	stack<int> s;
 
-	cout << a << endl;
+	// Assertion 추가
+	assert(!s.empty() && "스택이 비어있습니다! pop()을 호출할 수 없습니다.");
+
+	s.pop();
+
 	return 0;
 }
 
