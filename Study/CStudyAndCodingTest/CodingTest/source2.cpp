@@ -242,392 +242,420 @@ namespace ProgrammersBasicTraining
 			}
 		}
 
-		namespace _3
+
+	}
+
+	namespace _3
+	{
+		// 팩토리얼보다 전체 합 ^ 2이 작으면 1 리턴
+		int solution(vector<int> num_list)
 		{
-			// 팩토리얼보다 전체 합 ^ 2이 작으면 1 리턴
-			int solution(vector<int> num_list)
+			int accumulatdFactorial = 1;
+			int sum = 0;
+
+			for (auto i : num_list)
 			{
-				int accumulatdFactorial = 1;
-				int sum = 0;
-
-				for (auto i : num_list)
-				{
-					accumulatdFactorial *= i;
-					sum += i;
-				}
-
-				return accumulatdFactorial < sum * sum;
+				accumulatdFactorial *= i;
+				sum += i;
 			}
+
+			return accumulatdFactorial < sum * sum;
 		}
+	}
 
-		namespace _4
+	namespace _4
+	{
+		// 호수만 순서대로 이어 붙인 수와 짝수만 순서대로 이어 붙인 수의 합 (문자열)
+		int solution(vector<int> num_list)
 		{
-			// 호수만 순서대로 이어 붙인 수와 짝수만 순서대로 이어 붙인 수의 합 (문자열)
-			int solution(vector<int> num_list)
+			int answer = 0;
+
+			string oddString = "";
+			string evenString = "";
+
+			for (auto i : num_list)
 			{
-				int answer = 0;
-
-				string oddString = "";
-				string evenString = "";
-
-				for (auto i : num_list)
+				if (i % 2 == 0)
 				{
-					if (i % 2 == 0)
-					{
-						evenString += to_string(i);
-					}
-					else
-					{
-						oddString += to_string(i);
-					}
-				}
-
-				answer = stoi(evenString) + stoi(oddString);
-
-				return answer;
-			}
-		}
-
-		namespace _5
-		{
-			// 마지막 원소가 그 전 원소보다 크면 (마지막 원소 - 그 전 원소) 추가해서 리턴
-			// 마지막 원소 <= 그 전 원소라면 (마지막 원소 * 2) 추가해서 리턴
-			vector<int> solution(vector<int> num_list)
-			{
-				int lastIdx = num_list.size() - 1;
-
-				int last = num_list[lastIdx];
-				int preLast = num_list[lastIdx - 1];
-
-				if (last > preLast)
-				{
-					num_list.push_back(last - preLast);
+					evenString += to_string(i);
 				}
 				else
 				{
-					num_list.push_back(2 * last);
+					oddString += to_string(i);
+				}
+			}
+
+			answer = stoi(evenString) + stoi(oddString);
+
+			return answer;
+		}
+	}
+
+	namespace _5
+	{
+		// 마지막 원소가 그 전 원소보다 크면 (마지막 원소 - 그 전 원소) 추가해서 리턴
+		// 마지막 원소 <= 그 전 원소라면 (마지막 원소 * 2) 추가해서 리턴
+		vector<int> solution(vector<int> num_list)
+		{
+			int lastIdx = num_list.size() - 1;
+
+			int last = num_list[lastIdx];
+			int preLast = num_list[lastIdx - 1];
+
+			if (last > preLast)
+			{
+				num_list.push_back(last - preLast);
+			}
+			else
+			{
+				num_list.push_back(2 * last);
+			}
+
+			return num_list;
+		}
+	}
+
+	namespace _6
+	{
+		// 수 조작하기 1
+		// control 문자열 "w": n = n+1, "s": n = n-1;, "d": n = n+10, "a": n = n-10
+
+		int solution(int n, string control)
+		{
+			for (auto ch : control)
+			{
+				switch (ch)
+				{
+				case 'w':
+					n += 1;
+					break;
+
+				case 's':
+					n -= 1;
+					break;
+
+				case'd':
+					n += 10;
+					break;
+
+				case'a':
+					n -= 10;
+					break;
+				}
+			}
+
+			return n;
+		}
+	}
+
+	namespace _7
+	{
+		// 수 조작하기 2
+		// "w": +1
+		// "s": -1
+		// "d": +10
+		// "s": -10
+		unordered_map<int, char> um{ {1,'w'}, {-1, 's'}, {10, 'd'}, {-10, 'a'} };
+
+		string solution(vector<int> numLog)
+		{
+			string answer = "";
+
+			int before = numLog[0];
+			for (int i = 1; i < numLog.size(); i++)
+			{
+				int current = numLog[i];
+				int cmdNum = current - before;
+				answer.push_back(um[cmdNum]);
+				before = current;
+			}
+
+			return answer;
+		}
+	}
+
+	// 수열과 구간 쿼리 3
+	namespace _8
+	{
+		// query에 있는 인덱스 끼리 스왑
+		vector<int> solution(vector<int> arr, vector<vector<int>> queries)
+		{
+			for (const auto& vec : queries)
+			{
+				int idx1 = vec[0];
+				int idx2 = vec[1];
+
+				swap(arr[idx1], arr[idx2]);
+			}
+
+			return arr;
+		}
+	}
+
+	// 수열과 구간 쿼리 2
+	namespace _9
+	{
+		// 쿼리 범위에서 가장 작은 arr[i] 리턴, 없으면 -1
+		vector<int> solution(vector<int> arr, vector<vector<int>> queries)
+		{
+			vector<int> answer;
+
+			const int initValue = 1000000000;
+			for (const auto& query : queries)
+			{
+				int idx1 = query[0];
+				int idx2 = query[1];
+				int minStandard = query[2];
+
+				int temp = initValue;
+
+				for (int i = idx1; i <= idx2; i++)
+				{
+					if (arr[i] > minStandard)
+					{
+						temp = min(arr[i], temp);
+					}
 				}
 
-				return num_list;
+				if (temp == initValue)
+				{
+					answer.push_back(-1);
+				}
+				else
+				{
+					answer.push_back(temp);
+				}
 			}
+
+			return answer;
+		}
+	}
+
+	// 수열과 구간 쿼리 4
+	namespace _10
+	{
+		// 쿼리 idx 0, 1 범위의 수들에 대해서, i가 K의 배수이면 arr[i]에 1을 더한다.
+		vector<int> solution(vector<int> arr, vector<vector<int>> queries)
+		{
+			for (const auto& query : queries)
+			{
+				auto qr1 = query[0];
+				auto qr2 = query[1];
+				auto qr3 = query[2];
+
+				if (qr3 == 0)
+				{
+					continue;
+				}
+
+				for (int i = qr1; i <= qr2; i++)
+				{
+					if (i % qr3 == 0)
+					{
+						arr[i] += 1;
+					}
+				}
+			}
+			return arr;
+		}
+	}
+
+	// 배열 만들기2
+	namespace _11
+	{
+		bool IsConsistedOfOnly5or0(const string& in)
+		{
+			for (auto ch : in)
+			{
+				if (!(ch == '0' || ch == '5'))
+				{
+					return false;
+				}
+			}
+
+			return true;
 		}
 
-		namespace _6
+		// l 이상 r 이하 정수 중, 숫자 "0"과 "5"로만 이루어진 모든 정수를 오름차순으로 정렬한 배열 return, 없다면 -1 담아 리턴
+		//vector<int> solution(int l, int r)
+		//{
+		//	vector<int> answer;
+		//	
+		//	for (int i = l; i <= r; i++)
+		//	{
+		//		string temp = to_string(i);
+
+		//		if (IsConsistedOfOnly5or0(temp))
+		//		{
+		//			answer.push_back(i);
+		//		}
+		//	}
+
+
+		//	if (answer.empty())
+		//	{
+		//		answer.push_back(-1);
+		//	}
+
+		//	return answer;
+		//}
+
+
+		// 아래는 더 빠른 풀이
+
+		bool CheckDividedBy10AndN(int input, int n)
 		{
-			// 수 조작하기 1
-			// control 문자열 "w": n = n+1, "s": n = n-1;, "d": n = n+10, "a": n = n-10
+			int temp = input;
 
-			int solution(int n, string control)
+			// 10씩 나누면서 1의 자리 수가 모두 0 또는 n인지 확인
+			while (temp > 0)
 			{
-				for (auto ch : control)
+				int quotient = temp / 10;
+				int remainderBy10 = temp % 10;
+				int remainderBy5 = remainderBy10 % n;
+
+				if (remainderBy10 == 0 || remainderBy5 == 0)
 				{
-					switch (ch)
-					{
-					case 'w':
-						n += 1;
-						break;
-
-					case 's':
-						n -= 1;
-						break;
-
-					case'd':
-						n += 10;
-						break;
-
-					case'a':
-						n -= 10;
-						break;
-					}
+					temp = quotient;
 				}
-
-				return n;
+				else
+				{
+					return false;
+				}
 			}
+
+			return true;
 		}
 
-		namespace _7
+		vector<int> solution(int l, int r)
 		{
-			// 수 조작하기 2
-			// "w": +1
-			// "s": -1
-			// "d": +10
-			// "s": -10
-			unordered_map<int, char> um{ {1,'w'}, {-1, 's'}, {10, 'd'}, {-10, 'a'} };
+			vector<int> answer;
 
-			string solution(vector<int> numLog)
+			for (int i = l; i <= r; i++)
 			{
-				string answer = "";
-
-				int before = numLog[0];
-				for (int i = 1; i < numLog.size(); i++)
+				if (CheckDividedBy10AndN(i, 5))
 				{
-					int current = numLog[i];
-					int cmdNum = current - before;
-					answer.push_back(um[cmdNum]);
-					before = current;
-				}
-
-				return answer;
-			}
-
-			// 수열과 구간 쿼리 3
-			namespace _8
-			{
-				// query에 있는 인덱스 끼리 스왑
-				vector<int> solution(vector<int> arr, vector<vector<int>> queries)
-				{
-					for (const auto& vec : queries)
-					{
-						int idx1 = vec[0];
-						int idx2 = vec[1];
-
-						swap(arr[idx1], arr[idx2]);
-					}
-
-					return arr;
+					answer.push_back(i);
 				}
 			}
 
-			// 수열과 구간 쿼리 2
-			namespace _9
+
+			if (answer.empty())
 			{
-				// 쿼리 범위에서 가장 작은 arr[i] 리턴, 없으면 -1
-				vector<int> solution(vector<int> arr, vector<vector<int>> queries)
+				answer.push_back(-1);
+			}
+
+			return answer;
+		}
+	}
+
+	// 카운트 업
+	namespace _12
+	{
+		vector<int> solution(int start_num, int end_num)
+		{
+			auto len = end_num - start_num;
+			vector<int> answer;
+			answer.reserve(len);
+
+			for (int i = start_num; i <= end_num; i++)
+			{
+				answer.push_back(i);
+			}
+
+			return answer;
+		}
+	}
+
+	// 콜라츠 수열 만들기
+	namespace _13
+	{
+		// n이 짝수일 때 2로 나눔
+		// n이 홀 수일때 3*n + 1
+		vector<int> solution(int n)
+		{
+			vector<int> answer;
+			while (true)
+			{
+				answer.push_back(n);
+
+				if (n == 1)
 				{
-					vector<int> answer;
+					break;
+				}
 
-					const int initValue = 1000000000;
-					for (const auto& query : queries)
-					{
-						int idx1 = query[0];
-						int idx2 = query[1];
-						int minStandard = query[2];
-
-						int temp = initValue;
-
-						for (int i = idx1; i <= idx2; i++)
-						{
-							if (arr[i] > minStandard)
-							{
-								temp = min(arr[i], temp);
-							}
-						}
-
-						if (temp == initValue)
-						{
-							answer.push_back(-1);
-						}
-						else
-						{
-							answer.push_back(temp);
-						}
-					}
-
-					return answer;
+				if (n % 2 == 0)
+				{
+					n = n / 2;
+				}
+				else
+				{
+					n = 3 * n + 1;
 				}
 			}
 
-			// 수열과 구간 쿼리 4
-			namespace _10
+			return answer;
+		}
+	}
+
+	// 배열 만들기 4
+	namespace _14
+	{
+		// i = 0
+		// i < arr.size()면 반복 작업 수행
+		// stk 빈 배열, arr[i]를 stk에 추가 i=i+1
+		// stk 원소 있고, stk 마지막 원소 < arr[i], arr[i]를 stk에 추가, i=i+1
+		// stk 원소 있고, stk 마지막 원소 >= arr[i], stk 마지막 원소 stk에서 제거
+		vector<int> solution(vector<int> arr)
+		{
+			vector<int> stk;
+			for (int i = 0; i < arr.size();)
 			{
-				// 쿼리 idx 0, 1 범위의 수들에 대해서, i가 K의 배수이면 arr[i]에 1을 더한다.
-				vector<int> solution(vector<int> arr, vector<vector<int>> queries)
+				if (stk.empty())
 				{
-					for (const auto& query : queries)
+					stk.push_back(arr[i]);
+					i++;
+				}
+				else
+				{
+					if (stk.back() < arr[i])
 					{
-						auto qr1 = query[0];
-						auto qr2 = query[1];
-						auto qr3 = query[2];
-
-						if (qr3 == 0)
-						{
-							continue;
-						}
-
-						for (int i = qr1; i <= qr2; i++)
-						{
-							if (i % qr3 == 0)
-							{
-								arr[i] += 1;
-							}
-						}
+						stk.push_back(arr[i]);
+						i++;
 					}
-					return arr;
+					else
+					{
+						stk.pop_back();
+					}
 				}
 			}
+			return stk;
+		}
+	}
 
-			// 배열 만들기2
-			namespace _11
-			{
-				bool IsConsistedOfOnly5or0(const string& in)
-				{
-					for (auto ch : in)
-					{
-						if (!(ch == '0' || ch == '5'))
-						{
-							return false;
-						}
-					}
+	// 간단한 논리 연산
+	namespace _15
+	{
+		bool solution(bool x1, bool x2, bool x3, bool x4)
+		{
+			return (x1 || x2) && (x3 || x4);
+		}
+	}
 
-					return true;
-				}
+	// 주사위 게임 3
+	namespace _16
+	{
+		// 4 주사위 수가 모두 p로 같다면 1111*p 점을 얻음
+		// 3 주사위에서 나온 숫자가 P로 같고, 나머지 다른 주사위에서 나온 숫자가 q라면 (10*p+q)^2 점을 얻음
+		// 2 주사위가 2개씩 값이 같고, 각각 나온 값이 p, q 이면 (p+q) * abs(p-q) 점을 얻음
+		// 2 주사위가 p이고, 나머지 두 주사위에서 나온 숫자가 각각 p가 아닌 다른 값 q,r 이라면 q*r 점을 얻음
+		// 네 주사위에 적힌 숫자가 모두 다르면 가장 작은 숫자 만큼의 점수를 얻음
 
-				// l 이상 r 이하 정수 중, 숫자 "0"과 "5"로만 이루어진 모든 정수를 오름차순으로 정렬한 배열 return, 없다면 -1 담아 리턴
-				//vector<int> solution(int l, int r)
-				//{
-				//	vector<int> answer;
-				//	
-				//	for (int i = l; i <= r; i++)
-				//	{
-				//		string temp = to_string(i);
-
-				//		if (IsConsistedOfOnly5or0(temp))
-				//		{
-				//			answer.push_back(i);
-				//		}
-				//	}
-
-
-				//	if (answer.empty())
-				//	{
-				//		answer.push_back(-1);
-				//	}
-
-				//	return answer;
-				//}
-
-
-				// 아래는 더 빠른 풀이
-
-				bool CheckDividedBy10AndN(int input, int n)
-				{
-					int temp = input;
-
-					// 10씩 나누면서 1의 자리 수가 모두 0 또는 n인지 확인
-					while (temp > 0)
-					{
-						int quotient = temp / 10;
-						int remainderBy10 = temp % 10;
-						int remainderBy5 = remainderBy10 % n;
-
-						if (remainderBy10 == 0 || remainderBy5 == 0)
-						{
-							temp = quotient;
-						}
-						else
-						{
-							return false;
-						}
-					}
-
-					return true;
-				}
-
-				vector<int> solution(int l, int r)
-				{
-					vector<int> answer;
-
-					for (int i = l; i <= r; i++)
-					{
-						if (CheckDividedBy10AndN(i, 5))
-						{
-							answer.push_back(i);
-						}
-					}
-
-
-					if (answer.empty())
-					{
-						answer.push_back(-1);
-					}
-
-					return answer;
-				}
-			}
-
-			// 카운트 업
-			namespace _12
-			{
-				vector<int> solution(int start_num, int end_num)
-				{
-					auto len = end_num - start_num;
-					vector<int> answer;
-					answer.reserve(len);
-
-					for (int i = start_num; i <= end_num; i++)
-					{
-						answer.push_back(i);
-					}
-
-					return answer;
-				}
-			}
-
-			// 콜라츠 수열 만들기
-			namespace _13
-			{
-				// n이 짝수일 때 2로 나눔
-				// n이 홀 수일때 3*n + 1
-				vector<int> solution(int n)
-				{
-					vector<int> answer;
-					while (true)
-					{
-						answer.push_back(n);
-
-						if (n == 1)
-						{
-							break;
-						}
-
-						if (n % 2 == 0)
-						{
-							n = n / 2;
-						}
-						else
-						{
-							n = 3 * n + 1;
-						}
-					}
-
-					return answer;
-				}
-			}
-
-			// 배열 만들기 4
-			namespace _14
-			{
-				// i = 0
-				// i < arr.size()면 반복 작업 수행
-				// stk 빈 배열, arr[i]를 stk에 추가 i=i+1
-				// stk 원소 있고, stk 마지막 원소 < arr[i], arr[i]를 stk에 추가, i=i+1
-				// stk 원소 있고, stk 마지막 원소 >= arr[i], stk 마지막 원소 stk에서 제거
-				vector<int> solution(vector<int> arr)
-				{
-					vector<int> stk;
-					for (int i = 0; i < arr.size();)
-					{
-						if (stk.empty())
-						{
-							stk.push_back(arr[i]);
-							i++;
-						}
-						else
-						{
-							if (stk.back() < arr[i])
-							{
-								stk.push_back(arr[i]);
-								i++;
-							}
-							else
-							{
-								stk.pop_back();
-							}
-						}
-					}
-					return stk;
-				}
-			}
+		// 내일 다시 map 으로 접근해서 풀어보기
+		int solution(int a, int b, int c, int d)
+		{
+			int answer = 0;
+			return answer;
 		}
 	}
 
@@ -799,14 +827,7 @@ namespace ListTest
 
 int main()
 {
-	list<int> li;
-	li.insert(++li.begin(), 2);
-
-
-	for (auto i : li)
-	{
-		cout << i << endl;
-	}
+	cout << ProgrammersBasicTraining::_16::solution(5, 2, 6, 2) << endl;;
 	return 0;
 }
 
