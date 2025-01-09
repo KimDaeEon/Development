@@ -754,6 +754,60 @@ namespace ProgrammersBasicTraining
 		}
 	}
 
+	// 글자 이어 붙여 문자열 만들기
+	namespace _17
+	{
+		string solution(string my_string, vector<int> index_list)
+		{
+			string answer = "";
+
+			for (const auto i : index_list)
+			{
+				answer += my_string[i];
+			}
+
+			return answer;
+		}
+	}
+
+	// 9로 나눈 나머지
+	namespace _18
+	{
+		int solution(string number)
+		{
+			int answer = 0;
+
+			for (const auto ch : number)
+			{
+				answer += ch - '0';
+			}
+
+			answer = answer % 9;
+
+			return answer;
+		}
+	}
+
+	// 문자열 여러 번 뒤집기
+	namespace _19
+	{
+		string solution(string my_string, vector<vector<int>> queries)
+		{
+			for (const auto& query : queries)
+			{
+				int left = query[0];
+				int right = query[1];
+
+				while (left < right)
+				{
+					swap(my_string[left], my_string[right]);
+					left++;
+					right--;
+				}
+			}
+			return my_string;
+		}
+	}
 }
 
 namespace ListTest
