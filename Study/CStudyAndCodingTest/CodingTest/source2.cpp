@@ -651,11 +651,106 @@ namespace ProgrammersBasicTraining
 		// 2 주사위가 p이고, 나머지 두 주사위에서 나온 숫자가 각각 p가 아닌 다른 값 q,r 이라면 q*r 점을 얻음
 		// 네 주사위에 적힌 숫자가 모두 다르면 가장 작은 숫자 만큼의 점수를 얻음
 
+
 		// 내일 다시 map 으로 접근해서 풀어보기
 		int solution(int a, int b, int c, int d)
 		{
-			int answer = 0;
-			return answer;
+			// 주사위 눈이 같은 경우의 수를 기록
+			unordered_map<int, int> um;
+
+			um[a]++;
+			um[b]++;
+			um[c]++;
+			um[d]++;
+
+			int setCnt = um.size();
+
+			// 4 주사위가 같은 경우 (size = 1)
+			if (setCnt == 1)
+			{
+				return 1111 * a;
+			}
+
+			if (setCnt == 2)
+			{
+				int p = -1;
+				int q;
+
+				for (const auto& [val, cnt] : um)
+				{
+					// 3 주사위가 같고, 1개만 다른 경우 (size = 2)
+					if (cnt == 3)
+					{
+						p = val;
+						continue;
+					}
+					
+					if (cnt == 1)
+					{
+						q = val;
+						continue;
+					}
+
+					// 2 주사위씩 같은 경우 (size = 2)
+					if (cnt == 2 && p == -1)
+					{
+						p = val;
+						continue;
+					}
+
+					if (cnt == 2)
+					{
+						q = val;
+					}
+				}
+
+				if (um[a] == 1 || um[a] == 3)
+				{
+					return (10 * p + q) * (10 * p + q);
+				}
+				else
+				{
+					return (p + q) * abs(p - q);
+				}
+			}
+
+			// 2 주사위는 같고, 나머지 2개는 각각 다른 경우 (size = 3)
+			if (setCnt == 3)
+			{
+				int p;
+				int q = -1;
+				int r;
+
+				for (auto [val, cnt] : um)
+				{
+					if (cnt == 2)
+					{
+						p = val;
+						continue;
+					}
+					
+					if (cnt == 1 && q == -1)
+					{
+						q = val;
+						continue;
+					}
+
+					if (cnt == 1)
+					{
+						r = val;
+					}
+				}
+
+				return q * r;
+			}
+	
+			// 모든 주사위가 다른 경우 (size = 4)
+
+			int minVal = min(a, b);
+			minVal = min(minVal, c);
+			minVal = min(minVal, d);
+
+			return minVal;
 		}
 	}
 
