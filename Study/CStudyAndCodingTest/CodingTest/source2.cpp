@@ -808,6 +808,76 @@ namespace ProgrammersBasicTraining
 			return my_string;
 		}
 	}
+
+	// 배열 만들기 5
+	namespace _20
+	{
+		// 문자열들을 s idx부터 시작해서 l까지 잘라내고, 그것이 k보다 큰 값들을 담아서 리턴
+		vector<int> solution(vector<string> intStrs, int k, int s, int l)
+		{
+			vector<int> answer;
+
+			for (const auto& str : intStrs)
+			{
+				string temp = str.substr(s, l);
+				int intTemp = stoi(temp);
+
+				if (intTemp > k)
+				{
+					answer.push_back(intTemp);
+				}
+			}
+			
+			return answer;
+		}
+	}
+
+	// 부분 문자열 이어 붙여 문자열 만들기
+	namespace _21
+	{
+		string solution(vector<string> my_strings, vector<vector<int>> parts)
+		{
+			string answer = "";
+
+			for (int i = 0; i < my_strings.size(); i++)
+			{
+				answer += my_strings[i].substr(parts[i][0], parts[i][1] - parts[i][0] + 1);
+			}
+
+			return answer;
+		}
+	}
+
+	// 문자열 뒤의 n글자
+	namespace _22
+	{
+		string solution(string my_string, int n)
+		{
+			string answer = "";
+
+			answer = my_string.substr(my_string.size() - n, n);
+
+			return answer;
+		}
+	}
+
+	// 접미사 배열
+	namespace _23
+	{
+		vector<string> solution(string my_string)
+		{
+			vector<string> answer;
+			int len = my_string.size();
+
+			for (int i = 0; i < len; i++)
+			{
+				answer.push_back(my_string.substr(len - i - 1));
+			}
+
+			sort(answer.begin(), answer.end());
+			return answer;
+		}
+	}
 }
 
 namespace ListTest
@@ -976,7 +1046,6 @@ namespace ListTest
 
 int main()
 {
-	cout << ProgrammersBasicTraining::_16::solution(5, 2, 6, 2) << endl;;
 	return 0;
 }
 
