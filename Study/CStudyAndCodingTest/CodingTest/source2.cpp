@@ -878,6 +878,110 @@ namespace ProgrammersBasicTraining
 			return answer;
 		}
 	}
+
+	// 문자열의 앞의 n글자
+	namespace _24
+	{
+		string solution(string my_string, int n)
+		{
+			string answer = "";
+			answer = my_string.substr(0, n);
+			return answer;
+		}
+	}
+
+	// 접두사인지 확인하기
+	namespace _25
+	{
+		int solution(string my_string, string is_prefix)
+		{
+			int answer = 0;
+			/*for (int i = 0; i < my_string.size(); i++)
+			{
+				if (is_prefix == my_string.substr(0, i + 1))
+				{
+					answer = 1;
+				}
+			}*/
+
+			// 아래 방식처럼 prefix 크기를 안다면 이걸로 바로 비교해보는 게 제일 빠르다.
+			if (my_string.substr(0, is_prefix.size()) == is_prefix)
+			{
+				answer = 1;
+			}
+
+			return answer;
+		}
+	}
+
+	// 문자열 뒤집기
+	namespace _26
+	{
+		string solution(string my_string, int s, int e)
+		{
+			/*while (s <= e)
+			{
+				swap(my_string[s], my_string[e]);
+				s++;
+				e--;
+			}*/
+
+			// 뒤집는 문제는 아래처럼 하면 더 편하게 할 수 있음. 주의해야할 것은 맨 끝이 도달할 수없는 좌표여야 한다는 것 참고
+			reverse(my_string.begin() + s, my_string.begin() + e + 1);
+
+			return my_string;
+		}
+	}
+
+	// 세로 읽기
+	namespace _27
+	{
+		string solution(string my_string, int m, int c)
+		{
+			string answer = "";
+			/*vector<string> temp;
+
+			for (int i = 0; i < my_string.size(); i += m)
+			{
+				temp.push_back(my_string.substr(i, m));
+			}
+
+			for (const auto& str : temp)
+			{
+				answer += str[c - 1];
+			}*/
+
+			for (int i = c - 1; i < my_string.size(); i += m)
+			{
+				answer += my_string[i];
+			}
+
+			return answer;
+		}
+	}
+
+	// 제출 내역
+	namespace _28
+	{
+		string solution(int q, int r, string code)
+		{
+			string answer = "";
+			/*for (int i = 0; i < code.size(); i++)
+			{
+				if (i % q == r)
+				{
+					answer += code[i];
+				}
+			}*/
+
+			for (int i = r; i < code.size(); i += q)
+			{
+				answer += code[i];
+			}
+
+			return answer;
+		}
+	}
 }
 
 namespace ListTest
