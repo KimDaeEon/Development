@@ -982,6 +982,122 @@ namespace ProgrammersBasicTraining
 			return answer;
 		}
 	}
+
+	namespace _29
+	{
+		vector<int> solution(string my_string)
+		{
+			vector<int> answer(52,0);
+			
+			char upperCaseStart = 'A';
+			char lowerCaseStart = 'a';
+			
+			for (const auto ch : my_string)
+			{
+				if (isupper(ch))
+				{
+					answer[ch - upperCaseStart]++;
+				}
+				else
+				{
+					answer[ch - lowerCaseStart + 26]++;
+				}
+			}
+
+			return answer;
+		}
+	}
+
+	namespace _30
+	{
+		// 1이상 n이하 정수 중 k 배수, 오름 차순으로 정렬
+		vector<int> solution(int n, int k)
+		{
+			vector<int> answer;
+
+			for (int i = 1; i <= n; i++)
+			{
+				if (i % k == 0)
+				{
+					answer.push_back(i);
+				}
+			}
+
+			return answer;
+		}
+	}
+
+	// 글자 지우기
+	namespace _31
+	{
+		string solution(string my_string, vector<int> indices)
+		{
+			string answer = "";
+			
+			/*for (int i = 0; i < my_string.size(); i++)
+			{
+				if (find(indices.begin(), indices.end(), i) != indices.end())
+				{
+					continue;
+				}
+				answer.push_back(my_string[i]);
+			}*/
+
+			// 이렇게 해주면 복잡도가 n^2에서 2n으로 줄어든다. 한 번만 체크하면 되는 경우에 이런 식으로 하는 것이 더 좋은 것 같다.
+			for (const auto v : indices)
+			{
+				my_string[v] = ' ';
+			}
+
+			for (const auto c : my_string)
+			{
+				if (c != ' ')
+				{
+					answer += c;
+				}
+			}
+
+			return answer;
+		}
+	}
+
+	// 카운트 다운
+	namespace _32
+	{
+		vector<int> solution(int start_num, int end_num)
+		{
+			vector<int> answer;
+			answer.reserve(start_num - end_num);
+
+			for (int i = start_num; i >= end_num; i--)
+			{
+				answer.push_back(i);
+			}
+
+			return answer;
+		}
+	}
+
+	// 가까운 1 찾기
+	// 이거 문제 이상하다. 지문이 잘못되었다는 얘기가 많음.
+	namespace _33
+	{
+		int solution(vector<int> arr, int idx)
+		{
+			int answer = -1;
+
+			for (int i = 0; i < arr.size(); i++)
+			{
+				if (i >= idx && arr[i] == 1)
+				{
+					answer = i;
+					break;
+				}
+			}
+
+			return answer;
+		}
+	}
 }
 
 namespace ListTest
@@ -1150,6 +1266,8 @@ namespace ListTest
 
 int main()
 {
+	cout << char('a'+25) << endl;
+	cout << char('A'+25) << endl;
 	return 0;
 }
 
