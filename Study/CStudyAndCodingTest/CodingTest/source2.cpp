@@ -684,7 +684,7 @@ namespace ProgrammersBasicTraining
 						p = val;
 						continue;
 					}
-					
+
 					if (cnt == 1)
 					{
 						q = val;
@@ -728,7 +728,7 @@ namespace ProgrammersBasicTraining
 						p = val;
 						continue;
 					}
-					
+
 					if (cnt == 1 && q == -1)
 					{
 						q = val;
@@ -743,7 +743,7 @@ namespace ProgrammersBasicTraining
 
 				return q * r;
 			}
-	
+
 			// 모든 주사위가 다른 경우 (size = 4)
 
 			int minVal = min(a, b);
@@ -827,7 +827,7 @@ namespace ProgrammersBasicTraining
 					answer.push_back(intTemp);
 				}
 			}
-			
+
 			return answer;
 		}
 	}
@@ -987,11 +987,11 @@ namespace ProgrammersBasicTraining
 	{
 		vector<int> solution(string my_string)
 		{
-			vector<int> answer(52,0);
-			
+			vector<int> answer(52, 0);
+
 			char upperCaseStart = 'A';
 			char lowerCaseStart = 'a';
-			
+
 			for (const auto ch : my_string)
 			{
 				if (isupper(ch))
@@ -1033,7 +1033,7 @@ namespace ProgrammersBasicTraining
 		string solution(string my_string, vector<int> indices)
 		{
 			string answer = "";
-			
+
 			/*for (int i = 0; i < my_string.size(); i++)
 			{
 				if (find(indices.begin(), indices.end(), i) != indices.end())
@@ -1096,6 +1096,182 @@ namespace ProgrammersBasicTraining
 			}
 
 			return answer;
+		}
+	}
+
+	// 리스트 자르기
+	namespace _34
+	{
+		// n == 1, num_list 0번 ~ b번 인덱스까지 슬라이싱
+		// n == 2, a번 ~ 마지막 인덱스까지
+		// n == 3, a번 b번 인덱스까지
+		// n == 4, a 번 ~ b번 인덱스까지 c 간격으로
+		vector<int> solution(int n, vector<int> slicer, vector<int> num_list)
+		{
+			vector<int> answer;
+
+			int a = slicer[0];
+			int b = slicer[1];
+			int c = slicer[2];
+
+			if (n == 1)
+			{
+				for (int i = 0; i <= b; i++)
+				{
+					answer.push_back(num_list[i]);
+				}
+			}
+			else if (n == 2)
+			{
+				for (int i = a; i < num_list.size(); i++)
+				{
+					answer.push_back(num_list[i]);
+				}
+			}
+			else if (n == 3)
+			{
+				for (int i = a; i <= b; i++)
+				{
+					answer.push_back(num_list[i]);
+				}
+			}
+			else if (n == 4)
+			{
+				for (int i = a; i <= b; i += c)
+				{
+					answer.push_back(num_list[i]);
+				}
+			}
+
+			return answer;
+		}
+	}
+
+	// 첫 번째로 나오는 음수
+	namespace _35
+	{
+		int solution(vector<int> num_list)
+		{
+			for (int i = 0; i < num_list.size(); i++)
+			{
+				if (num_list[i] < 0)
+				{
+					return i;
+				}
+			}
+
+			return -1;
+		}
+	}
+
+	// 배열 만들기3
+	namespace _36
+	{
+		vector<int> solution(vector<int> arr, vector<vector<int>> intervals)
+		{
+			vector<int> answer;
+
+			int a1 = intervals[0][0];
+			int b1 = intervals[0][1];
+			int a2 = intervals[1][0];
+			int b2 = intervals[1][1];
+
+			for (int i = a1; i <= b1; i++)
+			{
+				answer.push_back(arr[i]);
+			}
+
+			for (int i = a2; i <= b2; i++)
+			{
+				answer.push_back(arr[i]);
+			}
+
+			return answer;
+		}
+	}
+
+	// 2의 영역
+	namespace _37
+	{
+		vector<int> solution(vector<int> arr)
+		{
+			int startIdx = -1;
+			int endIdx = -1;
+
+			for (int i = 0; i < arr.size(); i++)
+			{
+				if (arr[i] == 2 && startIdx == -1)
+				{
+					startIdx = i;
+					continue;
+				}
+
+				if (arr[i] == 2 && startIdx != -1)
+				{
+					endIdx = i;
+				}
+			}
+
+			if (startIdx != -1 && endIdx == -1)
+			{
+				endIdx = startIdx;
+			}
+
+			if (startIdx != -1 && endIdx != -1)
+			{
+				return vector<int>(arr.begin() + startIdx, arr.begin() + endIdx + 1);
+			}
+			else
+			{
+				return vector<int>(1, -1);
+			}
+		}
+	}
+
+	// 배열 조각하기
+	// TODO: 아래 연산량 줄이는 법 다시 고민하고 해보기
+	namespace _38
+	{
+		vector<int> solution(vector<int> arr, vector<int> query)
+		{
+			//vector<int> answer = arr;
+			//for (int i = 0; i < query.size(); i++)
+			//{
+			//	// query[i] 인덱스 뒷 부분 잘라서 버림
+			//	if (i % 2 == 0)
+			//	{
+			//		answer = vector<int>(answer.begin(), answer.begin() + query[i] + 1);
+			//	}
+			//	// query[i] 인덱스 앞 부분 잘라서 버림
+			//	else
+			//	{
+			//		answer = vector<int>(answer.begin() + query[i], answer.end());
+			//	}
+			//}
+
+			// 굳이 제거 연산을 안하고 idx만 추려내도 된다.
+
+
+			int startIdx = 0;
+			int endIdx = arr.size() - 1;
+			int offset = 0;
+
+			for (int i = 0; i < query.size(); i++)
+			{
+				// query[i] 인덱스 뒷 부분 잘라서 버림
+				if (i % 2 == 0)
+				{
+					endIdx = query[i] + offset;
+				}
+				// query[i] 인덱스 앞 부분 잘라서 버림
+				else
+				{
+					offset += query[i] - startIdx;
+					startIdx = query[i] + offset;
+				}
+			}
+
+			return vector<int>(arr.begin() + startIdx, arr.begin() + endIdx + 1);
 		}
 	}
 }
@@ -1266,8 +1442,8 @@ namespace ListTest
 
 int main()
 {
-	cout << char('a'+25) << endl;
-	cout << char('A'+25) << endl;
+	cout << char('a' + 25) << endl;
+	cout << char('A' + 25) << endl;
 	return 0;
 }
 
