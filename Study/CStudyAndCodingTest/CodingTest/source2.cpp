@@ -1229,7 +1229,6 @@ namespace ProgrammersBasicTraining
 	}
 
 	// 배열 조각하기
-	// TODO: 아래 연산량 줄이는 법 다시 고민하고 해보기
 	namespace _38
 	{
 		vector<int> solution(vector<int> arr, vector<int> query)
@@ -1253,25 +1252,127 @@ namespace ProgrammersBasicTraining
 
 
 			int startIdx = 0;
-			int endIdx = arr.size() - 1;
-			int offset = 0;
+			int lastIdx = arr.size() - 1;
 
 			for (int i = 0; i < query.size(); i++)
 			{
 				// query[i] 인덱스 뒷 부분 잘라서 버림
 				if (i % 2 == 0)
 				{
-					endIdx = query[i] + offset;
+					int deletedCount = lastIdx - startIdx - query[i];
+					lastIdx = lastIdx - deletedCount;
 				}
 				// query[i] 인덱스 앞 부분 잘라서 버림
 				else
 				{
-					offset += query[i] - startIdx;
-					startIdx = query[i] + offset;
+					int deletedCount = query[i];
+					startIdx = startIdx + deletedCount;
 				}
 			}
 
-			return vector<int>(arr.begin() + startIdx, arr.begin() + endIdx + 1);
+			return vector<int>(arr.begin() + startIdx, arr.begin() + lastIdx + 1);
+		}
+	}
+
+	// n번째 원소부터
+	namespace _39
+	{
+		vector<int> solution(vector<int> num_list, int n)
+		{
+			int startIdx = n - 1;
+			return vector<int>(num_list.begin() + startIdx, num_list.end());
+		}
+	}
+
+	// 순서 바꾸기
+	namespace _40
+	{
+		vector<int> solution(vector<int> num_list, int n)
+		{
+			vector<int> answer = vector<int>(num_list.begin() + n, num_list.end());
+			
+			for (int i = 0; i < n; i++)
+			{
+				answer.push_back(num_list[i]);
+			}
+
+			return answer;
+		}
+	}
+
+	// 왼쪽 오른쪽
+	namespace _41
+	{
+		// l 먼저 나오면 l 나온 기준으로 왼쪽에 있는 문자열 순서대로 담은 리스트, r 먼저 나오면 r 기준으로 오른쪽에 있는 문자열들을 순서대로 담은 리스트 리턴
+		vector<string> solution(vector<string> str_list)
+		{
+			vector<string> answer;
+			int startOrEndIdx = -1;
+			bool isLeftFirst;
+
+			for (int i = 0; i < str_list.size(); i++)
+			{
+				if (str_list[i] == "l")
+				{
+					startOrEndIdx = i; // 왼쪽부터
+					isLeftFirst = true;
+					break;
+				}
+				else if (str_list[i] == "r")
+				{
+					startOrEndIdx = i; // 오른쪽부터
+					isLeftFirst = false;
+					break;
+				}
+			}
+
+
+			if (startOrEndIdx == -1)
+			{
+				return answer;
+			}
+
+			if (isLeftFirst)
+			{
+				for (int i = 0; i < startOrEndIdx; i++)
+				{
+					answer.push_back(str_list[i]);
+				}
+			}
+			else
+			{
+				for (int i = startOrEndIdx + 1; i < str_list.size(); i++)
+				{
+					answer.push_back(str_list[i]);
+				}
+			}
+
+			return answer;
+		}
+	}
+
+	// n 번째 원소까지
+	namespace _42
+	{
+		vector<int> solution(vector<int> num_list, int n)
+		{
+			return vector<int>(num_list.begin(), num_list.begin() + n);
+		}
+	}
+
+	// n개 간격의 원소들
+	namespace _43
+	{
+		vector<int> solution(vector<int> num_list, int n)
+		{
+			vector<int> answer;
+
+			for (int i = 0; i < num_list.size(); i += n)
+			{
+				answer.push_back(num_list[i]);
+			}
+
+			return answer;
 		}
 	}
 }
