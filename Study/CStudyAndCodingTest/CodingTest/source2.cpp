@@ -1290,7 +1290,7 @@ namespace ProgrammersBasicTraining
 		vector<int> solution(vector<int> num_list, int n)
 		{
 			vector<int> answer = vector<int>(num_list.begin() + n, num_list.end());
-			
+
 			for (int i = 0; i < n; i++)
 			{
 				answer.push_back(num_list[i]);
@@ -1373,6 +1373,99 @@ namespace ProgrammersBasicTraining
 			}
 
 			return answer;
+		}
+	}
+
+	// 홀수 vs 짝수
+	namespace _44
+	{
+		int solution(vector<int> num_list)
+		{
+			int sumOdd = 0;
+			int sumEven = 0;
+
+			for (int i = 0; i < num_list.size(); i++)
+			{
+				if (i % 2 == 0)
+				{
+					sumEven += num_list[i];
+				}
+				else
+				{
+					sumOdd += num_list[i];
+				}
+			}
+
+			return sumOdd > sumEven ? sumOdd : sumEven;
+		}
+	}
+
+	// 5명 씩
+	namespace _45
+	{
+		vector<string> solution(vector<string> names)
+		{
+			vector<string> answer;
+
+			for (int i = 0; i < names.size(); i += 5)
+			{
+				answer.emplace_back(names[i]);
+			}
+
+			return answer;
+		}
+	}
+
+	// 할 일 목록
+	namespace _46
+	{
+		vector<string> solution(vector<string> todo_list, vector<bool> finished)
+		{
+			vector<string> answer;
+			for (int i = 0; i < todo_list.size(); i++)
+			{
+				if (finished[i] == false)
+				{
+					answer.emplace_back(todo_list[i]);
+				}
+			}
+			return answer;
+		}
+	}
+
+	// n보다 커질 때까지 더하기
+	namespace _47
+	{
+		int solution(vector<int> numbers, int n)
+		{
+			int answer = 0;
+			for (int i : numbers)
+			{
+				answer += i;
+				if (answer > n)
+				{
+					return answer;
+				}
+			}
+
+			return answer;
+		}
+	}
+
+	// 수열과 구간 쿼리 1
+	namespace _48
+	{
+		vector<int> solution(vector<int> arr, vector<vector<int>> queries)
+		{
+			for (const auto& query : queries)
+			{
+				for (int i = query[0]; i <= query[1]; i++)
+				{
+					arr[i]++;
+				}
+			}
+
+			return arr;
 		}
 	}
 }
@@ -1547,5 +1640,6 @@ int main()
 	cout << char('A' + 25) << endl;
 	return 0;
 }
+
 
 
