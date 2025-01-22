@@ -1468,6 +1468,105 @@ namespace ProgrammersBasicTraining
 			return arr;
 		}
 	}
+
+	// 조건에 맞게 수열 변환하기 1
+	namespace _49
+	{
+		// 50보다 크거나 같은 짝수라면 2로 나누기
+		// 50보다 작은 홀수라면 2를 곱하기
+		vector<int> solution(vector<int> arr)
+		{
+			vector<int> answer;
+			for (int i : arr)
+			{
+				if (i >= 50 && i % 2 == 0)
+				{
+					answer.push_back(i / 2);
+				}
+				else if (i < 50 && i % 2 != 0)
+				{
+					answer.push_back(i * 2);
+				}
+				else
+				{
+					answer.push_back(i);
+				}
+			}
+
+			return answer;
+		}
+	}
+
+	// 조건에 맞게 수열 변환하기 2
+	namespace _50
+	{
+		// 50보다 크거나 같은 짝수라면 2로 나누기
+		// 50보다 작은 홀수라면 2를 곱하고 다시 1을 더하기
+
+		int solution(vector<int> arr)
+		{
+			int answer = 0;
+			/*while (true)
+			{
+				answer++;
+				vector<int> before = arr;
+
+				for (auto& i : arr)
+				{
+					if (i >= 50 && i % 2 == 0)
+					{
+						i = i / 2;
+					}
+					else if (i < 50 && i % 2 != 0)
+					{
+						i = 2 * i + 1;
+					}
+				}
+
+				bool isEqual = true;
+
+				for (int i = 0; i < arr.size(); i++)
+				{
+					if (arr[i] != before[i])
+					{
+						isEqual = false;
+					}
+				}
+
+				if (isEqual)
+				{
+					return --answer;
+				}
+			}*/
+
+			// 아래 식이 O(n)이 나와서 더 빠르다.
+			while (true)
+			{
+				answer++;
+				vector<int> before = arr;
+				bool isChanged = false;
+
+				for (auto& i : arr)
+				{
+					if (i >= 50 && i % 2 == 0)
+					{
+						i = i / 2;
+						isChanged = true;
+					}
+					else if (i < 50 && i % 2 != 0)
+					{
+						i = 2 * i + 1;
+						isChanged = true;
+					}
+				}
+
+				if (isChanged == false)
+				{
+					return --answer;
+				}
+			}
+		}
+	}
 }
 
 namespace ListTest
