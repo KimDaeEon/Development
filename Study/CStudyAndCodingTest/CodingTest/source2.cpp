@@ -1567,6 +1567,83 @@ namespace ProgrammersBasicTraining
 			}
 		}
 	}
+
+	// 1로 만들기
+	namespace _51
+	{
+		// 짝수 반 나누기
+		// 홀수 1 뺀뒤 반 나누기
+		int solution(vector<int> num_list)
+		{
+			int answer = 0;
+			
+			for (auto& i : num_list)
+			{
+				while (i != 1)
+				{
+					if (i % 2 == 0)
+					{
+						i = i / 2;
+					}
+					else
+					{
+						i = (i - 1) / 2;
+					}
+
+					answer++;
+				}
+			}
+
+			return answer;
+		}
+	}
+
+	// 길이에 따른 연산
+	namespace _52
+	{
+		// 리스트 길이 11 이상 모든 원소 합 리턴
+		// 리스트 길이 10 이하 모든 원소 곱 리턴
+		int solution(vector<int> num_list)
+		{
+			int answer = 0;
+			if (num_list.size() >= 11)
+			{
+				for (const auto i : num_list)
+				{
+					answer += i;
+				}
+
+				return answer;
+			}
+			else
+			{
+				answer = 1;
+				for (const auto i : num_list)
+				{
+					answer *= i;
+				}
+
+				return answer;
+			}
+		}
+	}
+
+	// 원하는 문자열 찾기
+	namespace _53
+	{
+		int solution(string myString, string pat)
+		{
+			transform(myString.begin(), myString.end(), myString.begin(), ::tolower);
+			transform(pat.begin(), pat.end(), pat.begin(), ::tolower);
+
+			if (myString.find(pat) != string::npos)
+			{
+				return 1;
+			}
+
+			return 0;
+		}
+	}
 }
 
 namespace ListTest
