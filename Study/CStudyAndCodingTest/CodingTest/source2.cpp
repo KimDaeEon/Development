@@ -1576,7 +1576,7 @@ namespace ProgrammersBasicTraining
 		int solution(vector<int> num_list)
 		{
 			int answer = 0;
-			
+
 			for (auto& i : num_list)
 			{
 				while (i != 1)
@@ -1642,6 +1642,155 @@ namespace ProgrammersBasicTraining
 			}
 
 			return 0;
+		}
+	}
+
+	// 대문자로 바꾸기
+	namespace _54
+	{
+		string solution(string myString)
+		{
+			transform(myString.begin(), myString.end(), myString.begin(), ::toupper);
+			return myString;
+		}
+	}
+
+	// 소문자로 바꾸기
+	namespace _55
+	{
+		string solution(string myString)
+		{
+			transform(myString.begin(), myString.end(), myString.begin(), ::tolower);
+			return myString;
+		}
+	}
+
+	// 배열에서 문자열 대소문자 변환하기
+	namespace _56
+	{
+		// 홀수번째 인덱스 문자열 모두 대문자로
+		// 짝수번째 인덱스 문자열 모두 소문자로
+		vector<string> solution(vector<string> strArr)
+		{
+			bool tolowerMode = true;
+
+			for (auto& str : strArr)
+			{
+				if (tolowerMode)
+				{
+					transform(str.begin(), str.end(), str.begin(), ::tolower);
+				}
+				else
+				{
+					transform(str.begin(), str.end(), str.begin(), ::toupper);
+				}
+
+				tolowerMode = !tolowerMode;
+			}
+
+			return strArr;
+		}
+	}
+
+	// A 강조하기
+	namespace _57
+	{
+		// 'a' 면 모두 대문자 'A'로
+		// 'A'가 아닌 모든 대문자 알파벳은 소문자로
+		string solution(string myString)
+		{
+			for (auto& ch : myString)
+			{
+				if (ch == 'a' || ch == 'A')
+				{
+					ch = 'A';
+				}
+				else
+				{
+					if (isupper(ch))
+					{
+						ch = ::tolower(ch);
+					}
+				}
+			}
+
+			return myString;
+		}
+	}
+
+	// 특정한 문자를 대문자로 바꾸기
+	namespace _58
+	{
+		string solution(string my_string, string alp)
+		{
+			char ch = alp[0];
+
+			for (auto& c : my_string)
+			{
+				if (c == ch)
+				{
+					c = ::toupper(c);
+				}
+			}
+
+			return my_string;
+		}
+	}
+
+	// 특정 문자열로 끝나는 가장 긴 부분 문자열 찾기
+	namespace _59
+	{
+		string solution(string myString, string pat)
+		{
+			string answer = "";
+
+			// rfind로도 찾을 수 있단 것을 알자.
+			int idx = myString.rfind(pat) + pat.size();
+			if (idx != string::npos)
+			{
+				answer = myString.substr(0, idx);
+			}
+
+			return answer;
+		}
+	}
+
+	// 문자열이 몇 번 등장하는지 세기
+	namespace _60
+	{
+		int solution(string myString, string pat)
+		{
+			int answer = 0;
+			int findPos = 0;
+
+			while (true)
+			{
+				findPos = myString.find(pat, findPos);
+
+				if (findPos != string::npos)
+				{
+					answer++;
+					findPos++;
+				}
+				else
+				{
+					break;
+				}
+			}
+
+
+			//for (int i = 0; i < myString.size(); i++)
+			//{
+			//	int idx = myString.rfind(pat, i);
+
+			//	if (idx != string::npos)
+			//	{
+			//		answer++;
+			//		myString[idx] = ' ';
+			//	}
+			//}
+
+			return answer;
 		}
 	}
 }
@@ -1812,8 +1961,12 @@ namespace ListTest
 
 int main()
 {
-	cout << char('a' + 25) << endl;
-	cout << char('A' + 25) << endl;
+	string temp = "abcabc";
+	string temp2 = "abc";
+
+	int idx = temp.find(temp2);
+
+	cout << idx << endl;
 	return 0;
 }
 
