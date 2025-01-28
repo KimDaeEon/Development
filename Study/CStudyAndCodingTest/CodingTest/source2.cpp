@@ -12,7 +12,6 @@
 #include <sstream>
 #include <unordered_map>
 #include <unordered_set>
-#include <sstream>
 #include <regex>
 #include <bitset>
 using namespace std;
@@ -1793,6 +1792,267 @@ namespace ProgrammersBasicTraining
 			return answer;
 		}
 	}
+
+	// ad 제거하기
+	namespace _61
+	{
+		vector<string> solution(vector<string> strArr)
+		{
+			vector<string> answer;
+
+			for (auto& str : strArr)
+			{
+				if (str.find("ad") != string::npos)
+				{
+					continue;
+				}
+
+				answer.push_back(str);
+			}
+
+			return answer;
+		}
+	}
+
+	// 공백으로 구분하기 1
+	namespace _62
+	{
+		vector<string> solution(string my_string)
+		{
+			vector<string> answer;
+			int startIdx = 0;
+
+			for (int i = 0; i < my_string.size(); i++)
+			{
+				if (my_string[i] == ' ')
+				{
+					answer.push_back(my_string.substr(startIdx, i - startIdx));
+					startIdx = i + 1;
+				}
+			}
+
+			answer.push_back(my_string.substr(startIdx));
+
+			return answer;
+		}
+	}
+
+	// 공백으로 구분하기 2
+	namespace _63
+	{
+		vector<string> solution(string my_string)
+		{
+			vector<string> answer;
+			string temp = "";
+
+			for (int i = 0; i < my_string.size(); i++)
+			{
+				if (my_string[i] == ' ')
+				{
+					if (temp.empty() == false)
+					{
+						answer.push_back(temp);
+						temp.clear();
+					}
+				}
+				else
+				{
+					temp.push_back(my_string[i]);
+				}
+			}
+
+			if (temp.empty() == false)
+			{
+				answer.push_back(temp);
+				temp.clear();
+			}
+
+			return answer;
+		}
+	}
+
+	// x 사이의 개수
+	namespace _64
+	{
+		vector<int> solution(string myString)
+		{
+			vector<int> answer;
+			int temp = 0;
+
+			for (int i = 0; i < myString.size(); i++)
+			{
+				if (myString[i] == 'x')
+				{
+					answer.push_back(temp);
+					temp = 0;
+				}
+				else
+				{
+					temp++;
+				}
+			}
+
+			answer.push_back(temp);
+
+			return answer;
+		}
+	}
+
+	// 문자열 잘라서 정렬하기
+	namespace _65
+	{
+		vector<string> solution(string myString)
+		{
+			vector<string> answer;
+			string temp = "";
+
+			for (int i = 0; i < myString.size(); i++)
+			{
+				if (myString[i] == 'x')
+				{
+					if (temp.size() > 0)
+					{
+						answer.push_back(temp);
+						temp.clear();
+					}
+				}
+				else
+				{
+					temp.push_back(myString[i]);
+				}
+			}
+
+			if (temp.size() > 0)
+			{
+				answer.push_back(temp);
+			}
+
+			sort(answer.begin(), answer.end());
+
+			return answer;
+		}
+	}
+
+	// 간단한 식 계산하기
+	namespace _66
+	{
+		bool IsOp(char ch)
+		{
+			return ch == '+' || ch == '-' || ch == '*';
+		}
+
+		int CalcByOp(char op, int a, int b)
+		{
+			if (op == '+')
+			{
+				return a + b;
+			}
+			else if (op == '-')
+			{
+				return a - b;
+			}
+			else if (op == '*')
+			{
+				return a * b;
+			}
+		}
+
+		int solution(string binomial)
+		{
+			//int answer = 0;
+			//int a = -1;
+			//int b = -1;
+			//string temp = "";
+			//char op = ' ';
+
+			//for (int i = 0; i < binomial.size(); i++)
+			//{
+			//	if (!IsOp(binomial[i]) && binomial[i] != ' ')
+			//	{
+			//		temp.push_back(binomial[i]);
+			//	}
+			//	else
+			//	{
+			//		if (IsOp(binomial[i]))
+			//		{
+			//			op = binomial[i];
+			//			i++;
+			//			continue;
+			//		}
+
+			//		if (a == -1)
+			//		{
+			//			a = stoi(temp);
+			//			temp.clear();
+			//			continue;
+			//		}
+			//	}
+			//}
+
+			//b = stoi(temp);
+
+			//return CalcByOp(op, a, b);
+
+			stringstream ss(binomial);
+
+			string a;
+			string op;
+			string b;
+
+			ss >> a >> op >> b;
+
+			return CalcByOp(op[0], stoi(a), stoi(b));
+			
+		}
+	}
+
+	// 문자열 바꿔서 찾기
+	namespace _67
+	{
+		int solution(string myString, string pat)
+		{
+			for (auto& ch : myString)
+			{
+				if (ch == 'A')
+				{
+					ch = 'B';
+				}
+				else if (ch == 'B')
+				{
+					ch = 'A';
+				}
+			}
+
+			if (myString.find(pat) != string::npos)
+			{
+				return 1;
+			}
+
+			return 0;
+		}
+	}
+
+	// my_string
+	namespace _68
+	{
+		string solution(string rny_string)
+		{
+			string answer = "";
+			for (const auto ch : rny_string)
+			{
+				if (ch == 'm')
+				{
+					answer += "rn";
+				}
+				else
+				{
+					answer += ch;
+				}
+			}
+
+			return answer;
+		}
+	}
 }
 
 namespace ListTest
@@ -1961,12 +2221,22 @@ namespace ListTest
 
 int main()
 {
-	string temp = "abcabc";
-	string temp2 = "abc";
+	string a = "43   + 12";
 
-	int idx = temp.find(temp2);
+	stringstream ss(a);
 
-	cout << idx << endl;
+	string b;
+	string op;
+	string c;
+
+	ss >> b;
+	ss >> op;
+	ss >> c;
+
+	cout << b << endl;
+	cout << op << endl;
+	cout << c << endl;
+
 	return 0;
 }
 
