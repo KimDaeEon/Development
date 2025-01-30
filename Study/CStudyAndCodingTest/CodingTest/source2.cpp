@@ -2053,6 +2053,165 @@ namespace ProgrammersBasicTraining
 			return answer;
 		}
 	}
+
+	// 세 개의 구분자
+	namespace _69
+	{
+		vector<string> solution(string myStr)
+		{
+			vector<string> answer;
+			string temp;
+
+			for (int i = 0; i < myStr.size(); i++)
+			{
+				char ch = myStr[i];
+				if (ch == 'a' || ch == 'b' || ch == 'c')
+				{
+					if (temp.size() > 0)
+					{
+						answer.push_back(temp);
+						temp.clear();
+					}
+				}
+				else
+				{
+					temp.push_back(ch);
+				}
+			}
+
+			if (temp.size() > 0)
+			{
+				answer.push_back(temp);
+				temp.clear();
+			}
+
+			if (answer.size() == 0)
+			{
+				answer.push_back("EMPTY");
+			}
+
+			return answer;
+		}
+	}
+
+	// 배열의 원소만큼 추가하기
+	namespace _70
+	{
+		vector<int> solution(vector<int> arr)
+		{
+			vector<int> answer;
+			for (int i : arr)
+			{
+				for (int j = 0; j < i; j++)
+				{
+					answer.push_back(i);
+				}
+			}
+			return answer;
+		}
+	}
+
+	// 빈 배열에 추가, 삭제하기
+	namespace _71
+	{
+		vector<int> solution(vector<int> arr, vector<bool> flag)
+		{
+			vector<int> answer;
+			for (int i = 0; i < flag.size(); i++)
+			{
+				if (flag[i] == true)
+				{
+					for (int j = 0; j < arr[i] * 2; j++)
+					{
+						answer.push_back(arr[i]);
+					}
+				}
+				else
+				{
+					for (int j = 0; j < arr[i]; j++)
+					{
+						answer.pop_back();
+					}
+				}
+			}
+			return answer;
+		}
+	}
+
+	// 배열 만들기 6
+	namespace _72
+	{
+		vector<int> solution(vector<int> arr)
+		{
+			vector<int> answer;
+			for (int i = 0; i < arr.size(); i++)
+			{
+				if (answer.empty())
+				{
+					answer.push_back(arr[i]);
+					continue;
+				}
+
+				if (answer.back() == arr[i])
+				{
+					answer.pop_back();
+				}
+				else
+				{
+					answer.push_back(arr[i]);
+				}
+				
+			}
+
+			if (answer.empty())
+			{
+				answer.push_back(-1);
+			}
+
+			return answer;
+		}
+	}
+
+	namespace _73
+	{
+		vector<int> solution(vector<int> arr, int k)
+		{
+			vector<int> answer;
+			return answer;
+		}
+	}
+
+	// 무작위로 K개의 수 뽑기
+	namespace _74
+	{
+		vector<int> solution(vector<int> arr, int k)
+		{
+			vector<int> answer;
+			unordered_set<int> s;
+
+			for (int i = 0; i < arr.size(); i++)
+			{
+				if(s.find(arr[i]) == s.end())
+				{
+					answer.push_back(arr[i]);
+					s.insert(arr[i]);
+				}
+
+				if (answer.size() == k)
+				{
+					break;
+				}
+			}
+
+			answer.resize(k, -1); // 요렇게 나머지 채우는 것도 깔끔하게 가능함. 알아두기
+			//while (answer.size() < k)
+			//{
+			//	answer.push_back(-1);
+			//}
+
+			return answer;
+		}
+	}
 }
 
 namespace ListTest
