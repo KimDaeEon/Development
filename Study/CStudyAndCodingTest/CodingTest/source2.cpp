@@ -14,6 +14,7 @@
 #include <unordered_set>
 #include <regex>
 #include <bitset>
+#include <math.h>
 using namespace std;
 
 // 기본적 참고 사항 사항
@@ -2208,6 +2209,157 @@ namespace ProgrammersBasicTraining
 			//{
 			//	answer.push_back(-1);
 			//}
+
+			return answer;
+		}
+	}
+
+	// 배열의 길이를 2의 거듭제곱으로 만들기
+	namespace _75
+	{
+		bool CheckPowerOf2(int a)
+		{
+			while (a > 1)
+			{
+				int quotient = a / 2;
+				int remainder = a % 2;
+				a = quotient;
+
+				if (remainder != 0)
+				{
+					return false;
+				}
+			}
+
+			return true;
+		}
+		vector<int> solution(vector<int> arr)
+		{
+			//int size = arr.size();
+
+			//while (true)
+			//{
+			//	if (CheckPowerOf2(size))
+			//	{
+			//		break;
+			//	}
+			//	else
+			//	{
+			//		size++;
+			//	}
+			//}
+
+			//arr.resize(size, 0);
+
+
+			// 아래처럼 math 관련 함수 쓰면 좀 더 편하게 할 수 있다.
+			int size = arr.size();
+
+			int target = pow(2, ceil(log2(size)));
+
+			arr.resize(target, 0);
+
+			return arr;
+		}
+	}
+
+	// 배열 비교하기
+	namespace _76
+	{
+		// 길이가 더 큰 배열이 큰 배열
+		// 길이가 같다면, 모든 원소의 합이 큰 쪽이 크고, 합도 같다면 같은 배열
+		// arr2가 크다면 -1, arr1이 크다면 1, 같다면 0 리턴
+		int solution(vector<int> arr1, vector<int> arr2)
+		{
+			int answer = 0;
+			int size1 = arr1.size();
+			int size2 = arr2.size();
+
+			if (size1 != size2)
+			{
+				return size1 > size2 ? 1 : -1;
+			}
+
+			int sum1 = 0;
+			int sum2 = 0;
+
+			for (int i = 0; i < size1; i++)
+			{
+				sum1 += arr1[i];
+				sum2 += arr2[i];
+			}
+
+			if (sum1 != sum2)
+			{
+				return sum1 > sum2 ? 1 : -1;
+			}
+
+			return 0;
+		}
+	}
+
+	// 문자열 묶기
+	namespace _77
+	{
+		int solution(vector<string> strArr)
+		{
+			int answer = 0;
+			unordered_map<int, int> um;
+
+			for (const auto& str : strArr)
+			{
+				um[str.size()]++;
+			}
+
+			int m = 0;
+
+			for (const auto& [k, v] : um)
+			{
+				if (m < v)
+				{
+					m = v;
+				}
+			}
+			
+			return m;
+		}
+	}
+
+	// 배열의 길이에 따라 다른 연산하기
+	namespace _78
+	{
+		vector<int> solution(vector<int> arr, int n)
+		{
+			int size = arr.size();
+
+			// 짝수면 홀수 인덱스에 n 더하기
+			if (size % 2 == 0)
+			{
+				for (int i = 1; i < size; i = i + 2)
+				{
+					arr[i] += n;
+				}
+			}
+			// 홀수면 짝수 인덱스에 n 더하기
+			else
+			{
+				for (int i = 0; i < size; i = i + 2)
+				{
+					arr[i] += n;
+				}
+			}
+			return arr;
+		}
+	}
+
+	// 뒤에서 5등까지
+	namespace _79
+	{
+		vector<int> solution(vector<int> num_list)
+		{
+			sort(num_list.begin(), num_list.end());
+
+			vector<int> answer(num_list.begin(), num_list.begin() + 5);
 
 			return answer;
 		}
