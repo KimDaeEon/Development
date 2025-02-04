@@ -2364,6 +2364,120 @@ namespace ProgrammersBasicTraining
 			return answer;
 		}
 	}
+
+	// 뒤에서 5등 위로
+	namespace _80
+	{
+		vector<int> solution(vector<int> num_list)
+		{
+			sort(num_list.begin(), num_list.end());
+			vector<int> answer(num_list.begin() + 5, num_list.end());
+
+			return answer;
+		}
+	}
+
+	// 전국 대회 선발 고사
+	namespace _81
+	{
+		// 참가 가능한 사람들 중, 
+		// rank 가 가장 낮은 사람 상위 3명의 index1 * 10000 + index2 * 100 + index3 을 리턴
+		struct rankInfo
+		{
+			int idx;
+			int rank;
+		};
+
+		int solution(vector<int> rank, vector<bool> attendance)
+		{
+			int answer = 0;
+			vector<rankInfo> temp;
+
+			for (int i = 0; i < attendance.size(); i++)
+			{
+				if (attendance[i])
+				{
+					temp.push_back({ i, rank[i] });
+				}
+			}
+
+			sort(temp.begin(), temp.end(), [](rankInfo& a, rankInfo& b)
+				{
+					return a.rank < b.rank;
+				});
+
+			answer = 10000 * temp[0].idx + 100 * temp[1].idx + temp[2].idx;
+			return answer;
+		}
+	}
+
+	// 정수 부분
+	namespace _82
+	{
+		int solution(double flo)
+		{
+			return flo;
+		}
+	}
+
+	// 문자열 정수의 합
+	namespace _83
+	{
+		int solution(string num_str)
+		{
+			int answer = 0;
+			
+			for (auto ch : num_str)
+			{
+				answer += ch - '0';
+			}
+
+			return answer;
+		}
+	}
+	
+	// 문자열을 정수로 변환하기
+	namespace _84
+	{
+		int solution(string n_str)
+		{
+			return stoi(n_str);
+		}
+	}
+
+	// 0 떼기
+	namespace _85
+	{
+		// 맨 처음 왼쪽에 있는 0들을 다 뗀다.
+		string solution(string n_str)
+		{
+			string answer = "";
+			
+			for (int i = 0; i < n_str.size(); i++)
+			{
+				if (n_str[i] == '0')
+				{
+					continue;
+				}
+				else
+				{
+					answer = n_str.substr(i);
+					break;
+				}
+			}
+
+			return answer;
+		}
+	}
+
+	// 두 수의 합
+	namespace _86
+	{
+		string solution(string a, string b)
+		{
+
+		}
+	}
 }
 
 namespace ListTest
