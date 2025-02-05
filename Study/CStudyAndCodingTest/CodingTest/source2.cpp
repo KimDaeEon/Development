@@ -2003,7 +2003,7 @@ namespace ProgrammersBasicTraining
 			ss >> a >> op >> b;
 
 			return CalcByOp(op[0], stoi(a), stoi(b));
-			
+
 		}
 	}
 
@@ -2161,7 +2161,7 @@ namespace ProgrammersBasicTraining
 				{
 					answer.push_back(arr[i]);
 				}
-				
+
 			}
 
 			if (answer.empty())
@@ -2192,7 +2192,7 @@ namespace ProgrammersBasicTraining
 
 			for (int i = 0; i < arr.size(); i++)
 			{
-				if(s.find(arr[i]) == s.end())
+				if (s.find(arr[i]) == s.end())
 				{
 					answer.push_back(arr[i]);
 					s.insert(arr[i]);
@@ -2320,7 +2320,7 @@ namespace ProgrammersBasicTraining
 					m = v;
 				}
 			}
-			
+
 			return m;
 		}
 	}
@@ -2426,7 +2426,7 @@ namespace ProgrammersBasicTraining
 		int solution(string num_str)
 		{
 			int answer = 0;
-			
+
 			for (auto ch : num_str)
 			{
 				answer += ch - '0';
@@ -2435,7 +2435,7 @@ namespace ProgrammersBasicTraining
 			return answer;
 		}
 	}
-	
+
 	// 문자열을 정수로 변환하기
 	namespace _84
 	{
@@ -2452,7 +2452,7 @@ namespace ProgrammersBasicTraining
 		string solution(string n_str)
 		{
 			string answer = "";
-			
+
 			for (int i = 0; i < n_str.size(); i++)
 			{
 				if (n_str[i] == '0')
@@ -2471,11 +2471,46 @@ namespace ProgrammersBasicTraining
 	}
 
 	// 두 수의 합
+	// @ 이 문제가 쉬워보여도 문자열 조작 및 흐름 제어 관련해서 생각할 부분이 많아서 다시 보기
+	// 문자열 만들 때에 + 연산을 통해서 원하는 부분에 추가 가능 (char 도 포함)
+	// 길이를 벗어난 문자 같은 경우 0으로 처리해버리면 복잡하게 흐름제어 추가할 필요 X
 	namespace _86
 	{
 		string solution(string a, string b)
 		{
+			// 길이 넘으면 그냥 0으로 처리
+			string temp = "";
+			int aSize = a.size();
+			int bSize = b.size();
 
+			int idxA = aSize - 1;
+			int idxB = bSize - 1;
+			int carry = 0;
+			while (true)
+			{
+				int vA = idxA >= 0 ? a[idxA] - '0' : 0;
+				int vB = idxB >= 0 ? b[idxB] - '0' : 0;
+
+				int quotient = (vA + vB + carry) % 10;
+				carry = (vA + vB + carry) / 10;
+
+				temp = (char((quotient)+'0') + temp);
+
+				idxA--;
+				idxB--;
+
+				if (idxA < 0 && idxB < 0)
+				{
+					break;
+				}
+			}
+
+			if (carry)
+			{
+				temp = "1" + temp;
+			}
+
+			return temp;
 		}
 	}
 }
@@ -2646,22 +2681,7 @@ namespace ListTest
 
 int main()
 {
-	string a = "43   + 12";
-
-	stringstream ss(a);
-
-	string b;
-	string op;
-	string c;
-
-	ss >> b;
-	ss >> op;
-	ss >> c;
-
-	cout << b << endl;
-	cout << op << endl;
-	cout << c << endl;
-
+	ProgrammersBasicTraining::_86::solution("99", "199");
 	return 0;
 }
 
