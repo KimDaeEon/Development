@@ -2513,6 +2513,138 @@ namespace ProgrammersBasicTraining
 			return temp;
 		}
 	}
+
+	// 문자열로 변환
+	namespace _87
+	{
+		string solution(int n)
+		{
+			return to_string(n);
+		}
+	}
+
+	// 배열의 원소 삭제하기
+	namespace _88
+	{
+		vector<int> solution(vector<int> arr, vector<int> delete_list)
+		{
+			vector<int> answer;
+			unordered_set us(delete_list.begin(), delete_list.end());
+
+			for (int i : arr)
+			{
+				if (us.find(i) == us.end())
+				{
+					answer.push_back(i);
+				}
+				else
+				{
+					continue;
+				}
+			}
+			
+			return answer;
+		}
+	}
+
+	// 부분 문자열인지 확인하기
+	namespace _89
+	{
+		int solution(string my_string, string target)
+		{
+			if (my_string.find(target) != string::npos)
+			{
+				return 1;
+			}
+			else
+			{
+				return 0;
+			}
+		}
+	}
+
+	// 꼬리 문자열
+	namespace _90
+	{
+		string solution(vector<string> str_list, string ex)
+		{
+			string answer = "";
+			for (const auto& str : str_list)
+			{
+				if (str.find(ex) == string::npos)
+				{
+					answer += str;
+				}
+			}
+			return answer;
+		}
+	}
+
+	// 정수 찾기
+	namespace _91
+	{
+		int solution(vector<int> num_list, int n)
+		{
+			for (int i : num_list)
+			{
+				if (i == n)
+				{
+					return 1;
+				}
+			}
+
+			return 0;
+		}
+	}
+
+	// 주사위 게임 1
+	namespace _92
+	{
+		int solution(int a, int b)
+		{
+			bool isOddA = a & 1;
+			bool isOddB = b & 1;
+
+			// 모두 홀수인 경우
+			if (isOddA && isOddB)
+			{
+				return a * a + b * b;
+			}
+			// 모두 짝수인 경우
+			else if (!isOddA && !isOddB)
+			{
+				return abs(a - b);
+			}
+			// 둘 중 하나만 홀수인 경우
+			else
+			{
+				return 2 * (a + b);
+			}
+		}
+	}
+
+	// 날짜 비교하기
+	namespace _93
+	{
+		int solution(vector<int> date1, vector<int> date2)
+		{
+			for (int i = 0; i < date1.size(); i++)
+			{
+				int temp = date1[i] - date2[i];
+				if (temp < 0)
+				{
+					return 1;
+				}
+
+				if (temp > 0)
+				{
+					return 0;
+				}
+			}
+
+			return 0;
+		}
+	}
 }
 
 namespace ListTest
