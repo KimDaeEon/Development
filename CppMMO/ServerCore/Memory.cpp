@@ -68,6 +68,7 @@ void* MemoryPoolManager::Allocate(int32 size)
 	if (allocSize > MAX_ALLOC_SIZE)
 	{
 		// 메모리 풀링 최대 크기를 벗어나면 일반 할당
+		// TODO: 이거 일반 할당 부분 1MB 넘을 시에 VirtualAlloc 넣는 거 추후에 테스트 해보고 성능 비교해보기
 		header = reinterpret_cast<MemoryHeader*>(::_aligned_malloc(allocSize, SLIST_ALIGNMENT));
 	}
 	else
