@@ -2542,7 +2542,7 @@ namespace ProgrammersBasicTraining
 					continue;
 				}
 			}
-			
+
 			return answer;
 		}
 	}
@@ -2643,6 +2643,195 @@ namespace ProgrammersBasicTraining
 			}
 
 			return 0;
+		}
+	}
+
+	// 커피 심부름
+	namespace _94
+	{
+		vector<string> americanos = { "iceamericano", "hotamericano", "americanoice", "americanohot" ,"anything", "americano" };
+		vector<string> cafelattes = { "icecafelatte", "cafelatteice",  "hotcafelatte", "cafelattehot", "cafelatte" };
+
+		int solution(vector<string> orders)
+		{
+			int answer = 0;
+			//for (const auto& order : orders)
+			//{
+			//	if (find(cafelattes.begin(), cafelattes.end(), order) != cafelattes.end())
+			//	{
+			//		answer += 5000;
+			//	}
+			//	else
+			//	{
+			//		answer += 4500;
+			//	}
+			//}
+
+			// 최적화하면 latte 만 포함한 경우를 계산하면 더 빠르다.
+			for (const auto& order : orders)
+			{
+				if (order.find("latte") != string::npos)
+				{
+					answer += 5000;
+				}
+				else
+				{
+					answer += 4500;
+				}
+			}
+			return answer;
+		}
+	}
+
+	// 그림 확대
+	namespace _95
+	{
+		vector<string> solution(vector<string> picture, int k)
+		{
+			vector<string> answer;
+			for (const auto& str : picture)
+			{
+				string temp = "";
+
+				for (int i = 0; i < str.size(); i++)
+				{
+					for (int j = 0; j < k; j++)
+					{
+						temp += str[i];
+					}
+				}
+
+				for (int i = 0; i < k; i++)
+				{
+					answer.push_back(temp);
+				}
+			}
+
+			return answer;
+		}
+	}
+
+	// 조건에 맞게 수열 변환하기 3
+	namespace _96
+	{
+		vector<int> solution(vector<int> arr, int k)
+		{
+			// 홀수인 경우
+			if (k & 1)
+			{
+				for (int& i : arr)
+				{
+					i = k * i;
+				}
+			}
+			// 짝수인 경우
+			else
+			{
+				for (int& i : arr)
+				{
+					i = k + i;
+				}
+			}
+			return arr;
+		}
+	}
+
+	// l(L)로 만들기
+	namespace _97
+	{
+		string solution(string myString)
+		{
+			for (char& ch : myString)
+			{
+				if (ch < 'l')
+				{
+					ch = 'l';
+				}
+			}
+			return myString;
+		}
+	}
+
+	// 특별한 이차원 배열 1
+	namespace _98
+	{
+		vector<vector<int>> solution(int n)
+		{
+			vector<vector<int>> answer(n, vector<int>(n, 0));
+
+			//for (int i = 0; i < answer.size(); i++)
+			//{
+			//	for (int j = 0; j < answer[i].size(); j++)
+			//	{
+			//		if (i == j)
+			//		{
+			//			answer[i][j] = 1;
+			//		}
+			//	}
+			//}
+
+			for (int i = 0; i < answer.size(); i++)
+			{
+				answer[i][i] = 1;
+			}
+
+			return answer;
+		}
+	}
+
+	// 정수를 나선형으로 배치하기
+	// TODO: 아래 좀 더 직관적으로 푸는 법 고민해보기
+	namespace _99
+	{
+		// 0, 1, 2, 3
+		int dir[][2] = { {0,1}, {1,0}, {0, -1}, {-1, 0} };
+
+		vector<vector<int>> solution(int n)
+		{
+			vector<vector<int>> answer(n, vector<int>(n, 0));
+
+			// dir 방향대로 쭉 가면서 false가 나오면 다음 dir 실행
+			int r = 0;
+			int c = 0;
+			int searchDir = 0;
+
+			answer[r][c] = 1;
+
+			int nextR = r + dir[searchDir][0];
+			int nextC = c + dir[searchDir][1];
+			for (int i = 1; i < n; i++)
+			{
+				nextR = r + dir[searchDir][0];
+				nextC = c + dir[searchDir][1];
+
+				answer[nextR][nextC] = answer[r][c] + 1;
+
+				r = nextR;
+				c = nextC;
+			}
+			searchDir++;
+
+			// 이후 2번씩 해당 방향으로 움직이며 할당
+			for (int k = n - 1; k >= 1; k--)
+			{
+				for (int j = 0; j < 2; j++)
+				{
+					for (int i = 0; i < k; i++)
+					{
+						nextR = r + dir[searchDir][0];
+						nextC = c + dir[searchDir][1];
+
+						answer[nextR][nextC] = answer[r][c] + 1;
+						
+						r = nextR;
+						c = nextC;
+					}
+
+					searchDir = (searchDir + 1) % 4;
+				}
+			}
+			
+			return answer;
 		}
 	}
 }
@@ -2811,9 +3000,194 @@ namespace ListTest
 	}
 }
 
+namespace TreeTest
+{
+	// 트리 노드 정의
+	struct TreeNode
+	{
+		int val;
+		TreeNode* left;
+		TreeNode* right;
+
+		TreeNode(int value) : val(value), left(nullptr), right(nullptr) {}
+	};
+
+	// 이진 트리 클래스
+	class BinaryTree
+	{
+	public:
+		TreeNode* root;
+
+		BinaryTree() : root(nullptr) {}
+
+		// -----------------
+		// Inorder Traversal
+		// -----------------
+
+		// 재귀 버전 (Left -> Root -> Right)
+		void InorderRecursive(TreeNode* node)
+		{
+			if (node == nullptr) return;
+			InorderRecursive(node->left);
+			cout << node->val << " ";
+			InorderRecursive(node->right);
+		}
+
+		// while문 버전 (Left -> Root -> Right)
+		void InorderUsingWhile(TreeNode* node)
+		{
+			if (node == nullptr) return;
+
+			stack<TreeNode*> s;
+			TreeNode* current = node;
+
+			while (current != nullptr || !s.empty())
+			{
+				while (current != nullptr)
+				{
+					s.push(current);
+					current = current->left; // 왼쪽 노드로 이동
+				}
+
+				current = s.top(); // 스택에서 노드 꺼냄
+				s.pop();
+
+				cout << current->val << " "; // 현재 노드 출력
+
+				current = current->right; // 오른쪽 노드로 이동
+			}
+		}
+
+		// -----------------
+		// Preorder Traversal
+		// -----------------
+
+		// 재귀 버전 (Root -> Left -> Right)
+		void PreorderRecursive(TreeNode* node)
+		{
+			if (node == nullptr) return;
+			cout << node->val << " ";
+			PreorderRecursive(node->left);
+			PreorderRecursive(node->right);
+		}
+
+		// while문 버전 (Root -> Left -> Right)
+		void PreorderUsingWhile(TreeNode* node)
+		{
+			if (node == nullptr) return;
+
+			stack<TreeNode*> s;
+			s.push(node);
+
+			while (!s.empty())
+			{
+				TreeNode* current = s.top();
+				s.pop();
+
+				cout << current->val << " "; // 현재 노드 출력
+
+				// 오른쪽 자식 먼저 스택에 추가
+				if (current->right)
+				{
+					s.push(current->right);
+				}
+
+				// 왼쪽 자식을 스택에 추가
+				if (current->left)
+				{
+					s.push(current->left);
+				}
+			}
+		}
+
+		// -----------------
+		// Postorder Traversal
+		// -----------------
+
+		// 재귀 버전 (Left -> Right -> Root)
+		void PostorderRecursive(TreeNode* node)
+		{
+			if (node == nullptr) return;
+			PostorderRecursive(node->left);
+			PostorderRecursive(node->right);
+			cout << node->val << " ";
+		}
+
+		// while문 버전 (Left -> Right -> Root)
+		void PostorderUsingWhile(TreeNode* node)
+		{
+			if (node == nullptr) return;
+
+			stack<TreeNode*> s1, s2;
+			s1.push(node);
+
+			while (!s1.empty())
+			{
+				TreeNode* current = s1.top();
+				s1.pop();
+				s2.push(current);
+
+				// 왼쪽 자식 스택에 추가
+				if (current->left)
+				{
+					s1.push(current->left);
+				}
+
+				// 오른쪽 자식 스택에 추가
+				if (current->right)
+				{
+					s1.push(current->right);
+				}
+			}
+
+			// 두 번째 스택에서 출력
+			while (!s2.empty())
+			{
+				cout << s2.top()->val << " ";
+				s2.pop();
+			}
+		}
+	};
+
+	void foo()
+	{
+		BinaryTree tree;
+
+		// 트리 생성
+		tree.root = new TreeNode(1);
+		tree.root->left = new TreeNode(2);
+		tree.root->right = new TreeNode(3);
+		tree.root->left->left = new TreeNode(4);
+		tree.root->left->right = new TreeNode(5);
+		tree.root->right->left = new TreeNode(6);
+		tree.root->right->right = new TreeNode(7);
+
+		// Inorder Traversal
+		cout << "Inorder Recursive: ";
+		tree.InorderRecursive(tree.root);
+		cout << "\nInorder While: ";
+		tree.InorderUsingWhile(tree.root);
+		cout << endl;
+
+		// Preorder Traversal
+		cout << "Preorder Recursive: ";
+		tree.PreorderRecursive(tree.root);
+		cout << "\nPreorder While: ";
+		tree.PreorderUsingWhile(tree.root);
+		cout << endl;
+
+		// Postorder Traversal
+		cout << "Postorder Recursive: ";
+		tree.PostorderRecursive(tree.root);
+		cout << "\nPostorder While: ";
+		tree.PostorderUsingWhile(tree.root);
+		cout << endl;
+	}
+}
+
 int main()
 {
-	ProgrammersBasicTraining::_86::solution("99", "199");
+	ProgrammersBasicTraining::_99::solution(4);
 	return 0;
 }
 
