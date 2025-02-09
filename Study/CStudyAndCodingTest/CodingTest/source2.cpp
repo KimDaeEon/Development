@@ -2780,7 +2780,6 @@ namespace ProgrammersBasicTraining
 	}
 
 	// 정수를 나선형으로 배치하기
-	// TODO: 아래 좀 더 직관적으로 푸는 법 고민해보기
 	namespace _99
 	{
 		// 0, 1, 2, 3
@@ -2822,7 +2821,7 @@ namespace ProgrammersBasicTraining
 						nextC = c + dir[searchDir][1];
 
 						answer[nextR][nextC] = answer[r][c] + 1;
-						
+
 						r = nextR;
 						c = nextC;
 					}
@@ -2830,7 +2829,82 @@ namespace ProgrammersBasicTraining
 					searchDir = (searchDir + 1) % 4;
 				}
 			}
-			
+
+			return answer;
+		}
+	}
+
+	// 특별한 이차원 배열 2
+	namespace _100
+	{
+		int solution(vector<vector<int>> arr)
+		{
+			for (int i = 0; i < arr.size(); i++)
+			{
+				for (int j = 0; j <= (arr[i].size() / 2); j++)
+				{
+					if (arr[i][j] != arr[j][i])
+					{
+						return 0;
+					}
+				}
+			}
+			return 1;
+		}
+	}
+
+	// 정사각형으로 만들기
+	namespace _101
+	{
+		// 행, 열 중 부족한 쪽에 0을 채우면 된다.
+		vector<vector<int>> solution(vector<vector<int>> arr)
+		{
+			int rowSize = arr.size();
+			int columnSize = arr[0].size();
+			int gap = rowSize - columnSize;
+
+			// 행이 더 많으므로 열을 늘린다.
+			if (gap > 0)
+			{
+				for (int i = 0; i < rowSize; i++)
+				{
+					arr[i].resize(rowSize, 0);
+				}
+			}
+			else
+			{
+				// 열이 더 많으므로 행을 늘린다.
+				for (int i = 0; i < -gap; i++)
+				{
+					arr.push_back(vector<int>(columnSize, 0));
+				}
+			}
+
+			return arr;
+		}
+	}
+
+	// 이차원 배열 대각선 순회하기
+	namespace _102
+	{
+		int solution(vector<vector<int>> board, int k)
+		{
+			int answer = 0;
+			for (int i = 0; i < board.size(); i++)
+			{
+				for (int j = 0; j < board[i].size(); j++)
+				{
+					if (i + j <= k)
+					{
+						answer += board[i][j];
+					}
+					else
+					{
+						break;
+					}
+				}
+			}
+
 			return answer;
 		}
 	}
@@ -3058,6 +3132,39 @@ namespace TreeTest
 			}
 		}
 
+		void InorderUsingWhile2(TreeNode* node)
+		{
+			if (node == nullptr)
+			{
+				return;
+			}
+
+			stack<TreeNode*> s;
+			TreeNode* current = node;
+
+			while (true)
+			{
+				// 왼쪽 있으면 끝까지 집어넣기
+				while (current)
+				{
+					s.push(current);
+					current = current->left;
+				}
+
+				// 하나 꺼내서 실행한 후, 오른쪽 노드 있으면 해당 노드 푸시
+				current = s.top();
+				s.pop();
+				cout << current->val << " ";
+
+				current = current->right;
+
+				if (current == nullptr && s.empty())
+				{
+					break;
+				}
+			}
+		}
+
 		// -----------------
 		// Preorder Traversal
 		// -----------------
@@ -3100,6 +3207,43 @@ namespace TreeTest
 			}
 		}
 
+		void PreorderUsingWhile2(TreeNode* node)
+		{
+			if (node == nullptr)
+			{
+				return;
+			}
+
+			TreeNode* current = nullptr;
+			stack<TreeNode*> s;
+
+			s.push(node);
+
+			while (true)
+			{
+				// 일단 top을 꺼내서 프린트
+				current = s.top();
+				s.pop();
+				cout << current->val << " ";
+
+				// 오른쪽 꺼부터 삽입 (그래야 왼쪽께 먼저 나옴)
+				if (current->right)
+				{
+					s.push(current->right);
+				}
+
+				if (current->left)
+				{
+					s.push(current->left);
+				}
+
+				if (s.empty())
+				{
+					break;
+				}
+			}
+		}
+
 		// -----------------
 		// Postorder Traversal
 		// -----------------
@@ -3127,7 +3271,7 @@ namespace TreeTest
 				s1.pop();
 				s2.push(current);
 
-				// 왼쪽 자식 스택에 추가
+				// 왼쪽 자식 스택에 추가, 이게 헷갈리는게 다시 또 스택에 들어가면 순서가 바뀌는 거라 여기선 또 먼저 넣어줘야 함
 				if (current->left)
 				{
 					s1.push(current->left);
@@ -3145,6 +3289,49 @@ namespace TreeTest
 			{
 				cout << s2.top()->val << " ";
 				s2.pop();
+			}
+		}
+
+		void PostorderUsingWhile2(TreeNode* node)
+		{
+			if (node == nullptr)
+			{
+				return;
+			}
+
+			stack<TreeNode*> s1;
+			stack<TreeNode*> s2;
+
+			s1.push(node);
+
+			while (true)
+			{
+				auto top = s1.top();
+				s1.pop();
+				s2.push(top);
+
+				if (top->left)
+				{
+					s1.push(top->left);
+				}
+
+				if (top->right)
+				{
+					s1.push(top->right);
+				}
+
+				if (s1.empty())
+				{
+					break;
+				}
+			}
+
+			while (!s2.empty())
+			{
+				auto top = s2.top();
+				s2.pop();
+
+				cout << top->val << " ";
 			}
 		}
 	};
@@ -3166,28 +3353,28 @@ namespace TreeTest
 		cout << "Inorder Recursive: ";
 		tree.InorderRecursive(tree.root);
 		cout << "\nInorder While: ";
-		tree.InorderUsingWhile(tree.root);
+		tree.InorderUsingWhile2(tree.root);
 		cout << endl;
 
 		// Preorder Traversal
 		cout << "Preorder Recursive: ";
 		tree.PreorderRecursive(tree.root);
 		cout << "\nPreorder While: ";
-		tree.PreorderUsingWhile(tree.root);
+		tree.PreorderUsingWhile2(tree.root);
 		cout << endl;
 
 		// Postorder Traversal
 		cout << "Postorder Recursive: ";
 		tree.PostorderRecursive(tree.root);
 		cout << "\nPostorder While: ";
-		tree.PostorderUsingWhile(tree.root);
+		tree.PostorderUsingWhile2(tree.root);
 		cout << endl;
 	}
 }
 
 int main()
 {
-	ProgrammersBasicTraining::_99::solution(4);
+	TreeTest::foo();
 	return 0;
 }
 
