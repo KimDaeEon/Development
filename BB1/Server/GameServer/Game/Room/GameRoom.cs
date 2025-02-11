@@ -34,7 +34,7 @@ namespace GameServer
             ZoneCells = zoneCells; // 이게 10이면 X, Y 각각 10칸씩 갖는 Zone으로 맵이 쪼개진다.
 
             // TODO: 아래 dataSheetId로 map 이름을 찾던지 하는 로직 추가하기.
-            Map.LoadMap("00_testCollision");
+            Map.LoadMap("DefaultMapCollision");
 
             // 맵 사이즈가 Cell이 1개라면 올림해서 Zone이 1개는 나와야 하므로 올림 연산이 되도록 이렇게 계산
             int zoneCountX = (Map.SizeX + ZoneCells - 1) / ZoneCells; 

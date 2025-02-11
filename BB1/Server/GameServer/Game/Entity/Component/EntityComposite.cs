@@ -6,6 +6,7 @@ namespace GameServer
     public class EntityComposite
     {
         private readonly Dictionary<Type, IEntityComponent> _components = new Dictionary<Type, IEntityComponent>();
+        public Entity Owner { get; set; } // Owner 참조
 
         public EntityComposite() { }
 
@@ -23,6 +24,7 @@ namespace GameServer
             }
 
             _components[type] = component;
+            component.Owner = Owner;
         }
 
         public bool TryGetComponent<T>(out T component) where T : class, IEntityComponent

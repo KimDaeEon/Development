@@ -12,10 +12,10 @@ namespace GameServer
         protected Entity()
         {
             _entityComponents = new EntityComposite();
+            _entityComponents.Owner = this;
 
             // 기본 컴포넌트 추가 (필요하면 추가)
             var statusComponent = new StatusComponent();
-            statusComponent.Owner = this;
             _entityComponents.AddComponent(statusComponent);
 
             _entityInfo = new Protocol.EntityInfo();
