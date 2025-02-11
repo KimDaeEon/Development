@@ -10,7 +10,7 @@ namespace GameServer
 
         public EntityComposite() { }
 
-        public void AddComponent<T>(T component) where T : class, IEntityComponent
+        public T AddComponent<T>(T component) where T : class, IEntityComponent
         {
             if (component == null)
             {
@@ -25,6 +25,8 @@ namespace GameServer
 
             _components[type] = component;
             component.Owner = Owner;
+
+            return component;
         }
 
         public bool TryGetComponent<T>(out T component) where T : class, IEntityComponent
