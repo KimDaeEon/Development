@@ -19,9 +19,9 @@ namespace GameServer
             _entityInfo = new Protocol.EntityInfo();
         }
 
-        public void AddComponent<T>(T component) where T : class, IEntityComponent
+        public T AddComponent<T>(T component) where T : class, IEntityComponent
         {
-            _entityComponents.AddComponent(component);
+            return _entityComponents.AddComponent(component);
         }
 
         public T GetComponent<T>() where T : class, IEntityComponent
