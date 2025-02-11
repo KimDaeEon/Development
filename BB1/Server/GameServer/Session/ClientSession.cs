@@ -1,5 +1,5 @@
-﻿using GameServer.Data;
-using Google.Protobuf;
+﻿using Google.Protobuf;
+using Google.Protobuf.Protocol;
 using ServerCore;
 using System;
 using System.Collections.Generic;
@@ -13,6 +13,8 @@ namespace GameServer
     {
         public long AccountDbId { get; set; }
         public int SessionId { get; set; }
+
+        public bool IsVerified { get; set; } // IO 스레드에서만 건드리도록 하자.
 
         object _lock = new object();
 
@@ -49,6 +51,22 @@ namespace GameServer
             SessionManager.Instance.Remove(this);
 
             Console.WriteLine($"OnDisconnected : {endPoint}");
+
+
+            // TODO: MyCharacter랑 Room이 게임 스레드에서만 할당 및 해제가 이루어져서 읽기만은 문제 없을 것이라 판단해서 이렇게 했는데, 혹시나 문제 생기면 이 부분도 확인
+            var curRoom = MyCharacter?.Room;
+            if (curRoom != null)
+            {
+                GameRoomManager.Instance.FindRoom(curRoom.GameRoomId, callback: (room) =>
+                {
+                    if (room != null)
+                    {
+                        Console.WriteLine($"Found Room ID: {room.GetHashCode()}");
+
+                        room.HandleLeaveGame(this);
+                    }
+                });
+            }
         }
 
         public override void OnSend(int numOfBytes)

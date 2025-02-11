@@ -55,5 +55,21 @@ namespace GameServer
                 Console.WriteLine($"[Zone] Entity of type {entity.GetType().Name} cannot be removed.");
             }
         }
+
+
+        public void BroadCast<T>(T packet, HashSet<Character> excludeCharacters = null) where T : Google.Protobuf.IMessage
+        {
+            foreach (var character in Characters)
+            {
+                // 제외할 Character 목록에 포함되어 있으면 패킷을 보내지 않음
+                if (excludeCharacters != null && excludeCharacters.Contains(character))
+                {
+                    continue;
+                }
+
+                character.Session?.Send(packet);
+            }
+        }
+
     }
 }

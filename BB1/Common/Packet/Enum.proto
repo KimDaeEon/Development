@@ -34,6 +34,14 @@ enum EMoveDir
 	MOVE_DIR_DOWN_RIGHT = 8;
 }
 
+enum ECharacterType
+{
+    CHARACTER_TYPE_NONE = 0;
+    CHARACTER_TYPE_WARRIOR = 1;
+    CHARACTER_TYPE_ARCHER = 2;
+    CHARACTER_TYPE_MAGICIAN = 3;
+}
+
 enum EMonsterType
 {
 	MONSTER_TYPE_NONE = 0;

@@ -75,7 +75,7 @@ namespace GameServer
         {
             PushJob(() =>
             {
-                var rooms = _rooms.Values.ToList();
+                var rooms = new List<GameRoom>(_rooms.Values);
                 callback?.Invoke(rooms);
             });
         }

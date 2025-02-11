@@ -57,8 +57,19 @@ namespace Server
                 t.Start();
             }
 
-            // DB Test
-            DbJobProcessor.Instance.PushJob(DbJobProcessor.TestDB);
+
+            GameRoomManager.Instance.AddRoom(dataSheetId: 1, zoneCells: 10, callback: (room) =>
+            {
+                if (room != null)
+                {
+                    room.Init(1, 10);
+                    Console.WriteLine($"Room added successfully.");
+                }
+                else
+                {
+                    Console.WriteLine($"Adding room faield!!");
+                }
+            });
 
             // GameLogic
             Thread.CurrentThread.Name = "GameLogic";

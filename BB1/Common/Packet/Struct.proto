@@ -6,11 +6,11 @@ option csharp_namespace = "Google.Protobuf.Protocol";
 
 import public "Enum.proto";
 
+// Unity 상에서 찍히는 좌표이다. 이 좌표를 기반으로 Zone 을 찾기 위해서 맵의 경계 좌표를 빼서 다시 계산된다.
 message Position
 {
-	sint64 x = 1;
-	sint64 y = 2;
-	sint64 z = 3;
+	sint32 x = 1;
+	sint32 y = 2;
 }
 
 // --------------------------------
@@ -18,7 +18,7 @@ message Position
 // --------------------------------
 message MoveInfo
 {
-	Position Position = 1;
+	Position position = 1;
 	EActorState actorState = 2;
 }
 
@@ -92,6 +92,8 @@ message MonsterInfo
 message CharacterInfo
 {
 	string name = 1;
+	ECharacterType type = 2;
+
 	// TODO: 추후 퀘스트 정보 추가
 }
 

@@ -8,7 +8,7 @@ using System.Net;
 
 namespace GameServer
 {
-    // 2D 좌표 용도로 사용될 객체
+    // 2D 좌표 용도로 사용될 객체, 프로토콜 바뀌어도 서버는 일단 유지하기 위한 용도
     public struct Vector2Int
     {
         public int x;

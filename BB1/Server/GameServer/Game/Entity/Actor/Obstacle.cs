@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace GameServer
 {
@@ -10,22 +6,16 @@ namespace GameServer
     // 충돌 처리
     public class Obstacle : Actor
     {
-        private EntityComposite<IEntityComponent> _obstacleComponents;
-
-        public Obstacle()
+        protected Obstacle()
         {
-            //_obstacleComponents = new EntityComposite<IEntityComponent>(
-            //);
+            // Obstacle은 별다른 컴포넌트가 필요 없을 수도 있음
         }
 
-        public new T GetComponent<T>() where T : class, IEntityComponent
+        public override void Init(ulong dataSheetId)
         {
-            if (_obstacleComponents.TryGetComponent<T>(out var component))
-            {
-                return component;
-            }
+            base.Init(dataSheetId);
 
-            return base.GetComponent<T>();
+            // TODO: 데이터 세팅
         }
     }
 }

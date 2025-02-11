@@ -1,33 +1,20 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace GameServer
 {
     public class Monster : Actor
     {
-        private EntityComposite<IEntityComponent> _monsterComponents;
-
-        public Monster()
+        protected Monster()
         {
-            var aiComponent = new AIComponent();
-            // TODO: 여기서 EntityInfo 로 추후에 할당할 거 있으면 할당하기.
-
-            _monsterComponents = new EntityComposite<IEntityComponent>(
-                aiComponent
-            );
+            AddComponent(new AIComponent()); // ✅ 필요할 때만 추가
         }
 
-        public new T GetComponent<T>() where T : class, IEntityComponent
+        public override void Init(ulong dataSheetId)
         {
-            if (_monsterComponents.TryGetComponent<T>(out var component))
-            {
-                return component;
-            }
+            base.Init(dataSheetId);
+            DataSheetId = dataSheetId;
 
-            return base.GetComponent<T>();
+            // TODO: 데이터 세팅
         }
     }
 }

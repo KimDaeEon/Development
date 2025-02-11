@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace GameServer
 {
@@ -10,23 +6,17 @@ namespace GameServer
     // 충돌 처리 없음
     public class Item : Entity
     {
-        private EntityComposite<IEntityComponent> _itemComponents;
-
-        public Item()
+        protected Item()
         {
-            _itemComponents = new EntityComposite<IEntityComponent>(
-                //new SkillComponent() // Item도 SkillComponent를 포함
-            );
+            // 필요하면 Component 추가
+            // AddComponent(new SkillComponent()); // Item도 SkillComponent를 포함할 수 있음
         }
 
-        public new T GetComponent<T>() where T : class, IEntityComponent
+        public override void Init(ulong dataSheetId)
         {
-            if (_itemComponents.TryGetComponent<T>(out var component))
-            {
-                return component;
-            }
+            DataSheetId = dataSheetId;
 
-            return base.GetComponent<T>();
+            // TODO: 데이터 세팅
         }
     }
 }

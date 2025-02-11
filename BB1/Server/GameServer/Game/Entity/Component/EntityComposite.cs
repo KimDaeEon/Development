@@ -1,29 +1,35 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace GameServer
 {
-    // EntityComposite 클래스 정의
-    public class EntityComposite<T> where T : IEntityComponent
+    public class EntityComposite
     {
         private readonly Dictionary<Type, IEntityComponent> _components = new Dictionary<Type, IEntityComponent>();
 
-        public EntityComposite(params IEntityComponent[] components)
+        public EntityComposite() { }
+
+        public void AddComponent<T>(T component) where T : class, IEntityComponent
         {
-            foreach (var component in components)
+            if (component == null)
             {
-                _components[component.GetType()] = component;
+                throw new ArgumentNullException(nameof(component));
             }
+
+            Type type = typeof(T);
+            if (_components.ContainsKey(type))
+            {
+                throw new InvalidOperationException($"Component of type {type.Name} already exists.");
+            }
+
+            _components[type] = component;
         }
 
-        public bool TryGetComponent<TComponent>(out TComponent component) where TComponent : class, IEntityComponent
+        public bool TryGetComponent<T>(out T component) where T : class, IEntityComponent
         {
-            if (_components.TryGetValue(typeof(TComponent), out var foundComponent))
+            if (_components.TryGetValue(typeof(T), out var foundComponent))
             {
-                component = foundComponent as TComponent;
+                component = foundComponent as T;
                 return component != null;
             }
 
@@ -31,14 +37,14 @@ namespace GameServer
             return false;
         }
 
-        public TComponent GetComponent<TComponent>() where TComponent : class, IEntityComponent
+        public T GetComponent<T>() where T : class, IEntityComponent
         {
-            if (TryGetComponent<TComponent>(out var component))
+            if (TryGetComponent<T>(out var component))
             {
                 return component;
             }
 
-            throw new InvalidOperationException($"Component of type {typeof(TComponent).Name} does not exist.");
+            throw new InvalidOperationException($"Component of type {typeof(T).Name} does not exist.");
         }
     }
 }

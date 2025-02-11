@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace GameServer
 {
@@ -10,23 +6,17 @@ namespace GameServer
     // 충돌 처리 X (Actor에 충돌 시 사라짐)
     public class Projectile : Entity
     {
-        private EntityComposite<IEntityComponent> _projectileComponents;
-
-        public Projectile()
+        protected Projectile()
         {
-            _projectileComponents = new EntityComposite<IEntityComponent>(
-                //new AIComponent() // Projectile도 AIComponent를 포함
-            );
+            // 필요하면 Component 추가
+            // AddComponent(new AIComponent()); // Projectile도 AIComponent를 포함 가능
         }
 
-        public new T GetComponent<T>() where T : class, IEntityComponent
+        public override void Init(ulong dataSheetId)
         {
-            if (_projectileComponents.TryGetComponent<T>(out var component))
-            {
-                return component;
-            }
+            DataSheetId = dataSheetId;
 
-            return base.GetComponent<T>();
+            // TODO: 데이터 세팅
         }
     }
 }

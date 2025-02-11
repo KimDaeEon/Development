@@ -15,6 +15,7 @@ namespace GameServer.Data
         public int port;
         public string connectionString;
         public bool isDummyClientLoginPossible = false; // TODO: 추후 필요할지 다시 확인
+        public ulong packetVer; // 패킷 버전 체크
     }
     public class ConfigManager
     {

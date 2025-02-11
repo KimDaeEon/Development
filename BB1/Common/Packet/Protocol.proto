@@ -16,6 +16,7 @@ message C_Test
 	int32 v = 1;
 }
 
+// TODO: 이게 필요할까? 고민해보고 나중에도 필요 없을 거 같으면 지우기, 추후에 Lobby 패킷이 추가 되면 필요 없을 거 같다.
 message C_LeaveGame
 {
 }
@@ -28,6 +29,7 @@ message S_LeaveGame
 message C_EnterGame
 {
 	uint64 charDbId = 1; // 접속할 캐릭터 Id
+	uint64 version = 2; // 패킷 버전
 }
 
 // 자기만 받음
