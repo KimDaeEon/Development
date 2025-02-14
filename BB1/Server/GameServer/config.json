@@ -4,5 +4,5 @@
   "port": "8888",
   "connectionString": "Server=127.0.0.1;Initial Catalog=GameDB;User ID=sa;Password=1234;Connect Timeout=30;Encrypt=False;TrustServerCertificate=False;ApplicationIntent=ReadWrite;MultiSubnetFailover=False",
   "isDummyClientLoginPossible": true,
-  "packetVer": "1"
+  "packetVer": "0"
 }

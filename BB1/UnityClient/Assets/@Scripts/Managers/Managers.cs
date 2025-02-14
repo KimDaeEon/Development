@@ -11,11 +11,11 @@ public class Managers : MonoBehaviour
     #region Contents
 
     private GameManager _game = new GameManager();
-    private ObjectManager _object = new ObjectManager();
+    private GameObjectManager _object = new GameObjectManager();
     private MapManager _map = new MapManager();
     
     public static GameManager Game { get { return Instance?._game; } }
-    public static ObjectManager Object { get { return Instance?._object; } }
+    public static GameObjectManager Object { get { return Instance?._object; } }
     public static MapManager Map { get { return Instance?._map; } }
     
     #endregion

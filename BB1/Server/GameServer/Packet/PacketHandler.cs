@@ -20,10 +20,10 @@ class PacketHandler
         C_Test pkt = packet as C_Test;
         ClientSession clientSession = session as ClientSession;
 
-        if (clientSession.IsVerified == false)
-        {
-            clientSession.Disconnect();
-        }
+        //if (clientSession.IsVerified == false)
+        //{
+        //    clientSession.Disconnect();
+        //}
 
         System.Console.WriteLine(pkt);
     }

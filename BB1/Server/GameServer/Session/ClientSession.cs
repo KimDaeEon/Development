@@ -14,7 +14,8 @@ namespace GameServer
         public long AccountDbId { get; set; }
         public int SessionId { get; set; }
 
-        public bool IsVerified { get; set; } // IO 스레드에서만 건드리도록 하자.
+        // https://stackoverflow.com/questions/5209623/is-a-reference-assignment-threadsafe
+        public bool IsVerified { get; set; } // IO 스레드에서만 건드리도록 하자. bool Type은 assign thread-safe 하기에 읽기만 할 시에는 lock 제외
 
         object _lock = new object();
 

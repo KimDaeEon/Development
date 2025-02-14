@@ -63,6 +63,7 @@
     <Compile Include="Assets\@Scripts\Editor\MapEditor.cs" />
     <Compile Include="Assets\@Scripts\Editor\CustomEditor\TilemapEditor.cs" />
     <Compile Include="Assets\@Scripts\Editor\DataTransformer.cs" />
+    <Compile Include="Assets\@Scripts\Editor\CustomEditor\MapToolEditor.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="UnityEngine">

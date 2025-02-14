@@ -62,7 +62,6 @@ namespace Server
             {
                 if (room != null)
                 {
-                    room.Init(1, 10);
                     Console.WriteLine($"Room added successfully.");
                 }
                 else

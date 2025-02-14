@@ -18,7 +18,13 @@ MonoBehaviour:
   m_GUID: 4f4a826ca34ccad4ea00bedde178bea6
   m_SerializeEntries:
   - m_GUID: 1c2ad1ad8ae65194aa075f32d95f3eae
-    m_Address: Assets/@Resources/Prefabs/Monster/MonsterPrefab.prefab
+    m_Address: MonsterPrefab
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Preload
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 7f7a40ec42da8d34bbf4961710c928e1
+    m_Address: DefaultMap
     m_ReadOnly: 0
     m_SerializedLabels:
     - Preload

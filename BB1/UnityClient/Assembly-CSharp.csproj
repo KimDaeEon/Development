@@ -61,35 +61,38 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Assets\@Scripts\Managers\Contents\GameManager.cs" />
+    <Compile Include="Assets\@Scripts\Controllers\Character.cs" />
     <Compile Include="Assets\@Scripts\Packet\PacketHandler.cs" />
     <Compile Include="Assets\@Scripts\Scenes\TitleScene.cs" />
     <Compile Include="Assets\@Scripts\UI\SafeArea.cs" />
-    <Compile Include="Assets\@Scripts\Controllers\BaseController.cs" />
     <Compile Include="Assets\@Scripts\Packet\ServerCore\Session.cs" />
     <Compile Include="Assets\@Scripts\Packet\Generated\Struct.cs" />
     <Compile Include="Assets\@Scripts\Managers\Core\NetworkManager.cs" />
     <Compile Include="Assets\@Scripts\UI\Scene\UI_TitleScene.cs" />
     <Compile Include="Assets\@Scripts\UI\Popup\UI_Popup.cs" />
     <Compile Include="Assets\@Scripts\UI\SubItem\UI_SubItem.cs" />
+    <Compile Include="Assets\@Scripts\Controllers\Actor.cs" />
     <Compile Include="Assets\@Scripts\Utils\CustomEnum.cs" />
     <Compile Include="Assets\@Scripts\Utils\Utils.cs" />
     <Compile Include="Assets\@Scripts\UI\Scene\UI_Scene.cs" />
+    <Compile Include="Assets\@Scripts\Controllers\Entity.cs" />
     <Compile Include="Assets\@Scripts\UI\UI_EventHandler.cs" />
     <Compile Include="Assets\@Scripts\Scenes\GameScene.cs" />
     <Compile Include="Assets\@Scripts\Managers\Managers.cs" />
     <Compile Include="Assets\@Scripts\Packet\PacketQueue.cs" />
-    <Compile Include="Assets\@Scripts\Managers\Contents\ObjectManager.cs" />
     <Compile Include="Assets\@Scripts\Packet\Web\WebPacket.cs" />
     <Compile Include="Assets\@Scripts\UI\UI_Base.cs" />
     <Compile Include="Assets\@Scripts\Managers\Core\WebManager.cs" />
     <Compile Include="Assets\@Scripts\Utils\CaptureScreenShot.cs" />
     <Compile Include="Assets\@Scripts\Packet\ServerCore\RecvBuffer.cs" />
     <Compile Include="Assets\@Scripts\Packet\Generated\Enum.cs" />
+    <Compile Include="Assets\@Scripts\Managers\Contents\Map\MapTool.cs" />
+    <Compile Include="Assets\@Scripts\Controllers\MyCharacter.cs" />
     <Compile Include="Assets\@Scripts\UI\Scene\UI_Joystick.cs" />
-    <Compile Include="Assets\@Scripts\Managers\Contents\MapManager.cs" />
     <Compile Include="Assets\@Scripts\Managers\Core\UIManager.cs" />
     <Compile Include="Assets\@Scripts\Managers\Core\SoundManager.cs" />
     <Compile Include="Assets\@Scripts\Utils\Extension.cs" />
+    <Compile Include="Assets\@Scripts\Managers\Contents\GameObjectManager.cs" />
     <Compile Include="Assets\@Scripts\Packet\Generated\ClientPacketManager.cs" />
     <Compile Include="Assets\@Scripts\Managers\Core\PoolManager.cs" />
     <Compile Include="Assets\@Scripts\Managers\Core\DataManager.cs" />
@@ -97,6 +100,8 @@
     <Compile Include="Assets\@Scripts\Managers\Core\ResourceManager.cs" />
     <Compile Include="Assets\@Scripts\Packet\ServerCore\Connector.cs" />
     <Compile Include="Assets\@Scripts\Data\Data.Contents.cs" />
+    <Compile Include="Assets\@Scripts\Managers\Contents\Map\MapManager.cs" />
+    <Compile Include="Assets\@Scripts\Controllers\Monster.cs" />
     <Compile Include="Assets\@Scripts\Packet\Generated\Protocol.cs" />
     <Compile Include="Assets\@Scripts\UI\Scene\UI_GameScene.cs" />
     <Compile Include="Assets\@Scripts\Packet\ServerSession.cs" />
@@ -115,7 +120,6 @@
     <None Include="Assets\@Resources\Spines\Monster\03.castle\living_armor_common\living_armor_common.atlas.txt" />
     <None Include="Assets\@Resources\Spines\Character\012_michelle\012.atlas.txt" />
     <None Include="Assets\@Resources\Spines\Monster\06.desert\desert_worm\desert_worm.atlas.txt" />
-    <None Include="Assets\@Resources\Data\MapData\00_testCollision.txt" />
     <None Include="Assets\@Resources\Spines\Monster\01.forest\frog_common\frog_common.atlas.txt" />
     <None Include="Assets\@Resources\Spines\Character\009_luke\009.atlas.txt" />
     <None Include="Assets\@Resources\Spines\Monster\slime_spine\slime.atlas.txt" />
@@ -223,6 +227,7 @@
     <None Include="Assets\@Resources\Spines\Monster\03.castle\skeleton\skeleton.atlas.txt" />
     <None Include="Assets\@Resources\Spines\Monster\05.volcano\fire_rhino\fire_rhino.atlas.txt" />
     <None Include="Assets\@Resources\Spines\Character\030_lucy\030.atlas.txt" />
+    <None Include="Assets\@Resources\Data\MapData\DefaultMapCollision.txt" />
     <None Include="Assets\@Resources\Spines\Monster\01.forest\wood_common\wood_common.atlas.txt" />
     <None Include="Assets\@Resources\Spines\Monster\05.volcano\volcano_golem_shooter\volcano_golem_shooter.atlas.txt" />
     <None Include="Assets\TextMesh Pro\Shaders\TMP_Sprite.shader" />

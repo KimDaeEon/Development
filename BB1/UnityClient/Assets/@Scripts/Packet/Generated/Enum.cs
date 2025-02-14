@@ -32,28 +32,31 @@ namespace Google.Protobuf.Protocol {
             "X0RPV04QAhIRCg1NT1ZFX0RJUl9MRUZUEAMSEgoOTU9WRV9ESVJfUklHSFQQ",
             "BBIUChBNT1ZFX0RJUl9VUF9MRUZUEAUSFQoRTU9WRV9ESVJfVVBfUklHSFQQ",
             "BhIWChJNT1ZFX0RJUl9ET1dOX0xFRlQQBxIXChNNT1ZFX0RJUl9ET1dOX1JJ",
-            "R0hUEAgqVQoMRU1vbnN0ZXJUeXBlEhUKEU1PTlNURVJfVFlQRV9OT05FEAAS",
-            "FwoTTU9OU1RFUl9UWVBFX05PUk1BTBABEhUKEU1PTlNURVJfVFlQRV9CT1NT",
-            "EAIqqwEKC0VXZWFwb25UeXBlEhQKEFdFQVBPTl9UWVBFX05PTkUQABIgChxX",
-            "RUFQT05fVFlQRV9UV09fSEFOREVEX1NXT1JEEAESIAocV0VBUE9OX1RZUEVf",
-            "T05FX0hBTkRFRF9TV09SRBACEhMKD1dFQVBPTl9UWVBFX0JPVxADEhUKEVdF",
-            "QVBPTl9UWVBFX1NUQUZGEAQSFgoSV0VBUE9OX1RZUEVfREFHR0VSEAUqlwEK",
-            "CkVBcm1vclR5cGUSEwoPQVJNT1JfVFlQRV9OT05FEAASGQoVQVJNT1JfVFlQ",
-            "RV9DSEVTVFBMQVRFEAESFQoRQVJNT1JfVFlQRV9IRUxNRVQQAhIVChFBUk1P",
-            "Ul9UWVBFX1NISUVMRBADEhUKEUFSTU9SX1RZUEVfR0xPVkVTEAQSFAoQQVJN",
-            "T1JfVFlQRV9CT09UUxAFKnsKDkVBY2Nlc3NvcnlUeXBlEhcKE0FDQ0VTU09S",
-            "WV9UWVBFX05PTkUQABIXChNBQ0NFU1NPUllfVFlQRV9SSU5HEAESGwoXQUND",
-            "RVNTT1JZX1RZUEVfTkVDS0xBQ0UQAhIaChZBQ0NFU1NPUllfVFlQRV9FQVJS",
-            "SU5HEAMqgwIKD0VDb25zdW1hYmxlVHlwZRIYChRDT05TVU1BQkxFX1RZUEVf",
-            "Tk9ORRAAEi0KKUNPTlNVTUFCTEVfVFlQRV9XRUFQT05fRU5IQU5DRU1FTlRf",
-            "U0NST0xMEAESLAooQ09OU1VNQUJMRV9UWVBFX0FSTU9SX0VOSEFOQ0VNRU5U",
-            "X1NDUk9MTBACEjAKLENPTlNVTUFCTEVfVFlQRV9BQ0NFU1NPUllfRU5IQU5D",
-            "RU1FTlRfU0NST0xMEAMSHQoZQ09OU1VNQUJMRV9UWVBFX1NUQVRfQlVGRhAE",
-            "EigKJENPTlNVTUFCTEVfVFlQRV9URUxFUE9SVEFUSU9OX1NDUk9MTBAFQhuq",
-            "AhhHb29nbGUuUHJvdG9idWYuUHJvdG9jb2xiBnByb3RvMw=="));
+            "R0hUEAgqfQoORUNoYXJhY3RlclR5cGUSFwoTQ0hBUkFDVEVSX1RZUEVfTk9O",
+            "RRAAEhoKFkNIQVJBQ1RFUl9UWVBFX1dBUlJJT1IQARIZChVDSEFSQUNURVJf",
+            "VFlQRV9BUkNIRVIQAhIbChdDSEFSQUNURVJfVFlQRV9NQUdJQ0lBThADKlUK",
+            "DEVNb25zdGVyVHlwZRIVChFNT05TVEVSX1RZUEVfTk9ORRAAEhcKE01PTlNU",
+            "RVJfVFlQRV9OT1JNQUwQARIVChFNT05TVEVSX1RZUEVfQk9TUxACKqsBCgtF",
+            "V2VhcG9uVHlwZRIUChBXRUFQT05fVFlQRV9OT05FEAASIAocV0VBUE9OX1RZ",
+            "UEVfVFdPX0hBTkRFRF9TV09SRBABEiAKHFdFQVBPTl9UWVBFX09ORV9IQU5E",
+            "RURfU1dPUkQQAhITCg9XRUFQT05fVFlQRV9CT1cQAxIVChFXRUFQT05fVFlQ",
+            "RV9TVEFGRhAEEhYKEldFQVBPTl9UWVBFX0RBR0dFUhAFKpcBCgpFQXJtb3JU",
+            "eXBlEhMKD0FSTU9SX1RZUEVfTk9ORRAAEhkKFUFSTU9SX1RZUEVfQ0hFU1RQ",
+            "TEFURRABEhUKEUFSTU9SX1RZUEVfSEVMTUVUEAISFQoRQVJNT1JfVFlQRV9T",
+            "SElFTEQQAxIVChFBUk1PUl9UWVBFX0dMT1ZFUxAEEhQKEEFSTU9SX1RZUEVf",
+            "Qk9PVFMQBSp7Cg5FQWNjZXNzb3J5VHlwZRIXChNBQ0NFU1NPUllfVFlQRV9O",
+            "T05FEAASFwoTQUNDRVNTT1JZX1RZUEVfUklORxABEhsKF0FDQ0VTU09SWV9U",
+            "WVBFX05FQ0tMQUNFEAISGgoWQUNDRVNTT1JZX1RZUEVfRUFSUklORxADKoMC",
+            "Cg9FQ29uc3VtYWJsZVR5cGUSGAoUQ09OU1VNQUJMRV9UWVBFX05PTkUQABIt",
+            "CilDT05TVU1BQkxFX1RZUEVfV0VBUE9OX0VOSEFOQ0VNRU5UX1NDUk9MTBAB",
+            "EiwKKENPTlNVTUFCTEVfVFlQRV9BUk1PUl9FTkhBTkNFTUVOVF9TQ1JPTEwQ",
+            "AhIwCixDT05TVU1BQkxFX1RZUEVfQUNDRVNTT1JZX0VOSEFOQ0VNRU5UX1ND",
+            "Uk9MTBADEh0KGUNPTlNVTUFCTEVfVFlQRV9TVEFUX0JVRkYQBBIoCiRDT05T",
+            "VU1BQkxFX1RZUEVfVEVMRVBPUlRBVElPTl9TQ1JPTEwQBUIbqgIYR29vZ2xl",
+            "LlByb3RvYnVmLlByb3RvY29sYgZwcm90bzM="));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
           new pbr::FileDescriptor[] { },
-          new pbr::GeneratedClrTypeInfo(new[] {typeof(global::Google.Protobuf.Protocol.EResult), typeof(global::Google.Protobuf.Protocol.EActorState), typeof(global::Google.Protobuf.Protocol.EMoveDir), typeof(global::Google.Protobuf.Protocol.EMonsterType), typeof(global::Google.Protobuf.Protocol.EWeaponType), typeof(global::Google.Protobuf.Protocol.EArmorType), typeof(global::Google.Protobuf.Protocol.EAccessoryType), typeof(global::Google.Protobuf.Protocol.EConsumableType), }, null, null));
+          new pbr::GeneratedClrTypeInfo(new[] {typeof(global::Google.Protobuf.Protocol.EResult), typeof(global::Google.Protobuf.Protocol.EActorState), typeof(global::Google.Protobuf.Protocol.EMoveDir), typeof(global::Google.Protobuf.Protocol.ECharacterType), typeof(global::Google.Protobuf.Protocol.EMonsterType), typeof(global::Google.Protobuf.Protocol.EWeaponType), typeof(global::Google.Protobuf.Protocol.EArmorType), typeof(global::Google.Protobuf.Protocol.EAccessoryType), typeof(global::Google.Protobuf.Protocol.EConsumableType), }, null, null));
     }
     #endregion
 
@@ -84,6 +87,13 @@ namespace Google.Protobuf.Protocol {
     [pbr::OriginalName("MOVE_DIR_UP_RIGHT")] MoveDirUpRight = 6,
     [pbr::OriginalName("MOVE_DIR_DOWN_LEFT")] MoveDirDownLeft = 7,
     [pbr::OriginalName("MOVE_DIR_DOWN_RIGHT")] MoveDirDownRight = 8,
+  }
+
+  public enum ECharacterType {
+    [pbr::OriginalName("CHARACTER_TYPE_NONE")] CharacterTypeNone = 0,
+    [pbr::OriginalName("CHARACTER_TYPE_WARRIOR")] CharacterTypeWarrior = 1,
+    [pbr::OriginalName("CHARACTER_TYPE_ARCHER")] CharacterTypeArcher = 2,
+    [pbr::OriginalName("CHARACTER_TYPE_MAGICIAN")] CharacterTypeMagician = 3,
   }
 
   public enum EMonsterType {

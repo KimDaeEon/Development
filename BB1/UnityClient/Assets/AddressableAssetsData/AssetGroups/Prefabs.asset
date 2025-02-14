@@ -18,7 +18,7 @@ MonoBehaviour:
   m_GUID: 9e047ba540950b74d99e567ff6238591
   m_SerializeEntries:
   - m_GUID: 8ef7b993fa90a46439fe244349a7e3e0
-    m_Address: Assets/@Resources/Prefabs/Hero/KnightPrefab.prefab
+    m_Address: KnightPrefab
     m_ReadOnly: 0
     m_SerializedLabels:
     - Preload

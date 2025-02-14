@@ -8,6 +8,7 @@ namespace GameServer
     {
         protected EntityComposite _entityComponents;
         protected Protocol.EntityInfo _entityInfo;
+        protected Object _lock = new object();
 
         protected Entity()
         {
@@ -36,7 +37,27 @@ namespace GameServer
 
         public abstract void Init(ulong dataSheetId);
 
-        public GameRoom Room { get; set; }
+        // https://stackoverflow.com/questions/5209623/is-a-reference-assignment-threadsafe
+        // bool, char 같이 작은 데이터들은 assign 이 thread-safe 하다지만 다른 경우는 아니라고 한다.
+
+        GameRoom _gameRoom;
+        public GameRoom Room
+        {
+            get
+            {
+                lock (_lock)
+                {
+                    return _gameRoom;
+                }
+            }
+            set
+            {
+                lock (_lock)
+                {
+                    _gameRoom = value;
+                }
+            }
+        }
 
         public int ExtraCells { get; protected set; } = 0; // 여러 칸을 차지하는 Entity의 경우에 사용
 

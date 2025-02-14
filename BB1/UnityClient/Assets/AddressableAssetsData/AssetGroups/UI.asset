@@ -18,13 +18,13 @@ MonoBehaviour:
   m_GUID: 418890f90cfd9e8469846f470f09831d
   m_SerializeEntries:
   - m_GUID: bff952442e109b24fa77cb0647517106
-    m_Address: Assets/@Resources/Prefabs/UI/Scene/UI_Joystick.prefab
+    m_Address: UI_Joystick
     m_ReadOnly: 0
     m_SerializedLabels:
     - Preload
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 0702c4efd7a40404a9d4c55e01945061
-    m_Address: Assets/@Resources/Prefabs/UI/Scene/UI_GameScene.prefab
+    m_Address: UI_GameScene
     m_ReadOnly: 0
     m_SerializedLabels:
     - Preload

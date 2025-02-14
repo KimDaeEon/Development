@@ -17,13 +17,13 @@ namespace GameServer.DB.EFCore
         public DateTime CreateDate { get; private set; }
     }
 
-    // TODO: 당장은 아이템이 적어서 TemplateId 로 다 처리되지만, Type 같은 정보 추가해서 아이템 구조 어떻게 할 지 고민 필요
+    // TODO: 당장은 아이템이 적어서 DataSheetId 로 다 처리되지만, Type 같은 정보 추가해서 아이템 구조 어떻게 할 지 고민 필요
     [Table("Item")]
     public class ItemDb
     {
         // Convention : [클래스]Id 으로 명명하면 PK
         public long Id { get; set; }
-        public int TemplateId { get; set; }
+        public int DataSheetId { get; set; }
         public int EquipSlot { get; set; }
         public long AccountDbId { get; set; }
         public int Count { get; set; }

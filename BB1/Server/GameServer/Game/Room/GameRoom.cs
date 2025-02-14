@@ -194,8 +194,8 @@ namespace GameServer
 
             while (true)
             {
-                randomPos.x = _rand.Next(0, 5);
-                randomPos.y = _rand.Next(0, 5);
+                randomPos.x = _rand.Next(0, 100);
+                randomPos.y = _rand.Next(0, 100);
 
                 if (Map.CanGo(entity, randomPos, checkEntityCollision))
                 {

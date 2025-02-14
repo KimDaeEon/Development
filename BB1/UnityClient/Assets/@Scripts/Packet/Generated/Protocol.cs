@@ -27,13 +27,14 @@ namespace Google.Protobuf.Protocol {
             "Cg5Qcm90b2NvbC5wcm90bxIIUHJvdG9jb2waCkVudW0ucHJvdG8aDFN0cnVj",
             "dC5wcm90byINCgtTX0Nvbm5lY3RlZCITCgZDX1Rlc3QSCQoBdhgBIAEoBSIN",
             "CgtDX0xlYXZlR2FtZSIwCgtTX0xlYXZlR2FtZRIhCgZyZXN1bHQYASABKA4y",
-            "ES5Qcm90b2NvbC5FUmVzdWx0Ih8KC0NfRW50ZXJHYW1lEhAKCGNoYXJEYklk",
-            "GAEgASgEIloKC1NfRW50ZXJHYW1lEiEKBnJlc3VsdBgBIAEoDjIRLlByb3Rv",
-            "Y29sLkVSZXN1bHQSKAoKbXlDaGFySW5mbxgCIAEoCzIULlByb3RvY29sLkVu",
-            "dGl0eUluZm8iVwoHU19TcGF3bhIhCgZyZXN1bHQYASABKA4yES5Qcm90b2Nv",
-            "bC5FUmVzdWx0EikKC2VudGl0eUluZm9zGAIgAygLMhQuUHJvdG9jb2wuRW50",
-            "aXR5SW5mbyIcCglTX0Rlc3Bhd24SDwoHZ2FtZUlkcxgBIAMoBEIbqgIYR29v",
-            "Z2xlLlByb3RvYnVmLlByb3RvY29sUABQAWIGcHJvdG8z"));
+            "ES5Qcm90b2NvbC5FUmVzdWx0IjAKC0NfRW50ZXJHYW1lEhAKCGNoYXJEYklk",
+            "GAEgASgEEg8KB3ZlcnNpb24YAiABKAQiWgoLU19FbnRlckdhbWUSIQoGcmVz",
+            "dWx0GAEgASgOMhEuUHJvdG9jb2wuRVJlc3VsdBIoCgpteUNoYXJJbmZvGAIg",
+            "ASgLMhQuUHJvdG9jb2wuRW50aXR5SW5mbyJXCgdTX1NwYXduEiEKBnJlc3Vs",
+            "dBgBIAEoDjIRLlByb3RvY29sLkVSZXN1bHQSKQoLZW50aXR5SW5mb3MYAiAD",
+            "KAsyFC5Qcm90b2NvbC5FbnRpdHlJbmZvIhwKCVNfRGVzcGF3bhIPCgdnYW1l",
+            "SWRzGAEgAygEQhuqAhhHb29nbGUuUHJvdG9idWYuUHJvdG9jb2xQAFABYgZw",
+            "cm90bzM="));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
           new pbr::FileDescriptor[] { global::Google.Protobuf.Protocol.EnumReflection.Descriptor, global::Google.Protobuf.Protocol.StructReflection.Descriptor, },
           new pbr::GeneratedClrTypeInfo(null, null, new pbr::GeneratedClrTypeInfo[] {
@@ -41,7 +42,7 @@ namespace Google.Protobuf.Protocol {
             new pbr::GeneratedClrTypeInfo(typeof(global::Google.Protobuf.Protocol.C_Test), global::Google.Protobuf.Protocol.C_Test.Parser, new[]{ "V" }, null, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::Google.Protobuf.Protocol.C_LeaveGame), global::Google.Protobuf.Protocol.C_LeaveGame.Parser, null, null, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::Google.Protobuf.Protocol.S_LeaveGame), global::Google.Protobuf.Protocol.S_LeaveGame.Parser, new[]{ "Result" }, null, null, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::Google.Protobuf.Protocol.C_EnterGame), global::Google.Protobuf.Protocol.C_EnterGame.Parser, new[]{ "CharDbId" }, null, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::Google.Protobuf.Protocol.C_EnterGame), global::Google.Protobuf.Protocol.C_EnterGame.Parser, new[]{ "CharDbId", "Version" }, null, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::Google.Protobuf.Protocol.S_EnterGame), global::Google.Protobuf.Protocol.S_EnterGame.Parser, new[]{ "Result", "MyCharInfo" }, null, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::Google.Protobuf.Protocol.S_Spawn), global::Google.Protobuf.Protocol.S_Spawn.Parser, new[]{ "Result", "EntityInfos" }, null, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::Google.Protobuf.Protocol.S_Despawn), global::Google.Protobuf.Protocol.S_Despawn.Parser, new[]{ "GameIds" }, null, null, null, null)
@@ -410,6 +411,9 @@ namespace Google.Protobuf.Protocol {
 
   }
 
+  /// <summary>
+  /// TODO: 이게 필요할까? 고민해보고 나중에도 필요 없을 거 같으면 지우기, 추후에 Lobby 패킷이 추가 되면 필요 없을 거 같다.
+  /// </summary>
   [global::System.Diagnostics.DebuggerDisplayAttribute("{ToString(),nq}")]
   public sealed partial class C_LeaveGame : pb::IMessage<C_LeaveGame>
   #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
@@ -805,6 +809,7 @@ namespace Google.Protobuf.Protocol {
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public C_EnterGame(C_EnterGame other) : this() {
       charDbId_ = other.charDbId_;
+      version_ = other.version_;
       _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
     }
 
@@ -829,6 +834,21 @@ namespace Google.Protobuf.Protocol {
       }
     }
 
+    /// <summary>Field number for the "version" field.</summary>
+    public const int VersionFieldNumber = 2;
+    private ulong version_;
+    /// <summary>
+    /// 패킷 버전
+    /// </summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public ulong Version {
+      get { return version_; }
+      set {
+        version_ = value;
+      }
+    }
+
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public override bool Equals(object other) {
@@ -845,6 +865,7 @@ namespace Google.Protobuf.Protocol {
         return true;
       }
       if (CharDbId != other.CharDbId) return false;
+      if (Version != other.Version) return false;
       return Equals(_unknownFields, other._unknownFields);
     }
 
@@ -853,6 +874,7 @@ namespace Google.Protobuf.Protocol {
     public override int GetHashCode() {
       int hash = 1;
       if (CharDbId != 0UL) hash ^= CharDbId.GetHashCode();
+      if (Version != 0UL) hash ^= Version.GetHashCode();
       if (_unknownFields != null) {
         hash ^= _unknownFields.GetHashCode();
       }
@@ -875,6 +897,10 @@ namespace Google.Protobuf.Protocol {
         output.WriteRawTag(8);
         output.WriteUInt64(CharDbId);
       }
+      if (Version != 0UL) {
+        output.WriteRawTag(16);
+        output.WriteUInt64(Version);
+      }
       if (_unknownFields != null) {
         _unknownFields.WriteTo(output);
       }
@@ -889,6 +915,10 @@ namespace Google.Protobuf.Protocol {
         output.WriteRawTag(8);
         output.WriteUInt64(CharDbId);
       }
+      if (Version != 0UL) {
+        output.WriteRawTag(16);
+        output.WriteUInt64(Version);
+      }
       if (_unknownFields != null) {
         _unknownFields.WriteTo(ref output);
       }
@@ -901,6 +931,9 @@ namespace Google.Protobuf.Protocol {
       int size = 0;
       if (CharDbId != 0UL) {
         size += 1 + pb::CodedOutputStream.ComputeUInt64Size(CharDbId);
+      }
+      if (Version != 0UL) {
+        size += 1 + pb::CodedOutputStream.ComputeUInt64Size(Version);
       }
       if (_unknownFields != null) {
         size += _unknownFields.CalculateSize();
@@ -916,6 +949,9 @@ namespace Google.Protobuf.Protocol {
       }
       if (other.CharDbId != 0UL) {
         CharDbId = other.CharDbId;
+      }
+      if (other.Version != 0UL) {
+        Version = other.Version;
       }
       _unknownFields = pb::UnknownFieldSet.MergeFrom(_unknownFields, other._unknownFields);
     }
@@ -940,6 +976,10 @@ namespace Google.Protobuf.Protocol {
             CharDbId = input.ReadUInt64();
             break;
           }
+          case 16: {
+            Version = input.ReadUInt64();
+            break;
+          }
         }
       }
     #endif
@@ -961,6 +1001,10 @@ namespace Google.Protobuf.Protocol {
             break;
           case 8: {
             CharDbId = input.ReadUInt64();
+            break;
+          }
+          case 16: {
+            Version = input.ReadUInt64();
             break;
           }
         }
