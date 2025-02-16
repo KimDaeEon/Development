@@ -39,7 +39,7 @@ namespace GameServer
 
         // https://stackoverflow.com/questions/5209623/is-a-reference-assignment-threadsafe
         // bool, char 같이 작은 데이터들은 assign 이 thread-safe 하다지만 다른 경우는 아니라고 한다.
-
+        // 참조가 포인터이고 테스트해보니 assign 자체는 thread-safe 한 거 같은데.. 가시성 문제도 있다고 하여서 일단 lock 을 잡자..
         GameRoom _gameRoom;
         public GameRoom Room
         {
@@ -80,7 +80,61 @@ namespace GameServer
             }
             set
             {
-                _entityInfo = value;
+                if (value == null)
+                {
+                    return;
+                }
+
+                // Entity 기본 정보 할당
+                if (value.GameId != 0)
+                {
+                    _entityInfo.GameId = value.GameId;
+                }
+
+                if (value.DataSheetId != 0)
+                {
+                    _entityInfo.DataSheetId = value.DataSheetId;
+                }
+
+                if (value.MoveInfo != null)
+                {
+                    _entityInfo.MoveInfo = value.MoveInfo;
+                }
+
+                if (value.StatInfo != null)
+                {
+                    _entityInfo.StatInfo = value.StatInfo;
+                }
+
+                // ENtity 하위 클래스 정보에 따라 할당
+                if (value.EntityTypeCase == Protocol.EntityInfo.EntityTypeOneofCase.ActorInfo)
+                {
+                    _entityInfo.ActorInfo = value.ActorInfo;
+                }
+                else if (value.EntityTypeCase == Protocol.EntityInfo.EntityTypeOneofCase.ItemInfo)
+                {
+                    _entityInfo.ItemInfo = value.ItemInfo;
+                }
+                else if (value.EntityTypeCase == Protocol.EntityInfo.EntityTypeOneofCase.ProjectileInfo)
+                {
+                    _entityInfo.ProjectileInfo = value.ProjectileInfo;
+                }
+                else if (value.EntityTypeCase == Protocol.EntityInfo.EntityTypeOneofCase.ObstacleInfo)
+                {
+                    _entityInfo.ObstacleInfo = value.ObstacleInfo;
+                }
+            }
+        }
+
+        public Protocol.EntityInfo EntityInfoForMove
+        {
+            get
+            {
+                var entityInfoForMove = new Protocol.EntityInfo();
+                entityInfoForMove.MoveInfo = MoveInfo;
+                entityInfoForMove.GameId = GameId;
+
+                return entityInfoForMove;
             }
         }
 

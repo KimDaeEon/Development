@@ -49,3 +49,14 @@ message S_Despawn
 {
 	repeated uint64 gameIds = 1;
 }
+
+message C_Move
+{
+	EntityInfo entityInfo = 1;
+}
+
+message S_Move
+{
+	EResult result = 1;
+	EntityInfo entityInfo = 2;
+}

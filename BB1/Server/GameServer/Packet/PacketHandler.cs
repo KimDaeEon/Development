@@ -25,7 +25,7 @@ class PacketHandler
         //    clientSession.Disconnect();
         //}
 
-        System.Console.WriteLine(pkt);
+        Console.WriteLine(pkt);
     }
 
     internal static void C_EnterGameHandler(PacketSession session, IMessage packet)
@@ -80,5 +80,36 @@ class PacketHandler
         ClientSession clientSession = session as ClientSession;
 
         clientSession.Disconnect();
+    }
+
+    internal static void C_MoveHandler(PacketSession session, IMessage packet)
+    {
+        C_Move pkt = packet as C_Move;
+        ClientSession clientSession = session as ClientSession;
+
+        if (clientSession.IsVerified == false)
+        {
+            clientSession.Disconnect();
+        }
+
+        GameRoomManager.Instance.FindRoom(roomId: 1, callback: (room) =>
+        {
+            if (room != null)
+            {
+                Console.WriteLine($"Found Room ID: {room.GetHashCode()}");
+
+                room.HandleMove(clientSession, pkt);
+            }
+            else
+            {
+                Console.WriteLine("Room not found.");
+
+                // 실패 패킷 전달
+                S_Move pkt = new S_Move();
+                pkt.Result = EResult.Failed;
+
+                clientSession.Send(pkt);
+            }
+        });
     }
 }

@@ -14,7 +14,7 @@ namespace GameServer.DB.EFCore
         public DbSet<CharacterDb> Characters { get; set; }
         public DbSet<ItemDb> Items { get; set; }
 
-        static readonly ILoggerFactory _logger = LoggerFactory.Create(builder => { builder.AddConsole(); });
+        static readonly ILoggerFactory _dbLogger = LoggerFactory.Create(builder => { builder.AddConsole(); });
 
         public GameDbContext()
         {
@@ -26,7 +26,7 @@ namespace GameServer.DB.EFCore
             ConfigManager.Init();
 
             options
-                .UseLoggerFactory(_logger)
+                .UseLoggerFactory(_dbLogger)
                 .UseSqlServer(ConfigManager.Config.connectionString);
         }
 

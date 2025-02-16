@@ -14,6 +14,8 @@ public enum MsgId
 	S_EnterGame = 6,
 	S_Spawn = 7,
 	S_Despawn = 8,
+	C_Move = 9,
+	S_Move = 10,
 }
 
 class PacketManager
@@ -44,7 +46,9 @@ class PacketManager
 		_packetCreatorMap.Add((ushort)MsgId.S_Spawn, MakePacket<S_Spawn>);
 		_packetHandlerMap.Add((ushort)MsgId.S_Spawn, PacketHandler.S_SpawnHandler);		
 		_packetCreatorMap.Add((ushort)MsgId.S_Despawn, MakePacket<S_Despawn>);
-		_packetHandlerMap.Add((ushort)MsgId.S_Despawn, PacketHandler.S_DespawnHandler);
+		_packetHandlerMap.Add((ushort)MsgId.S_Despawn, PacketHandler.S_DespawnHandler);		
+		_packetCreatorMap.Add((ushort)MsgId.S_Move, MakePacket<S_Move>);
+		_packetHandlerMap.Add((ushort)MsgId.S_Move, PacketHandler.S_MoveHandler);
 	}
 
 	public void OnRecvPacket(PacketSession session, ArraySegment<byte> buffer)

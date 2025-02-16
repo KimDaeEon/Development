@@ -32,7 +32,7 @@ public class GameObjectManager
 
     public MyCharacter MyCharacter { get; set; }
 
-    Dictionary<ulong, GameObject> _objects = new Dictionary<ulong, GameObject>();
+    private Dictionary<ulong, GameObject> _objects = new Dictionary<ulong, GameObject>();
 
     public GameObject FindByGameId(ulong id)
     {
@@ -124,7 +124,7 @@ public class GameObjectManager
             {
                 Managers.Resource.Destroy(go);
 
-                // TODO: 여기서 MyChracterInfo 지웠을 때에 조치를 취해야 할까? 일단 서버에서 지금까지 패킷으로는 이 시점까지 안 올거 같기는 한데..
+                // TODO: 여기서 MyCharacter 지웠을 때에 필요한 로직 생긴다면 추가하자.
                 _objects.Remove(gameId);
             }
         }

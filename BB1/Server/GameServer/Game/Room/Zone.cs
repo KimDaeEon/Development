@@ -36,7 +36,7 @@ namespace GameServer
             }
             else
             {
-                Console.WriteLine($"[Zone] Entity of type {entity.GetType().Name} cannot be added.");
+                Logger.LogDebug($"[Zone] Entity of type {entity.GetType().Name} cannot be added.");
             }
         }
 
@@ -52,7 +52,7 @@ namespace GameServer
             }
             else
             {
-                Console.WriteLine($"[Zone] Entity of type {entity.GetType().Name} cannot be removed.");
+                Logger.LogDebug($"[Zone] Entity of type {entity.GetType().Name} cannot be removed.");
             }
         }
 

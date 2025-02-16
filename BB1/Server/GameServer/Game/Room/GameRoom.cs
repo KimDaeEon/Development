@@ -59,7 +59,7 @@ namespace GameServer
             return GetZoneByIndex(indexX, indexY);
         }
 
-        public Zone GetZoneByIndex(int indexX, int indexY)
+        private Zone GetZoneByIndex(int indexX, int indexY)
         {
             if (indexX < 0 || indexX >= Zones.GetLength(0))
             {
@@ -188,7 +188,7 @@ namespace GameServer
             return entityInfos.ToList();
         }
 
-        public Vector2Int GetRandomSpawnPos(Entity entity, bool checkEntityCollision = true)
+        public Vector2Int GetRandomSpawnPos(Entity entity, bool checkActorCollision = true)
         {
             Vector2Int randomPos;
 
@@ -197,7 +197,7 @@ namespace GameServer
                 randomPos.x = _rand.Next(0, 100);
                 randomPos.y = _rand.Next(0, 100);
 
-                if (Map.CanGo(entity, randomPos, checkEntityCollision))
+                if (Map.CanGo(entity, randomPos, checkActorCollision))
                 {
                     return randomPos;
                 }
