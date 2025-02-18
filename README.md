@@ -13,7 +13,7 @@
 
 
 * C# 관련
-  * CSharpMMO: MMORPG TCP 서버, 웹 서버, 더미 클라이언트, Packet Generator 프로젝트가 들어있는 솔루션입니다.
+  * BB1: 최근 작성한 C# 게임 서버 관련 코드 및 클라이언트 코드가 있는 솔루션입니다.
 
 
 * Unity 엔진 관련
