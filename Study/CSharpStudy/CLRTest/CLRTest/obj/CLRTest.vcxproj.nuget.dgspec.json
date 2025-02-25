@@ -1,20 +1,25 @@
 {
   "format": 1,
   "restore": {
-    "C:\\GitForGame\\Development\\CSharpStudy\\CLRTest\\CLRTest\\CLRTest.vcxproj": {}
+    "C:\\GitForGame\\Development\\Study\\CSharpStudy\\CLRTest\\CLRTest\\CLRTest.vcxproj": {}
   },
   "projects": {
-    "C:\\GitForGame\\Development\\CSharpStudy\\CLRTest\\CLRTest\\CLRTest.vcxproj": {
+    "C:\\GitForGame\\Development\\Study\\CSharpStudy\\CLRTest\\CLRTest\\CLRTest.vcxproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\GitForGame\\Development\\CSharpStudy\\CLRTest\\CLRTest\\CLRTest.vcxproj",
+        "projectUniqueName": "C:\\GitForGame\\Development\\Study\\CSharpStudy\\CLRTest\\CLRTest\\CLRTest.vcxproj",
         "projectName": "CLRTest",
-        "projectPath": "C:\\GitForGame\\Development\\CSharpStudy\\CLRTest\\CLRTest\\CLRTest.vcxproj",
+        "projectPath": "C:\\GitForGame\\Development\\Study\\CSharpStudy\\CLRTest\\CLRTest\\CLRTest.vcxproj",
         "packagesPath": "C:\\Users\\eo956\\.nuget\\packages\\",
-        "outputPath": "C:\\GitForGame\\Development\\CSharpStudy\\CLRTest\\CLRTest\\obj\\",
+        "outputPath": "C:\\GitForGame\\Development\\Study\\CSharpStudy\\CLRTest\\CLRTest\\obj\\",
         "projectStyle": "PackageReference",
+        "UsingMicrosoftNETSdk": false,
+        "fallbackFolders": [
+          "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
+        ],
         "configFilePaths": [
           "C:\\Users\\eo956\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
         "originalTargetFrameworks": [
@@ -22,7 +27,6 @@
         ],
         "sources": {
           "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
-          "C:\\Program Files\\dotnet\\library-packs": {},
           "https://api.nuget.org/v3/index.json": {}
         },
         "frameworks": {
@@ -35,7 +39,8 @@
           "enableAudit": "true",
           "auditLevel": "low",
           "auditMode": "direct"
-        }
+        },
+        "SdkAnalysisLevel": "9.0.200"
       },
       "frameworks": {
         "net8.0-windows7.0": {
@@ -52,18 +57,12 @@
           "assetTargetFallback": true,
           "secondaryFramework": "native",
           "warn": true,
-          "downloadDependencies": [
-            {
-              "name": "Microsoft.Windows.SDK.NET.Ref",
-              "version": "[10.0.22621.34, 10.0.22621.34]"
-            }
-          ],
           "frameworkReferences": {
             "Microsoft.NETCore.App": {
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.400/PortableRuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.200/PortableRuntimeIdentifierGraph.json"
         }
       }
     }
