@@ -4,6 +4,9 @@
 
 int main()
 {
-	MultiThreadProgramming::ThreadLocalStorageTest::foo();
+	//MultiThreadProgramming::ThreadLocalStorageTest::foo();
+	//VTable::Test();
+
+	WindowsViaCpp::SEH_VEH_Test::Test();
 	return 1;
 }
