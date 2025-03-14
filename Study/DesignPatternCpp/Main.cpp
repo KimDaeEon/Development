@@ -1,11 +1,20 @@
 #include <iostream>
 #include <memory>
-#include <unordered_map>
 #include <string>
+#include <thread>
+#include <chrono>
+#include <functional>
+#include <random>
+
+#include <queue>
+#include <stack>
+#include <vector>
+#include <unordered_map>
+
 using namespace std;
 #include "GOF.h"
 
-void main()
+int main()
 {
 	// Creational
 	//GOF::Creational::AbstractFactory::Test();
@@ -22,6 +31,24 @@ void main()
 	//GOF::Structural::Bridge::Test();
 	//GOF::Structural::Composite::Test();
 	//GOF::Structural::Decorator::Test();
-	GOF::Structural::Facade::Test();
-																		
-}
+	//GOF::Structural::Facade::Test();
+	//GOF::Structural::FlyWeight::Test();
+	//GOF::Structural::Proxy::Test();
+	
+
+
+	// Behavioural
+	//GOF::Behavioural::ChainOfResponsibility::Test();
+	//GOF::Behavioural::Command::Test();
+	//GOF::Behavioural::Interpreter::Test();
+	//GOF::Behavioural::Iterator::Test();
+	//GOF::Behavioural::Mediator::Test();
+	//GOF::Behavioural::Memento::Test();
+	//GOF::Behavioural::Observer::Test();
+	//GOF::Behavioural::State::Test();
+	//GOF::Behavioural::Strategy::Test();
+	//GOF::Behavioural::TemplateMethod::Test();
+	GOF::Behavioural::Visitor::Test();
+
+	return 1;
+}	

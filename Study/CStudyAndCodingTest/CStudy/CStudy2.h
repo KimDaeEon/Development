@@ -1,6 +1,7 @@
 ﻿#pragma once
 #include <iostream>
 #include <utility>
+#include <WerApi.h>
 
 namespace RVOTest
 {
