@@ -2,6 +2,8 @@
 #include <iostream>
 #include <utility>
 #include <WerApi.h>
+#include <windows.h>
+#include <iostream>
 
 namespace RVOTest
 {
@@ -166,5 +168,36 @@ namespace WindowsViaCpp
 
 			std::cout << "핸들러 제거 완료." << std::endl;
 		}
+	}
+
+	namespace EXPLICIT_DYNAMIC_LINKING
+	{
+		typedef void (*HelloFunctionPtr)(); // 함수 포인터 선언
+
+		int Test()
+		{
+			HMODULE hModule = LoadLibrary(L"Dll1.dll"); // DLL 로드
+			if (!hModule)
+			{
+				std::cerr << "Failed to load DLL!" << std::endl;
+				return 1;
+			}
+
+			// 아래처럼 윈도우는 심벌이름으로 문자열을 사용하는 경향이 있으므로 알아두면 좋음
+			HelloFunctionPtr HelloFunction = (HelloFunctionPtr)GetProcAddress(hModule, "HelloFunction");
+			if (!HelloFunction)
+			{
+				std::cerr << "Failed to get function address!" << std::endl;
+				FreeLibrary(hModule);
+				return 1;
+			}
+
+			HelloFunction(); // 동적 호출
+
+			FreeLibrary(hModule); // DLL 해제
+			
+			return 1;
+		}
+
 	}
 }

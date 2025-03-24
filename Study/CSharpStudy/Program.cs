@@ -181,6 +181,7 @@ namespace CSharpStudy
 
         #endregion
 
+
         static void Main(string[] args)
         {
             #region new vs override
@@ -190,6 +191,36 @@ namespace CSharpStudy
 
             //t1.foo();
             //t2.foo();
+            #endregion
+
+            #region Lock vs No Lock
+            //object _lock = new object();
+            //int _valueWithLock = 0;
+            //int _valueWithoutLock = 0;
+            //const int IterationCount = 100_000_000;
+
+            //Console.WriteLine("싱글 스레드 환경에서 숫자 증가 성능 비교");
+
+            //// 1. Lock 없이
+            //Stopwatch sw1 = Stopwatch.StartNew();
+            //for (int i = 0; i < IterationCount; i++)
+            //{
+            //    _valueWithoutLock++;
+            //}
+            //sw1.Stop();
+            //Console.WriteLine($"[No Lock]   {_valueWithoutLock} 증가 완료. 소요 시간: {sw1.ElapsedMilliseconds} ms");
+
+            //// 2. Lock 사용
+            //Stopwatch sw2 = Stopwatch.StartNew();
+            //for (int i = 0; i < IterationCount; i++)
+            //{
+            //    lock (_lock)
+            //    {
+            //        _valueWithLock++;
+            //    }
+            //}
+            //sw2.Stop();
+            //Console.WriteLine($"[With Lock] {_valueWithLock} 증가 완료. 소요 시간: {sw2.ElapsedMilliseconds} ms");
             #endregion
 
             // 예외 필터의 다른 활용 예를 살펴보자
