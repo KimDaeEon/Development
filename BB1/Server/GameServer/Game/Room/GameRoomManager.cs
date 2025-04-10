@@ -28,11 +28,11 @@ namespace GameServer
         {
             PushJob(() =>
             {
-                int roomId = _roomIdIssuer++;
                 var newRoom = new GameRoom();
+                newRoom.GameRoomId = _roomIdIssuer++;
                 newRoom.Init(dataSheetId, zoneCells);
 
-                _rooms[roomId] = newRoom;
+                _rooms[newRoom.GameRoomId] = newRoom;
 
                 callback?.Invoke(newRoom);
             });

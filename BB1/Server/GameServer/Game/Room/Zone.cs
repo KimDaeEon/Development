@@ -24,35 +24,41 @@ namespace GameServer
             IndexY = y;
         }
 
-        public void Add(Entity entity)
+        public bool Add(Entity entity)
         {
             if (entity is Character character)
             {
                 Characters.Add(character);
+                return true;
             }
             else if (entity is Monster monster)
             {
                 Monsters.Add(monster);
+                return true;
             }
             else
             {
                 Logger.LogDebug($"[Zone] Entity of type {entity.GetType().Name} cannot be added.");
+                return false;
             }
         }
 
-        public void Remove(Entity entity)
+        public bool Remove(Entity entity)
         {
             if (entity is Character character)
             {
                 Characters.Remove(character);
+                return true;
             }
             else if (entity is Monster monster)
             {
                 Monsters.Remove(monster);
+                return true;
             }
             else
             {
-                Logger.LogDebug($"[Zone] Entity of type {entity.GetType().Name} cannot be removed.");
+                Logger.LogError($"[Zone] Entity of type {entity.GetType().Name} cannot be removed.");
+                return false;
             }
         }
 

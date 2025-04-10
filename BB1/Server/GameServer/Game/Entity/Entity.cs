@@ -7,7 +7,6 @@ namespace GameServer
     public abstract class Entity
     {
         protected EntityComposite _entityComponents;
-        protected Protocol.EntityInfo _entityInfo;
         protected Object _lock = new object();
 
         protected Entity()
@@ -17,7 +16,7 @@ namespace GameServer
 
             // 기본 컴포넌트 추가 (필요하면 추가)
             _entityComponents.AddComponent(new StatusComponent());
-            _entityInfo = new Protocol.EntityInfo();
+            EntityInfo = new Protocol.EntityInfo();
         }
 
         public T AddComponent<T>(T component) where T : class, IEntityComponent
@@ -61,77 +60,26 @@ namespace GameServer
 
         public int ExtraCells { get; protected set; } = 0; // 여러 칸을 차지하는 Entity의 경우에 사용
 
-        public void SetVector2IntToPosition(Vector2Int pos)
+        public void SetCellPosToPosition(Vector2Int pos)
         {
             MoveInfo.Position.X = pos.x;
             MoveInfo.Position.Y = pos.y;
         }
 
-        public Vector2Int GetVector2IntFromPosition()
+        public Vector2Int GetCellPosFromPosition()
         {
             return new Vector2Int(MoveInfo.Position.X, MoveInfo.Position.Y);
         }
 
-        public Protocol.EntityInfo EntityInfo
-        {
-            get
-            {
-                return _entityInfo;
-            }
-            set
-            {
-                if (value == null)
-                {
-                    return;
-                }
-
-                // Entity 기본 정보 할당
-                if (value.GameId != 0)
-                {
-                    _entityInfo.GameId = value.GameId;
-                }
-
-                if (value.DataSheetId != 0)
-                {
-                    _entityInfo.DataSheetId = value.DataSheetId;
-                }
-
-                if (value.MoveInfo != null)
-                {
-                    _entityInfo.MoveInfo = value.MoveInfo;
-                }
-
-                if (value.StatInfo != null)
-                {
-                    _entityInfo.StatInfo = value.StatInfo;
-                }
-
-                // ENtity 하위 클래스 정보에 따라 할당
-                if (value.EntityTypeCase == Protocol.EntityInfo.EntityTypeOneofCase.ActorInfo)
-                {
-                    _entityInfo.ActorInfo = value.ActorInfo;
-                }
-                else if (value.EntityTypeCase == Protocol.EntityInfo.EntityTypeOneofCase.ItemInfo)
-                {
-                    _entityInfo.ItemInfo = value.ItemInfo;
-                }
-                else if (value.EntityTypeCase == Protocol.EntityInfo.EntityTypeOneofCase.ProjectileInfo)
-                {
-                    _entityInfo.ProjectileInfo = value.ProjectileInfo;
-                }
-                else if (value.EntityTypeCase == Protocol.EntityInfo.EntityTypeOneofCase.ObstacleInfo)
-                {
-                    _entityInfo.ObstacleInfo = value.ObstacleInfo;
-                }
-            }
-        }
+        // TODO: 서버 쪽은 클라이언트가 준 것을 그대로 반영하면 안되기에, 각각의 Component에서 EntityInfo에 정보 세팅하도록 해야 한다.
+        public Protocol.EntityInfo EntityInfo { get; protected set; }
 
         public Protocol.EntityInfo EntityInfoForMove
         {
             get
             {
                 var entityInfoForMove = new Protocol.EntityInfo();
-                entityInfoForMove.MoveInfo = MoveInfo;
+                entityInfoForMove.MoveInfo = MoveInfo.Clone();
                 entityInfoForMove.GameId = GameId;
 
                 return entityInfoForMove;
@@ -142,11 +90,11 @@ namespace GameServer
         {
             get
             {
-                return _entityInfo.MoveInfo;
+                return EntityInfo.MoveInfo;
             }
             set
             {
-                _entityInfo.MoveInfo = value;
+                EntityInfo.MoveInfo = value;
             }
         }
 
@@ -154,11 +102,11 @@ namespace GameServer
         {
             get
             {
-                return _entityInfo.StatInfo;
+                return EntityInfo.StatInfo;
             }
             set
             {
-                _entityInfo.StatInfo = value;
+                EntityInfo.StatInfo = value;
             }
         }
 
@@ -166,11 +114,11 @@ namespace GameServer
         {
             get
             {
-                return _entityInfo.DataSheetId;
+                return EntityInfo.DataSheetId;
             }
             set
             {
-                _entityInfo.DataSheetId = value;
+                EntityInfo.DataSheetId = value;
             }
         }
 
@@ -178,11 +126,11 @@ namespace GameServer
         {
             get
             {
-                return _entityInfo.GameId;
+                return EntityInfo.GameId;
             }
             set
             {
-                _entityInfo.GameId = value;
+                EntityInfo.GameId = value;
             }
         }
 

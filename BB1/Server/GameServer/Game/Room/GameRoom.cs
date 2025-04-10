@@ -107,7 +107,7 @@ namespace GameServer
             return zones.ToList();
         }
 
-        public List<Character> GetAdjacentCharacters(Vector2Int cellPos, List<Entity> excludedEntities = null, int cells = GameRoom.VisionCells)
+        public HashSet<Character> GetAdjacentCharacters(Vector2Int cellPos, List<Entity> excludedEntities = null, int cells = GameRoom.VisionCells)
         {
             HashSet<Character> characters = new HashSet<Character>();
             List<Zone> zones = GetAdjacentZones(cellPos, cells);
@@ -123,10 +123,10 @@ namespace GameServer
                 characters.ExceptWith(excludedEntities.OfType<Character>());
             }
 
-            return characters.ToList();
+            return characters;
         }
 
-        public List<Monster> GetAdjacentMonsters(Vector2Int cellPos, List<Entity> excludedEntities = null, int cells = GameRoom.VisionCells)
+        public HashSet<Monster> GetAdjacentMonsters(Vector2Int cellPos, List<Entity> excludedEntities = null, int cells = GameRoom.VisionCells)
         {
             HashSet<Monster> monsters = new HashSet<Monster>();
             List<Zone> zones = GetAdjacentZones(cellPos, cells);
@@ -142,10 +142,10 @@ namespace GameServer
                 monsters.ExceptWith(excludedEntities.OfType<Monster>());
             }
 
-            return monsters.ToList();
+            return monsters;
         }
 
-        public List<Entity> GetAdjacentEntities(Vector2Int cellPos, List<Entity> excludedEntities = null, int cells = GameRoom.VisionCells)
+        public HashSet<Entity> GetAdjacentEntities(Vector2Int cellPos, HashSet<Entity> excludedEntities = null, int cells = VisionCells)
         {
             HashSet<Entity> entities = new HashSet<Entity>();
             List<Zone> zones = GetAdjacentZones(cellPos, cells);
@@ -162,11 +162,11 @@ namespace GameServer
                 entities.ExceptWith(excludedEntities);
             }
 
-            return entities.ToList();
+            return entities;
         }
 
 
-        public List<EntityInfo> GetAdjacentEntityInfos(Vector2Int cellPos, List<Entity> excludedEntities = null, int cells = GameRoom.VisionCells)
+        public List<EntityInfo> GetAdjacentEntityInfos(Vector2Int cellPos, HashSet<Entity> excludedEntities = null, int cells = GameRoom.VisionCells)
         {
             HashSet<EntityInfo> entityInfos = new HashSet<EntityInfo>();
             List<Zone> zones = GetAdjacentZones(cellPos, cells);
@@ -194,8 +194,8 @@ namespace GameServer
 
             while (true)
             {
-                randomPos.x = _rand.Next(0, 100);
-                randomPos.y = _rand.Next(0, 100);
+                randomPos.x = _rand.Next(30, 100);
+                randomPos.y = _rand.Next(30, 100);
 
                 if (Map.CanGo(entity, randomPos, checkActorCollision))
                 {
@@ -221,7 +221,7 @@ namespace GameServer
 
         public void BroadcastToAdjacentZones<T>(T packet, Entity self, HashSet<Character> excludeCharacters = null) where T : Google.Protobuf.IMessage
         {
-            var zones = GetAdjacentZones(self.GetVector2IntFromPosition());
+            var zones = GetAdjacentZones(self.GetCellPosFromPosition());
             foreach (var zone in zones)
             {
                 zone.BroadCast(packet, excludeCharacters);

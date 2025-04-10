@@ -13,18 +13,18 @@ namespace GameServer
         [Conditional("DEBUG")]
         public static void LogDebug(string message)
         {
-            Logger.LogDebug($"[DEBUG] {message}");
+            Console.WriteLine($"[DEBUG] {message}");
         }
 
         [Conditional("DEBUG")]
         public static void LogWarning(string message)
         {
-            Logger.LogDebug($"[WARNING] {message}");
+            Console.WriteLine($"[WARNING] {message}");
         }
 
         public static void LogError(string message)
         {
-            Logger.LogDebug($"[ERROR] {message}");
+            Console.WriteLine($"[ERROR] {message}");
         }
     }
 }

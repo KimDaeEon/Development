@@ -12,30 +12,30 @@ using static CustomEnum;
 class PacketHandler
 {
     ///////////////////////////////////// GameServer - Client /////////////////////////////////////
-	public static void S_ConnectedHandler(PacketSession session, IMessage packet)
-	{
-		Debug.Log("S_Connected");
-	}
-	public static void S_EnterGameHandler(PacketSession session, IMessage packet)
-	{
-		Debug.Log("S_EnterGame");
+    public static void S_ConnectedHandler(PacketSession session, IMessage packet)
+    {
+        Debug.Log("S_Connected");
+    }
+    public static void S_EnterGameHandler(PacketSession session, IMessage packet)
+    {
+        Debug.Log("S_EnterGame");
 
         S_EnterGame enterGamePacket = packet as S_EnterGame;
-		Managers.Object.SpawnMyCharacter(enterGamePacket.MyCharInfo);
-	}
+        Managers.Object.SpawnMyCharacter(enterGamePacket.MyCharInfo);
+    }
 
-	public static void S_LeaveGameHandler(PacketSession session, IMessage packet)
-	{
-		Debug.Log("S_Leave");
+    public static void S_LeaveGameHandler(PacketSession session, IMessage packet)
+    {
+        Debug.Log("S_Leave");
         Managers.Object.Clear();
     }
-	
-	public static void S_DespawnHandler(PacketSession session, IMessage packet)
-	{
+
+    public static void S_DespawnHandler(PacketSession session, IMessage packet)
+    {
         Debug.Log("S_DespawnHandler");
 
         S_Despawn despawnPacket = packet as S_Despawn;
-		Managers.Object.Despawn(despawnPacket.GameIds.ToList());
+        Managers.Object.Despawn(despawnPacket.GameIds.ToList());
     }
 
     internal static void S_SpawnHandler(PacketSession session, IMessage packet)
@@ -47,6 +47,27 @@ class PacketHandler
         foreach (EntityInfo entityInfo in spawnPacket.EntityInfos)
         {
             Managers.Object.Spawn(entityInfo);
+        }
+    }
+
+    internal static void S_MoveHandler(PacketSession session, IMessage packet)
+    {
+        S_Move movePkt = packet as S_Move;
+
+        if (movePkt.Result == EResult.Success)
+        {
+            GameObject go = Managers.Object.FindByGameId(movePkt.EntityInfo.GameId);
+            if (go != null)
+            {
+                Entity entity = go.GetComponent<Entity>();
+                entity.EntityInfo = movePkt.EntityInfo;
+                Debug.Log($"S_Move = {movePkt}");
+            }
+            else
+            {
+                Debug.LogError("Something is wrong with move packet");
+            }
+
         }
     }
 }

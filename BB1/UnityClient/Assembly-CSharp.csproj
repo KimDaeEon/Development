@@ -206,6 +206,7 @@
     <None Include="Assets\@Resources\Spines\Monster\06.desert\palm_tree\palm_tree.atlas.txt" />
     <None Include="Assets\@Resources\Spines\Character\026_sylvia\026.atlas.txt" />
     <None Include="Assets\@Resources\Spines\Monster\03.castle\ghost_shooter\ghost_shooter.atlas.txt" />
+    <None Include="Assets\AddressableAssetsData\link.xml" />
     <None Include="Assets\@Resources\Spines\Character\019_alex\019.atlas.txt" />
     <None Include="Assets\@Resources\Spines\Character\004_leon\004.atlas.txt" />
     <None Include="Assets\@Resources\Spines\Character\001_Knight\001.atlas.txt" />

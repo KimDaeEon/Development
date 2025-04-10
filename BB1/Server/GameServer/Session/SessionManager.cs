@@ -23,7 +23,7 @@ namespace GameServer
                 newSession.SessionId = newSessionId;
                 _sessions.Add(newSessionId, newSession);
 
-                Console.WriteLine($"Connected Sessions Count: {_sessions.Count}");
+                Logger.LogDebug($"Connected Sessions Count: {_sessions.Count}");
 
                 return newSession;
             }
@@ -34,7 +34,7 @@ namespace GameServer
             lock (_lock)
             {
                 _sessions.Remove(session.SessionId);
-                Console.WriteLine($"Connected Sessions Count: {_sessions.Count}");
+                Logger.LogDebug($"Connected Sessions Count: {_sessions.Count}");
             }
         }
 
@@ -58,6 +58,14 @@ namespace GameServer
             }
 
             return sessions;
+        }
+
+        public int Count()
+        {
+            lock (_lock)
+            {
+                return _sessions.Count;
+            }
         }
     }
 }

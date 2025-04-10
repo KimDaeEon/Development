@@ -12,7 +12,9 @@ public class GameObjectManager
     {
         GameObject root = GameObject.Find(name);
         if (root == null)
+        {
             root = new GameObject { name = name };
+        }
 
         return root.transform;
     }
@@ -32,28 +34,28 @@ public class GameObjectManager
 
     public MyCharacter MyCharacter { get; set; }
 
-    private Dictionary<ulong, GameObject> _objects = new Dictionary<ulong, GameObject>();
+    private Dictionary<ulong, GameObject> _unityGameObjects = new Dictionary<ulong, GameObject>();
 
     public GameObject FindByGameId(ulong id)
     {
         GameObject go = null;
-        _objects.TryGetValue(id, out go);
+        _unityGameObjects.TryGetValue(id, out go);
         return go;
     }
 
     public void Clear()
     {
-        foreach (GameObject obj in _objects.Values)
+        foreach (GameObject obj in _unityGameObjects.Values)
             Managers.Resource.Destroy(obj);
 
-        _objects.Clear();
+        _unityGameObjects.Clear();
         MyCharacter = null;
     }
 
     public MyCharacter SpawnMyCharacter(Protocol.EntityInfo entityInfo)
     {
         // 여기서 CharacterInfo 맞는지 체크
-        var charInfo = entityInfo?.ActorInfo.CharacterInfo;
+        var charInfo = entityInfo?.ActorInfo?.CharacterInfo;
 
         if (charInfo == null)
         {
@@ -69,7 +71,8 @@ public class GameObjectManager
         MyCharacter = Utils.GetOrAddComponent<MyCharacter>(go);
         MyCharacter.EntityInfo = entityInfo;
 
-        _objects.Add(entityInfo.GameId, go);
+        // 자기 캐릭터 정보는 무조건 덮어 쓴다.
+        _unityGameObjects[entityInfo.GameId] = go;
 
         return MyCharacter;
     }
@@ -109,7 +112,11 @@ public class GameObjectManager
             return null;
         }
 
-        _objects.Add(entityInfo.GameId, go);
+        if (!_unityGameObjects.ContainsKey(entityInfo.GameId))
+        {
+            _unityGameObjects.Add(entityInfo.GameId, go);
+        }
+
 
         entity.EntityInfo = entityInfo;
 
@@ -120,12 +127,12 @@ public class GameObjectManager
     {
         foreach (ulong gameId in gameIds)
         {
-            if (_objects.TryGetValue(gameId, out GameObject go))
+            if (_unityGameObjects.TryGetValue(gameId, out GameObject go))
             {
                 Managers.Resource.Destroy(go);
 
                 // TODO: 여기서 MyCharacter 지웠을 때에 필요한 로직 생긴다면 추가하자.
-                _objects.Remove(gameId);
+                _unityGameObjects.Remove(gameId);
             }
         }
     }

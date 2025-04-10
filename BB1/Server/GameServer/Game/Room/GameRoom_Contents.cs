@@ -19,10 +19,13 @@ namespace GameServer
 
             var character = EntityManager.Instance.Spawn<Character>(100);
 
-            Map.ApplyMove(character, GetRandomSpawnPos(character));
-
             session.MyCharacter = character;
             session.MyCharacter.Room = this;
+            session.MyCharacter.Session = session;
+
+            Map.ApplyMove(character, GetRandomSpawnPos(character));
+            var visionCellsComponent = character.GetComponent<VisionCellsComponent>();
+            visionCellsComponent?.Update();
 
             // 선택한 캐릭터 정보 담아서 자신에게 S_EnterGame으로 전달
             S_EnterGame enterGamePkt = new S_EnterGame();
@@ -30,15 +33,21 @@ namespace GameServer
             enterGamePkt.Result = EResult.Success;
             session.Send(enterGamePkt);
 
+
             // 자기 자신은 뺄 거라서 해당 리스트에 추가
-            List<Entity> excludedEntities = new List<Entity> { character };
+            HashSet<Entity> excludedEntities = new () { character };
 
             // 해당 Zone 주위의 Entity 정보 담아서 자신에게 전달
             {
-                S_Spawn spawnPkt = new S_Spawn();
-                spawnPkt.EntityInfos.AddRange(GetAdjacentEntityInfos(character.GetVector2IntFromPosition(), excludedEntities));
-                spawnPkt.Result = EResult.Success;
-                session.Send(spawnPkt);
+                var entityInfosExceptMe = GetAdjacentEntityInfos(character.GetCellPosFromPosition(), excludedEntities);
+
+                if (entityInfosExceptMe.Count > 0)
+                {
+                    S_Spawn spawnPkt = new S_Spawn();
+                    spawnPkt.EntityInfos.AddRange(entityInfosExceptMe);
+                    spawnPkt.Result = EResult.Success;
+                    session.Send(spawnPkt);
+                }
             }
 
             // 자신의 정보 주위 다른 플레이어들에게 S_Spawn으로 전달, 자신은 전달하지 않음
@@ -48,7 +57,6 @@ namespace GameServer
                 spawnPkt.Result = EResult.Success;
                 BroadcastToAdjacentZones(spawnPkt, session.MyCharacter, new() { session.MyCharacter });
             }
-
         }
         public void HandleLeaveGame(ClientSession clientSession)
         {
@@ -87,7 +95,7 @@ namespace GameServer
             // 각 EntityInfo에 있는 정보가 현재 session이 소유 캐릭터인지 확인
             if (movedEntityInfo.GameId == myCharacter.GameId)
             {
-                // TODO: 여기서 속도 같은 것을 체크한다면, 해당 내용 추가 필요
+                // TODO: 현재 좌표 기준으로, 동서남북 2칸, 대각선 1칸의 거리를 이동하는 좌표를 클라이언트가 보냈는지 체크
 
                 Vector2Int toPos = new Vector2Int(movedEntityInfo.MoveInfo.Position.X, movedEntityInfo.MoveInfo.Position.Y);
 

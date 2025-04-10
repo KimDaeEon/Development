@@ -12,7 +12,8 @@ namespace GameServer
 
         protected Character()
         {
-            AddComponent(new QuestComponent()); // ✅ 필요할 때만 추가
+            AddComponent(new QuestComponent()); // 필요할 때만 추가
+            AddComponent(new VisionCellsComponent()); // 필요할 때만 추가
         }
 
         // TODO: DB 관련 로직 추후 아래에서 처리

@@ -1,4 +1,6 @@
 ﻿using GameServer.Data;
+using Google.Protobuf.Protocol;
+using Microsoft.EntityFrameworkCore.SqlServer.Query.Internal;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -57,53 +59,60 @@ namespace GameServer
             return true;
         }
 
-        bool CanGoInternal(Entity self, Vector2Int cellPos, bool checkActorCollision = true)
+        bool CanGoInternal(Entity self, Vector2Int targetCellPos, bool checkActorCollision = true)
         {
             // 맵 범위 밖으로 가려면 통과 불가
-            if (cellPos.x < MinX || cellPos.x > MaxX)
+            if (targetCellPos.x < MinX || targetCellPos.x > MaxX)
             {
                 return false;
             }
 
-            if (cellPos.y < MinY || cellPos.y > MaxY)
+            if (targetCellPos.y < MinY || targetCellPos.y > MaxY)
             {
                 return false;
             }
 
-            int x = cellPos.x - MinX;
-            int y = MaxY - cellPos.y;
+            int indexX = targetCellPos.x - MinX;
+            int indexY = MaxY - targetCellPos.y;
 
             // 충돌 영역이면 못 간다
-            if (_mapCollision[x, y])
+            if (_mapCollision[indexX, indexY])
             {
                 return false;
             }
 
             if (checkActorCollision)
             {
-                // 자신이 아닌 다른 엔티티 있으면 못 간다
-                if (_actorCollision[x, y] != null && _actorCollision[x, y] != self)
+                // 다른 액터 있으면 못간다.
+                if (_actorCollision[indexX, indexY] != null)
+                {
                     return false;
+                }
             }
 
             return true;
         }
 
 
-        internal bool ApplyMove(Character myCharacter, Vector2Int toPos, bool checkActorCollision = true)
+        internal bool ApplyMove(Entity self, Vector2Int toPos, bool checkActorCollision = true)
         {
-            if (myCharacter == null)
+            if (self == null)
+            {
+                return false;
+            }
+
+            Vector2Int fromPos = self.GetCellPosFromPosition();
+
+            if(fromPos == toPos)
             {
                 return false;
             }
 
             // 이동 가능 여부 확인
-            if (CanGo(myCharacter, toPos, checkActorCollision) == false)
+            if (CanGo(self, toPos, checkActorCollision) == false)
             {
                 return false;
             }
-
-            Vector2Int fromPos = myCharacter.GetVector2IntFromPosition();
 
             int fromX = fromPos.x - MinX;
             int fromY = MaxY - fromPos.y;
@@ -111,22 +120,20 @@ namespace GameServer
             int toX = toPos.x - MinX;
             int toY = MaxY - toPos.y;
 
-            if (_actorCollision[fromX, fromY] == null && _actorCollision[fromX, fromY] == myCharacter)
+            if (self is Actor && _actorCollision[toX, toY] == null)
             {
-                // 기존 위치의 충돌 정보 제거
-                _actorCollision[toX, toY] = myCharacter;
+                // 새로운 위치에 액터 배치
+                _actorCollision[toX, toY] = (Actor)self;
 
-                // 새로운 위치에 캐릭터 배치
-                _actorCollision[fromX, fromY] = null;
-            }
-            else
-            {
-                Logger.LogError("Somethings wrong with _actorCollision");
-                return false;
+                // 기존 위치의 충돌 정보 제거
+                if(_actorCollision[fromX, fromY] == self)
+                {
+                    _actorCollision[fromX, fromY] = null;
+                }
             }
 
             // Zone 이동 처리
-            var curRoom = myCharacter.Room;
+            var curRoom = self.Room;
 
             var fromZone = curRoom.GetZoneByCellpos(fromPos);
             var toZone = curRoom.GetZoneByCellpos(toPos);
@@ -134,53 +141,52 @@ namespace GameServer
             // 이동하려는 Zone이 기존 Zone과 다르다면 Zone 이동 실시
             if (fromZone != toZone)
             {
-                fromZone.Remove(myCharacter);
-                toZone.Add(myCharacter);
+                fromZone.Remove(self);
+                toZone.Add(self);
             }
 
             // 캐릭터 위치 정보 변경
-            myCharacter.SetVector2IntToPosition(toPos);
+            self.SetCellPosToPosition(toPos);
 
             return true;
         }
 
-        internal bool ApplyLeave(Actor actor)
+        internal bool ApplyLeave(Entity self)
         {
-            if (actor == null)
+            if (self == null)
             {
                 return false;
             }
 
-            var room = actor.Room;
+            var room = self.Room;
 
             if (room == null)
             {
                 return false;
             }
 
-            Vector2Int actorPos = actor.GetVector2IntFromPosition();
+            Vector2Int actorPos = self.GetCellPosFromPosition();
 
             // Zone 에서 제거
             Zone zone = room.GetZoneByCellpos(actorPos);
             if (zone != null)
             {
-                zone.Remove(actor); // Character라면 RemoveCharacter 호출
+                if (zone.Remove(self))
+                {
+                    S_Despawn despawnPkt = new S_Despawn();
+                    despawnPkt.GameIds.Add(self.GameId);
+                    zone.BroadCast(despawnPkt);
+                }
             }
 
             // ActorCollision 에서 제거
             int x = actorPos.x - MinX;
             int y = MaxY - actorPos.y;
 
-            if (_actorCollision[x, y] == actor)
+            if (self is Actor && _actorCollision[x, y] == self)
             {
                 _actorCollision[x, y] = null;
             
-            }
-            else
-            {
-                // TODO: 일단 Actor 는 무조건 충돌 처리를 하도록 하는데, 설계가 바뀌면 여기 바꿔야 한다.
-                Logger.LogError("Somethings wrong with actorCollision");
-                return false;
             }
 
             return true;
@@ -237,12 +243,15 @@ namespace GameServer
             public int CompareTo(AStarPathFindingNode other)
             {
                 if (F == other.F)
+                {
                     return 0;
+                }
                 return F < other.F ? 1 : -1;
             }
         }
 
-        List<Vector2Int> _pathFindingDelta = new List<Vector2Int>()
+        
+        List<Vector2Int> _moveDelta = new List<Vector2Int>()
         {
             new Vector2Int(0, 1), // U
 			new Vector2Int(1, 1), // UR

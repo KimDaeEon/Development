@@ -23,8 +23,8 @@ MonoBehaviour:
     m_SerializedLabels:
     - Preload
     FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: 7f7a40ec42da8d34bbf4961710c928e1
-    m_Address: DefaultMap
+  - m_GUID: e93d8c78dfed5944eacbece1306e0fa6
+    m_Address: Cursor
     m_ReadOnly: 0
     m_SerializedLabels:
     - Preload
