@@ -188,7 +188,7 @@ namespace GameServer
             return entityInfos.ToList();
         }
 
-        public Vector2Int GetRandomSpawnPos(Entity entity, bool checkActorCollision = true)
+        public Vector2Int GetRandomSpawnPos(Entity entity, bool checkEntityCollision = true)
         {
             Vector2Int randomPos;
 
@@ -197,7 +197,7 @@ namespace GameServer
                 randomPos.x = _rand.Next(30, 100);
                 randomPos.y = _rand.Next(30, 100);
 
-                if (Map.CanGo(entity, randomPos, checkActorCollision))
+                if (Map.CanGo(entity, randomPos, checkEntityCollision))
                 {
                     return randomPos;
                 }

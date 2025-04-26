@@ -120,6 +120,8 @@ public class GameObjectManager
 
         entity.EntityInfo = entityInfo;
 
+        Managers.Map.ApplyMove(entity, entity.CellPos);
+
         return entity;
     }
 

@@ -38,7 +38,7 @@ namespace GameServer.DB
 //                        room.Push(() =>
 //                        {
 //#if DEBUG
-//                            Console.WriteLine($"Hp Saved {playerDb}");
+//                            Logger.LogDebug($"Hp Saved {playerDb}");
 //#endif
 //                        });
 //                    }

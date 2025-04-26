@@ -56,10 +56,11 @@ public class MyCharacter : Character
         }
     }
 
+    // TODO: 이 부분 추후에 좀 더 다듬어야 한다. 캐릭터가 있는 좌표를 바로 찍었으면 근처에 있는 좌표로 이동하도록 수정 필요
     void UpdateInput()
     {
         // GetMousButton 을 하면 누르고 있는 시간 동안 계속 여기로 들어와서 원하는 목표로 이동할 수 있다.
-        if (Input.GetMouseButton(0))
+        if (Input.GetMouseButton(1))
         {
             Vector2 mouseWorldPos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
             _targetDestPos = mouseWorldPos;
@@ -69,26 +70,32 @@ public class MyCharacter : Character
             var path = Managers.Map.FindPath(this, CellPos, targetCellPos);
 
             // 경로가 2칸 이상이라면 움직일 수 있으므로 패킷을 보낸다.
-            if(path.Count >= 2)
+            if (path.Count >= 2)
             {
-                NextDestPos = path[1];
+                NextDestPos = path[path.Count - 1];
             }
 
-            SpawnOrMoveCursor(mouseWorldPos);
+            SpawnOrMoveMouseCursor(mouseWorldPos);
         }
     }
 
-    void SpawnOrMoveCursor(Vector2 position)
+    void SpawnOrMoveMouseCursor(Vector2 position)
     {
-        if (_moveCursor != null)
-        {
-            _moveCursor.transform.position = position;
-        }
-        else
+        if(_moveCursor == null)
         {
             _moveCursor = Managers.Resource.Instantiate("Cursor", pooling: true);
             _moveCursor.transform.position = position;
         }
+        else
+        {
+            _moveCursor.transform.position = position;
+        }
+    }
+
+    public void DestroyMouseCursor()
+    {
+        Managers.Resource.Destroy(_moveCursor);
+        _moveCursor = null;
     }
 
     void UpdateSendMovePacket()

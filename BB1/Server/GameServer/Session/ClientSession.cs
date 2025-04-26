@@ -39,7 +39,7 @@ namespace GameServer
 
         public override void OnConnected(EndPoint endPoint)
         {
-            Console.WriteLine($"OnConnected : {endPoint}");
+            Logger.LogDebug($"OnConnected : {endPoint}");
         }
 
         public override void OnRecvPacket(ArraySegment<byte> buffer)
@@ -51,7 +51,7 @@ namespace GameServer
         {
             SessionManager.Instance.Remove(this);
 
-            Console.WriteLine($"OnDisconnected : {endPoint}");
+            Logger.LogDebug($"OnDisconnected : {endPoint}");
 
 
             // TODO: MyCharacter랑 Room이 게임 스레드에서만 할당 및 해제가 이루어져서 읽기만은 문제 없을 것이라 판단해서 이렇게 했는데, 혹시나 문제 생기면 이 부분도 확인
@@ -62,7 +62,7 @@ namespace GameServer
                 {
                     if (room != null)
                     {
-                        Console.WriteLine($"Found Room ID: {room.GetHashCode()}");
+                        Logger.LogDebug($"Found Room ID: {room.GetHashCode()}");
 
                         room.HandleLeaveGame(this);
                     }
@@ -72,7 +72,7 @@ namespace GameServer
 
         public override void OnSend(int numOfBytes)
         {
-            Console.WriteLine($"Transferred bytes: {numOfBytes}");
+            Logger.LogDebug($"Transferred bytes: {numOfBytes}");
         }
         #endregion
     }

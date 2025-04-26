@@ -1,4 +1,6 @@
 ﻿using Google.Protobuf.Protocol;
+using ServerCore;
+
 using Microsoft.EntityFrameworkCore.Update.Internal;
 using System;
 using System.Collections.Generic;
@@ -28,7 +30,7 @@ namespace GameServer
                 return;
             }
 
-            Console.WriteLine("[VisionCellsComponent] Updating...");
+            //Logger.LogDebug("[VisionCellsComponent] Updating...");
 
             HashSet<Entity> excludedEntities = new HashSet<Entity> { Owner };
 
@@ -70,7 +72,7 @@ namespace GameServer
 
         public override void Notify(EventData message)
         {
-            Console.WriteLine("[VisionCellsComponent] Notifying observers with message.");
+            Logger.LogDebug("[VisionCellsComponent] Notifying observers with message.");
             NotifyObservers(message);
         }
 
@@ -79,16 +81,16 @@ namespace GameServer
             switch (message.Type)
             {
                 case EventDataType.Int:
-                    Console.WriteLine($"[VisionCellsComponent] Received int message: {(int)message.Data}");
+                    Logger.LogDebug($"[VisionCellsComponent] Received int message: {(int)message.Data}");
                     break;
                 case EventDataType.Float:
-                    Console.WriteLine($"[VisionCellsComponent] Received float message: {(float)message.Data}");
+                    Logger.LogDebug($"[VisionCellsComponent] Received float message: {(float)message.Data}");
                     break;
                 case EventDataType.String:
-                    Console.WriteLine($"[VisionCellsComponent] Received string message: {(string)message.Data}");
+                    Logger.LogDebug($"[VisionCellsComponent] Received string message: {(string)message.Data}");
                     break;
                 default:
-                    Console.WriteLine("[VisionCellsComponent] Unknown message type received.");
+                    Logger.LogDebug("[VisionCellsComponent] Unknown message type received.");
                     break;
             }
         }

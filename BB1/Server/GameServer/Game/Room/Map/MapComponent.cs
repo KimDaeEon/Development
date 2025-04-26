@@ -35,7 +35,7 @@ namespace GameServer
         Actor[,] _actorCollision;
 
 
-        public bool CanGo(Entity self, Vector2Int cellPos, bool checkActorCollision = true)
+        public bool CanGo(Entity self, Vector2Int cellPos, bool checkEntityCollision = true)
         {
             int extraCells = 0;
             if (self != null)
@@ -49,7 +49,7 @@ namespace GameServer
                 for (int dy = -extraCells; dy <= extraCells; dy++)
                 {
                     Vector2Int checkedCellPos = new Vector2Int(cellPos.x + dx, cellPos.y + dy);
-                    if (CanGoInternal(self, checkedCellPos, checkActorCollision) == false)
+                    if (CanGoInternal(self, checkedCellPos, checkEntityCollision) == false)
                     {
                         return false;
                     }
@@ -59,7 +59,7 @@ namespace GameServer
             return true;
         }
 
-        bool CanGoInternal(Entity self, Vector2Int targetCellPos, bool checkActorCollision = true)
+        bool CanGoInternal(Entity self, Vector2Int targetCellPos, bool checkEntityCollision = true)
         {
             // 맵 범위 밖으로 가려면 통과 불가
             if (targetCellPos.x < MinX || targetCellPos.x > MaxX)
@@ -81,7 +81,7 @@ namespace GameServer
                 return false;
             }
 
-            if (checkActorCollision)
+            if (checkEntityCollision)
             {
                 // 다른 액터 있으면 못간다.
                 if (_actorCollision[indexX, indexY] != null)
@@ -94,7 +94,7 @@ namespace GameServer
         }
 
 
-        internal bool ApplyMove(Entity self, Vector2Int toPos, bool checkActorCollision = true)
+        internal bool ApplyMove(Entity self, Vector2Int toPos, bool checkEntityCollision = true)
         {
             if (self == null)
             {
@@ -109,7 +109,7 @@ namespace GameServer
             }
 
             // 이동 가능 여부 확인
-            if (CanGo(self, toPos, checkActorCollision) == false)
+            if (CanGo(self, toPos, checkEntityCollision) == false)
             {
                 return false;
             }
@@ -120,7 +120,7 @@ namespace GameServer
             int toX = toPos.x - MinX;
             int toY = MaxY - toPos.y;
 
-            if (self is Actor && _actorCollision[toX, toY] == null)
+            if (_actorCollision[toX, toY] == null && self is Actor)
             {
                 // 새로운 위치에 액터 배치
                 _actorCollision[toX, toY] = (Actor)self;
@@ -179,11 +179,11 @@ namespace GameServer
                 }
             }
 
-            // ActorCollision 에서 제거
+            // EntityCollision 에서 제거
             int x = actorPos.x - MinX;
             int y = MaxY - actorPos.y;
 
-            if (self is Actor && _actorCollision[x, y] == self)
+            if (_actorCollision[x, y] == self)
             {
                 _actorCollision[x, y] = null;
             

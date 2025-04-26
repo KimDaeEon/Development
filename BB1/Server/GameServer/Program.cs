@@ -48,7 +48,7 @@ namespace Server
             IPEndPoint endPoint = new IPEndPoint(ipAddr, ConfigManager.Config.port);
             _listener.Init(endPoint, () => { return SessionManager.Instance.Generate(); });
 
-            Console.WriteLine("Listening on " + endPoint);
+            Logger.LogDebug("Listening on " + endPoint);
 
             // GameDbTask
             {
@@ -62,11 +62,11 @@ namespace Server
             {
                 if (room != null)
                 {
-                    Console.WriteLine($"Room added successfully.");
+                    Logger.LogDebug($"Room added successfully.");
                 }
                 else
                 {
-                    Console.WriteLine($"Adding room faield!!");
+                    Logger.LogDebug($"Adding room faield!!");
                 }
             });
 

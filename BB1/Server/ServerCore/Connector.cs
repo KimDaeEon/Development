@@ -56,12 +56,12 @@ namespace ServerCore
                 session.Start(args.ConnectSocket);
 
                 // 아래 결과는 같다고 나온다. socket.ConnectAsync 를 하는 순간 내부적으로 args 의 ConnectSocket에 socket 의 주소를 저장하는 것 같다.
-                //Console.WriteLine("args.ConnectSocket 과 args.UserToken.ConnectSocket 이 같은가? " + (args.ConnectSocket == args.UserToken));
+                //Logger.LogDebug("args.ConnectSocket 과 args.UserToken.ConnectSocket 이 같은가? " + (args.ConnectSocket == args.UserToken));
                 session.OnConnected(args.ConnectSocket.RemoteEndPoint);
             }
             else
             {
-                //Console.WriteLine($"Connect Fail! reason:{args.SocketError}");
+                //Logger.LogDebug($"Connect Fail! reason:{args.SocketError}");
             }
         }
     }

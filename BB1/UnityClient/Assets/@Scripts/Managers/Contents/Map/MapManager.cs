@@ -33,14 +33,88 @@ public class MapManager
     bool[,] _mapCollision;
 
     // 특정 위치에 액터가 있는지 체크하기 위함
-    Actor[,] _actorCollision;
+    Actor[,] _actorCollision; // TODO: 이거랑 위에 _cells 수정해서 아이템까지 완벽히 처리하는 이동 형식으로 바꿔야 한다.
 
 
-    public Entity GetObject(Vector3Int cellPos)
+    public bool ApplyMove(Entity entity, Vector3Int cellPos)
+    {
+        if (CanGo(entity, cellPos) == false)
+        {
+            return false;
+        }
+
+        // 기존의 좌표에서 제거
+        RemoveEntity(entity);
+
+        PutEntity(entity, cellPos);
+
+        MyCharacter myCharacter = entity as MyCharacter;
+        if (myCharacter != null)
+        {
+            myCharacter.DestroyMouseCursor();
+        }
+
+        return true;
+    }
+
+    public Entity GetEntity(Vector3Int cellPos)
     {
         _cells.TryGetValue(cellPos, out Entity value);
         return value;
     }
+
+    public void RemoveEntity(Entity entity)
+    {
+        int extraCells = 0;
+
+        if (entity != null)
+        {
+            extraCells = entity.ExtraCells;
+        }
+
+        Vector3Int cellPos = entity.CellPos;
+
+        for (int dx = -extraCells; dx <= extraCells; dx++)
+        {
+            for (int dy = -extraCells; dy <= extraCells; dy++)
+            {
+                Vector3Int newCellPos = new Vector3Int(cellPos.x + dx, cellPos.y + dy);
+                Entity targetPosEntity = GetEntity(newCellPos);
+
+                if (targetPosEntity == entity)
+                {
+                    _cells[newCellPos] = null;
+                }
+            }
+        }
+    }
+
+    public void PutEntity(Entity entity, Vector3Int cellPos)
+    {
+        int extraCells = 0;
+        if (entity != null)
+        {
+            extraCells = entity.ExtraCells;
+        }
+
+        for (int dx = -extraCells; dx <= extraCells; dx++)
+        {
+            for (int dy = -extraCells; dy <= extraCells; dy++)
+            {
+                Vector3Int newCellPos = new Vector3Int(cellPos.x + dx, cellPos.y + dy);
+
+                Entity targetPosEntity = GetEntity(newCellPos);
+                if (targetPosEntity != null && targetPosEntity != entity)
+                {
+                    Debug.LogWarning($"Something is wrong with PutEntity function");
+                    return;
+                }
+
+                _cells[newCellPos] = entity;
+            }
+        }
+    }
+
     public Vector3 CellPosToWorldPos(Vector3Int cellPos)
     {
         return CellGrid.CellToWorld(cellPos);
@@ -112,73 +186,6 @@ public class MapManager
         ParseCollisionData(map, mapName);
     }
 
-
-    public bool ApplyMove(Entity self, Vector3Int toPos, bool checkActorCollision = true)
-    {
-        if (self == null)
-        {
-            return false;
-        }
-
-        Vector3Int fromPos = self.GetVector3IntFromPosition();
-
-        if (fromPos == toPos)
-        {
-            return false;
-        }
-
-        // 이동 가능 여부 확인
-        if (CanGo(self, toPos, checkActorCollision) == false)
-        {
-            return false;
-        }
-
-        int fromX = fromPos.x - MinX;
-        int fromY = MaxY - fromPos.y;
-
-        int toX = toPos.x - MinX;
-        int toY = MaxY - toPos.y;
-
-        if (self is Actor && _actorCollision[toX, toY] == null)
-        {
-            // 새로운 위치에 액터 배치
-            _actorCollision[toX, toY] = (Actor)self;
-
-            // 기존 위치의 충돌 정보 제거
-            if (_actorCollision[fromX, fromY] == self)
-            {
-                _actorCollision[fromX, fromY] = null;
-            }
-        }
-
-        // 위치 정보 변경
-        self.SetVector3IntToPosition(toPos);
-
-        return true;
-    }
-
-    public bool ApplyLeave(Entity self)
-    {
-        if (self == null)
-        {
-            return false;
-        }
-
-        Vector3Int actorPos = self.GetVector3IntFromPosition();
-
-        // ActorCollision 에서 제거
-        int x = actorPos.x - MinX;
-        int y = MaxY - actorPos.y;
-
-        if (self is Actor && _actorCollision[x, y] == self)
-        {
-            _actorCollision[x, y] = null;
-
-        }
-
-        return true;
-    }
-
     #region A* Path Finding
     public struct PathFindingNode : IComparable<PathFindingNode>
     {
@@ -221,12 +228,12 @@ public class MapManager
         return CellGrid.WorldToCell(worldPos);
     }
 
-    public bool CanGo(Entity self, Vector3 worldPos, bool ignoreObjects = false)
-    {
-        return CanGo(self, WorldPosToCellPos(worldPos), ignoreObjects);
-    }
+    //public bool CanGo(Entity self, Vector3 worldPos, bool checkActorCollision = true)
+    //{
+    //    return CanGo(self, WorldPosToCellPos(worldPos), checkActorCollision);
+    //}
 
-    public bool CanGo(Entity self, Vector3Int cellPos, bool ignoreObjects = false, int extraCell = 0)
+    public bool CanGo(Entity self, Vector3Int cellPos, bool checkActorCollision = true, int extraCell = 0)
     {
         int extraCells = extraCell;
         if (self != null)
@@ -238,7 +245,7 @@ public class MapManager
             {
                 Vector3Int checkPos = new Vector3Int(cellPos.x + dx, cellPos.y + dy);
 
-                if (CanGoInternal(self, checkPos, ignoreObjects) == false)
+                if (CanGoInternal(self, checkPos, checkActorCollision) == false)
                 {
                     return false;
                 }
@@ -273,7 +280,9 @@ public class MapManager
         if (checkActorCollision)
         {
             // 다른 액터 있으면 못간다.
-            if (_actorCollision[indexX, indexY] != null)
+            Entity entity = GetEntity(targetCellPos);
+            Actor actor = entity as Actor;
+            if (actor != null && actor != self)
             {
                 return false;
             }
@@ -296,7 +305,7 @@ public class MapManager
 
         // destCellPos에 도착 못하면 가장 가까운 애로 설정, 이래야 몬스터가 가만히 있지 않고 여기저기 움직인다.
         Vector3Int closestCellPos = startCellPos;
-        int closestH = (destCellPos - curCellPos).sqrMagnitude;
+        int closestH = int.MaxValue;
 
         // 시작 정보 할당
         {
@@ -381,6 +390,8 @@ public class MapManager
         }
 
         Stack<Vector3Int> pathStack = new Stack<Vector3Int>();
+
+        pathStack.Push(destCellPos);
 
         // 목표 좌표 -> 시작 좌표로 역으로 가면서 스택에 저장해서 경로를 뒤집는다.
         do

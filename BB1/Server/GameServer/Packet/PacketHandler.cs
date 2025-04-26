@@ -25,7 +25,7 @@ class PacketHandler
         //    clientSession.Disconnect();
         //}
 
-        Console.WriteLine(pkt);
+        Logger.LogDebug(pkt.ToString());
     }
 
     internal static void C_EnterGameHandler(PacketSession session, IMessage packet)
@@ -33,7 +33,7 @@ class PacketHandler
         C_EnterGame pkt = packet as C_EnterGame;
         ClientSession clientSession = session as ClientSession;
 
-        System.Console.WriteLine(pkt);
+        Logger.LogDebug(pkt.ToString());
 
         // 패킷 버전 불일치 시에 바로 실패 및 연결 종료
         if(pkt.Version != ConfigManager.Config.packetVer)
@@ -41,7 +41,7 @@ class PacketHandler
             S_EnterGame sEnterGamePkt = new S_EnterGame();
             sEnterGamePkt.Result = EResult.Failed;
             clientSession.Send(sEnterGamePkt);
-            Console.WriteLine($"Wrong Packet Version: {pkt.Version}");
+            Logger.LogDebug($"Wrong Packet Version: {pkt.Version}");
             clientSession.Disconnect();
             return;
         }
@@ -56,13 +56,13 @@ class PacketHandler
         {
             if (room != null)
             {
-                Console.WriteLine($"Found Room ID: {room.GetHashCode()}");
+                Logger.LogDebug($"Found Room ID: {room.GetHashCode()}");
 
                 room.HandleEnterGame(clientSession, pkt);
             }
             else
             {
-                Console.WriteLine("Room not found.");
+                Logger.LogDebug("Room not found.");
 
                 // 실패 패킷 전달
                 S_EnterGame pkt = new S_EnterGame();
@@ -92,17 +92,19 @@ class PacketHandler
             clientSession.Disconnect();
         }
 
+        Logger.LogDebug(pkt.ToString());
+
         GameRoomManager.Instance.FindRoom(roomId: 1, callback: (room) =>
         {
             if (room != null)
             {
-                Console.WriteLine($"Found Room ID: {room.GetHashCode()}");
+                Logger.LogDebug($"Found Room ID: {room.GetHashCode()}");
 
                 room.HandleMove(clientSession, pkt);
             }
             else
             {
-                Console.WriteLine("Room not found.");
+                Logger.LogDebug("Room not found.");
 
                 // 실패 패킷 전달
                 S_Move pkt = new S_Move();

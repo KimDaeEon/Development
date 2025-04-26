@@ -170,7 +170,7 @@ namespace ServerCore
             }
             catch (Exception e)
             {
-                Console.WriteLine($"{MethodBase.GetCurrentMethod().Name} Failed {e}");
+                Logger.LogDebug($"{MethodBase.GetCurrentMethod().Name} Failed {e}");
             }
         }
 
@@ -195,7 +195,7 @@ namespace ServerCore
                     }
                     catch (Exception e)
                     {
-                        Console.WriteLine($"{MethodBase.GetCurrentMethod().Name} Failed {e}");
+                        Logger.LogDebug($"{MethodBase.GetCurrentMethod().Name} Failed {e}");
                     }
                 }
                 else
@@ -226,7 +226,7 @@ namespace ServerCore
             }
             catch (Exception e)
             {
-                Console.WriteLine($"{MethodBase.GetCurrentMethod().Name} Failed {e}");
+                Logger.LogDebug($"{MethodBase.GetCurrentMethod().Name} Failed {e}");
             }
 
         }
@@ -265,7 +265,7 @@ namespace ServerCore
                 catch (Exception e)
                 {
                     // TODO: 방어 코드를 더 추가한 뒤에 여기로 넘어오면 Disconnect() 하는 것이 좋을 것 같다.
-                    Console.WriteLine($"{MethodBase.GetCurrentMethod().Name} Failed {e}");
+                    Logger.LogDebug($"{MethodBase.GetCurrentMethod().Name} Failed {e}");
                     Disconnect();
                 }
             }

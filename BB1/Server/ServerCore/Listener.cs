@@ -67,12 +67,12 @@ namespace ServerCore
                 }
                 else
                 {
-                    Console.WriteLine(args.SocketError.ToString());
+                    Logger.LogDebug(args.SocketError.ToString());
                 }
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex);
+                Logger.LogDebug(ex.ToString());
             }
 
             // OnAcceptCompleted 작업이 끝났으면 다시 다음 연결 작업에 대한 처리를 해준다.

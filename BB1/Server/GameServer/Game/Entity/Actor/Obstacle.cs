@@ -3,7 +3,6 @@
 namespace GameServer
 {
     // 수동적인 상호 작용만 가능 (폭발, 파괴, 밀려서 이동 등등)
-    // 충돌 처리
     public class Obstacle : Actor
     {
         protected Obstacle()

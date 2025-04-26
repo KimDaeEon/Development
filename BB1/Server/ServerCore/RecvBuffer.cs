@@ -53,7 +53,7 @@ namespace ServerCore
         {
             if (numOfBytes > ReceviedDataSize)
             {
-                //Console.WriteLine("Error on "+ MethodBase.GetCurrentMethod().Name);
+                //Logger.LogDebug("Error on "+ MethodBase.GetCurrentMethod().Name);
                 return false;
             }
             _readPos += numOfBytes;
@@ -64,7 +64,7 @@ namespace ServerCore
         {
             if(numOfBytes > FreeSize)
             {
-                //Console.WriteLine("Error on "+ MethodBase.GetCurrentMethod().Name);
+                //Logger.LogDebug("Error on "+ MethodBase.GetCurrentMethod().Name);
                 return false;
             }
             _writePos += numOfBytes;

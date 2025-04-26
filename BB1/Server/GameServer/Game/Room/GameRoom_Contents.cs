@@ -1,4 +1,6 @@
 ﻿using System;
+using ServerCore;
+
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -95,7 +97,7 @@ namespace GameServer
             // 각 EntityInfo에 있는 정보가 현재 session이 소유 캐릭터인지 확인
             if (movedEntityInfo.GameId == myCharacter.GameId)
             {
-                // TODO: 현재 좌표 기준으로, 동서남북 2칸, 대각선 1칸의 거리를 이동하는 좌표를 클라이언트가 보냈는지 체크
+                // TODO: 거리 이동 제한 관련해서 고민을 하고 아래 부분 체크하는 것을 넣어야 할 것 같다.
 
                 Vector2Int toPos = new Vector2Int(movedEntityInfo.MoveInfo.Position.X, movedEntityInfo.MoveInfo.Position.Y);
 
@@ -105,6 +107,8 @@ namespace GameServer
                     movePkt.Result = EResult.Success;
                 }
             }
+
+            Logger.LogDebug(movePkt.ToString());
 
             BroadcastToAdjacentZones(movePkt, myCharacter);
         }

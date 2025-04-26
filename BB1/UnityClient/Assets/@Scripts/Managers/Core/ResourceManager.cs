@@ -73,10 +73,14 @@ public class ResourceManager
     public void Destroy(GameObject go)
     {
         if (go == null)
+        {
             return;
+        }
 
         if (Managers.Pool.Push(go))
+        {
             return;
+        }
 
         Object.Destroy(go);
     }

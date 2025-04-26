@@ -148,8 +148,9 @@ public abstract class Entity : MonoBehaviour
             transform.position = destWorldPos;
             isMoving = false;
 
-            // 맵 충돌 정보 갱신
             Managers.Map.ApplyMove(this, CellPos);
+
+
             return;
         }
 

@@ -1,4 +1,6 @@
 ﻿using GameServer.DB.EFCore;
+using ServerCore;
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -18,7 +20,7 @@ namespace GameServer
             }
             catch (Exception e)
             {
-                Console.WriteLine($"SaveChanges() exception occurred!!! {e}");
+                Logger.LogDebug($"SaveChanges() exception occurred!!! {e}");
                 return false;
             }
         }

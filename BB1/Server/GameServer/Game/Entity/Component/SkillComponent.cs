@@ -1,4 +1,6 @@
 ﻿using System;
+using ServerCore;
+
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -12,17 +14,17 @@ namespace GameServer
     {
         public override void Update()
         {
-            Console.WriteLine("[SkillComponent] Updating skills...");
+            Logger.LogDebug("[SkillComponent] Updating skills...");
 
             int updatedValue = 100;
-            Console.WriteLine($"[SkillComponent] New value: {updatedValue}");
+            Logger.LogDebug($"[SkillComponent] New value: {updatedValue}");
 
             NotifyObservers(new EventData { Type = EventDataType.Int, Data = updatedValue });
         }
 
         public override void Notify(EventData message)
         {
-            Console.WriteLine("[SkillComponent] Notifying observers with message.");
+            Logger.LogDebug("[SkillComponent] Notifying observers with message.");
             NotifyObservers(message);
         }
 
@@ -31,16 +33,16 @@ namespace GameServer
             switch (message.Type)
             {
                 case EventDataType.Int:
-                    Console.WriteLine($"[SkillComponent] Received int message: {(int)message.Data}");
+                    Logger.LogDebug($"[SkillComponent] Received int message: {(int)message.Data}");
                     break;
                 case EventDataType.Float:
-                    Console.WriteLine($"[SkillComponent] Received float message: {(float)message.Data}");
+                    Logger.LogDebug($"[SkillComponent] Received float message: {(float)message.Data}");
                     break;
                 case EventDataType.String:
-                    Console.WriteLine($"[SkillComponent] Received string message: {(string)message.Data}");
+                    Logger.LogDebug($"[SkillComponent] Received string message: {(string)message.Data}");
                     break;
                 default:
-                    Console.WriteLine("[SkillComponent] Unknown message type received.");
+                    Logger.LogDebug("[SkillComponent] Unknown message type received.");
                     break;
             }
         }

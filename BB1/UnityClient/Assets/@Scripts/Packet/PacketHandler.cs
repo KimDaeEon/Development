@@ -47,6 +47,7 @@ class PacketHandler
         foreach (EntityInfo entityInfo in spawnPacket.EntityInfos)
         {
             Managers.Object.Spawn(entityInfo);
+
         }
     }
 

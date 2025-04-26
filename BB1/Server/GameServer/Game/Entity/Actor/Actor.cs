@@ -3,7 +3,6 @@
 namespace GameServer
 {
     // 주체적으로 상호 작용
-    // 충돌 처리
     public class Actor : Entity
     {
         protected Actor()

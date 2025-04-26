@@ -1,4 +1,6 @@
 ﻿using System;
+using ServerCore;
+
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -44,12 +46,12 @@ namespace GameServer
             {
                 if (_rooms.TryGetValue(roomId, out var room))
                 {
-                    Console.WriteLine($"[GameRoomManager] Room {roomId} found.");
+                    Logger.LogDebug($"Room {roomId} found.");
                     callback?.Invoke(room);
                     return;
                 }
 
-                Console.WriteLine($"[GameRoomManager] Room {roomId} not found.");
+                Logger.LogDebug($"Room {roomId} not found.");
                 callback?.Invoke(null);
             });
         }
@@ -61,12 +63,12 @@ namespace GameServer
                 if (_rooms.TryGetValue(roomId, out var room))
                 {
                     _rooms.Remove(roomId);
-                    Console.WriteLine($"[GameRoomManager] Room {roomId} removed.");
+                    Logger.LogDebug($"Room {roomId} removed.");
                     callback?.Invoke(room);
                     return;
                 }
 
-                Console.WriteLine($"[GameRoomManager] Room {roomId} removal failed. Room not found.");
+                Logger.LogDebug($"Room {roomId} removal failed. Room not found.");
                 callback?.Invoke(null);
             });
         }

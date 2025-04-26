@@ -1,4 +1,5 @@
 ﻿using System;
+using ServerCore;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -12,17 +13,17 @@ namespace GameServer
     {
         public override void Update()
         {
-            Console.WriteLine("[QuestComponent] Updating quest progress...");
+            Logger.LogDebug("[QuestComponent] Updating quest progress...");
 
             int updatedValue = 100;
-            Console.WriteLine($"[QuestComponent] New value: {updatedValue}");
+            Logger.LogDebug($"[QuestComponent] New value: {updatedValue}");
 
             NotifyObservers(new EventData { Type = EventDataType.Int, Data = updatedValue });
         }
 
         public override void Notify(EventData message)
         {
-            Console.WriteLine("[QuestComponent] Notifying observers with quest message.");
+            Logger.LogDebug("[QuestComponent] Notifying observers with quest message.");
             NotifyObservers(message);
         }
 
@@ -31,16 +32,16 @@ namespace GameServer
             switch (message.Type)
             {
                 case EventDataType.Int:
-                    Console.WriteLine($"[QuestComponent] Received int message: {(int)message.Data}");
+                    Logger.LogDebug($"[QuestComponent] Received int message: {(int)message.Data}");
                     break;
                 case EventDataType.Float:
-                    Console.WriteLine($"[QuestComponent] Received float message: {(float)message.Data}");
+                    Logger.LogDebug($"[QuestComponent] Received float message: {(float)message.Data}");
                     break;
                 case EventDataType.String:
-                    Console.WriteLine($"[QuestComponent] Received string message: {(string)message.Data}");
+                    Logger.LogDebug($"[QuestComponent] Received string message: {(string)message.Data}");
                     break;
                 default:
-                    Console.WriteLine("[QuestComponent] Unknown message type received.");
+                    Logger.LogDebug("[QuestComponent] Unknown message type received.");
                     break;
             }
         }
