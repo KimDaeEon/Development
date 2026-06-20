@@ -1,0 +1,602 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>DUCK CORP — 쿼터뷰 Stage 1</title>
+<style>
+  *{margin:0;padding:0;box-sizing:border-box;}
+  html,body{height:100%;background:#0a0c10;overflow:hidden;font-family:ui-monospace,Menlo,Consolas,monospace;color:#e7e9ee;cursor:none;}
+  #app{position:fixed;inset:0;}
+  canvas{display:block;}
+
+  #hud{position:fixed;inset:0;pointer-events:none;font-size:13px;letter-spacing:.4px;}
+  .panel{position:absolute;background:rgba(12,14,18,.62);border:1px solid #2c3138;border-radius:7px;padding:8px 11px;backdrop-filter:blur(2px);}
+  #bl{bottom:14px;left:14px;min-width:190px;}
+  #tr{top:14px;right:14px;text-align:right;}
+  .amber{color:#ffd23f;}.green{color:#4ad17c;}.red{color:#ff5a5a;}.dim{color:#8a93a0;}
+  .bar{width:170px;height:9px;background:#2c3138;border-radius:5px;margin-top:6px;overflow:hidden;}
+  .fill{height:100%;background:linear-gradient(90deg,#ff5a5a,#ffd23f);transition:width .1s;}
+  #ammo{font-size:22px;}
+  /* cursor crosshair (follows mouse) */
+  #ch{position:fixed;width:30px;height:30px;pointer-events:none;transform:translate(-50%,-50%);z-index:5;mix-blend-mode:screen;}
+  #ch::before,#ch::after{content:"";position:absolute;background:#9fe7c2;}
+  #ch::before{width:2px;height:30px;left:14px;top:0;}
+  #ch::after{height:2px;width:30px;top:14px;left:0;}
+  #chdot{position:absolute;left:13px;top:13px;width:4px;height:4px;border-radius:50%;background:#ffd23f;}
+  #vig{position:fixed;inset:0;pointer-events:none;box-shadow:inset 0 0 200px 40px rgba(255,40,40,0);transition:box-shadow .15s;}
+
+  #ov{position:fixed;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;gap:16px;cursor:auto;
+      background:radial-gradient(circle at 50% 38%,rgba(16,18,24,.88),rgba(7,8,11,.97));z-index:10;}
+  #ov.hidden{display:none;}
+  #ov h1{font-size:46px;letter-spacing:4px;}#ov h1 .d{color:#ffd23f;}
+  #ov p{color:#b9c0cc;max-width:540px;line-height:1.7;font-size:13px;}
+  #ov .keys{color:#8a93a0;font-size:12px;line-height:2.1;}#ov .keys b{color:#ffd23f;}
+  .result{font-size:34px;}.win{color:#4ad17c;}.lose{color:#ff5a5a;}
+  button{pointer-events:auto;font-family:inherit;font-size:15px;letter-spacing:1px;color:#0c0d10;background:#ffd23f;border:none;border-radius:8px;padding:13px 30px;cursor:pointer;transition:transform .08s,background .15s;}
+  button:hover{background:#ffdd66;transform:translateY(-1px);}
+  #snd{position:absolute;top:14px;left:14px;cursor:pointer;pointer-events:auto;}
+  #toast{position:fixed;left:50%;top:74px;transform:translateX(-50%);font-size:14px;color:#ffd23f;
+         background:rgba(12,14,18,.7);border:1px solid #2c3138;border-radius:6px;padding:6px 14px;opacity:0;transition:opacity .25s;pointer-events:none;}
+</style>
+</head>
+<body>
+<div id="app"></div>
+
+<div id="hud">
+  <div class="panel" id="bl">
+    <div>HP <span class="amber" id="hp">100</span></div>
+    <div class="bar"><div class="fill" id="hpf"></div></div>
+    <div style="margin-top:8px">탄약 <span class="amber" id="ammo">30</span><span class="dim" id="res"> / 150</span></div>
+    <div style="margin-top:6px">무기 <span class="green" id="wname">소총</span> &nbsp;<span id="wslots"></span></div>
+    <div style="margin-top:6px" id="rollind">구르기 <span class="green">READY</span></div>
+  </div>
+  <div class="panel" id="tr">
+    <div class="green">STAGE 1 · 소굴 소탕</div>
+    <div style="margin-top:5px">잔존 적 <span class="red" id="left">0</span> · 처치 <span class="amber" id="kill">0</span></div>
+  </div>
+  <div class="panel" id="snd">🔊 사운드 ON</div>
+  <div id="ch"><div id="chdot"></div></div>
+</div>
+<div id="vig"></div>
+<div id="toast"></div>
+
+<div id="ov">
+  <h1>DUCK <span class="d">CORP</span> <span style="font-size:20px;color:#8a93a0">쿼터뷰</span></h1>
+  <p>무장한 오리 군단이 창고를 점거했다. <span style="color:#ffd23f">시야</span>는 무기가 비추는 원뿔 안쪽만 보인다 — 어둠 속 적은 가까이 와야 드러난다. 맵에 떨어진 <span style="color:#ffa23f">샷건</span>·<span style="color:#6ad6ff">저격총</span>을 주워 상황에 맞게 바꿔 쓰고, 위급하면 <span style="color:#4ad17c">구르기</span>로 탄을 피하라.</p>
+  <div class="keys">
+    <b>WASD</b> 이동 · <b>마우스</b> 조준 · <b>좌클릭</b> 사격 · <b>R</b> 재장전<br>
+    <b>1·2·3</b> 무기 교체 · <b>Space</b> 구르기(회피) · <b>M</b> 음소거
+  </div>
+  <p class="dim" style="font-size:11px">소리가 나오니 볼륨을 확인하세요.</p>
+  <button id="start">작전 시작</button>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+const clamp=(v,a,b)=>v<a?a:v>b?b:v;
+const lerp=(a,b,t)=>a+(b-a)*t;
+
+/* ============================ AUDIO (procedural) ============================ */
+let ac=null,master=null,musicGain=null,sndOn=true,noiseBuf=null,musicTimer=null;
+function initAudio(){
+  if(ac) return;
+  ac=new (window.AudioContext||window.webkitAudioContext)();
+  master=ac.createGain(); master.gain.value=0.9; master.connect(ac.destination);
+  musicGain=ac.createGain(); musicGain.gain.value=0.45; musicGain.connect(master);
+  const n=ac.sampleRate*1.0; noiseBuf=ac.createBuffer(1,n,ac.sampleRate);
+  const d=noiseBuf.getChannelData(0); for(let i=0;i<n;i++) d[i]=Math.random()*2-1;
+  startAmbient(); startMusic();
+}
+function noise(dur,filterType,freq,gain,decay){
+  if(!ac||!sndOn) return;
+  const s=ac.createBufferSource(); s.buffer=noiseBuf;
+  const f=ac.createBiquadFilter(); f.type=filterType; f.frequency.value=freq;
+  const g=ac.createGain(); const t=ac.currentTime;
+  g.gain.setValueAtTime(gain,t); g.gain.exponentialRampToValueAtTime(0.0001,t+decay);
+  s.connect(f); f.connect(g); g.connect(master); s.start(t); s.stop(t+dur);
+}
+function tone(freq,dur,type,gain,slideTo){
+  if(!ac||!sndOn) return;
+  const o=ac.createOscillator(); o.type=type||'sine'; const g=ac.createGain();
+  const t=ac.currentTime; o.frequency.setValueAtTime(freq,t);
+  if(slideTo) o.frequency.exponentialRampToValueAtTime(slideTo,t+dur);
+  g.gain.setValueAtTime(gain,t); g.gain.exponentialRampToValueAtTime(0.0001,t+dur);
+  o.connect(g); g.connect(master); o.start(t); o.stop(t+dur);
+}
+const sfx={
+  shoot(){ noise(0.16,'bandpass',1900,0.45,0.11); tone(150,0.07,'square',0.22,60); },
+  enemyShoot(){ noise(0.15,'bandpass',1050,0.22,0.11); },
+  hit(){ noise(0.09,'highpass',3200,0.4,0.06); },
+  hurt(){ noise(0.25,'lowpass',500,0.5,0.2); tone(90,0.2,'sawtooth',0.2,50); },
+  death(){ noise(0.3,'lowpass',800,0.4,0.25); tone(200,0.3,'square',0.2,60); },
+  reload(){ noise(0.05,'highpass',2000,0.2,0.04); setTimeout(()=>noise(0.06,'highpass',2600,0.22,0.05),130); },
+  empty(){ tone(180,0.05,'square',0.15); },
+  roll(){ noise(0.32,'bandpass',650,0.3,0.28); tone(260,0.18,'sine',0.12,140); },
+  pickup(){ tone(660,0.09,'triangle',0.3); setTimeout(()=>tone(990,0.13,'triangle',0.3),70); },
+  win(){ [523,659,784,1047].forEach((f,i)=>setTimeout(()=>tone(f,0.32,'triangle',0.3),i*150)); }
+};
+// environment ambient: low hum + occasional metal creaks
+let ambHum=null;
+function startAmbient(){
+  // continuous low hum
+  const o=ac.createOscillator(),g=ac.createGain(),f=ac.createBiquadFilter();
+  o.type='sawtooth'; o.frequency.value=42; f.type='lowpass'; f.frequency.value=160;
+  g.gain.value=0.06; o.connect(f); f.connect(g); g.connect(master); o.start();
+  ambHum=g;
+  // wind-ish filtered noise layer
+  const s=ac.createBufferSource(); s.buffer=noiseBuf; s.loop=true;
+  const nf=ac.createBiquadFilter(); nf.type='bandpass'; nf.frequency.value=320; nf.Q.value=0.6;
+  const ng=ac.createGain(); ng.gain.value=0.025;
+  s.connect(nf); nf.connect(ng); ng.connect(master); s.start();
+  // random creaks
+  function creak(){
+    if(ac){ if(sndOn){ tone(120+Math.random()*120,0.5,'sine',0.05,80+Math.random()*60);
+      noise(0.2,'bandpass',600+Math.random()*400,0.05,0.18);}
+      setTimeout(creak,3500+Math.random()*6000); }
+  }
+  setTimeout(creak,3000);
+}
+const bassPat=[55,0,55,0,73.42,0,55,0, 49,0,49,0,65.41,0,55,0];
+const arpPat =[220,277,330,277, 294,349,440,349, 196,247,294,247, 220,262,330,262];
+let mStep=0,mNext=0; const mTempo=0.27;
+function startMusic(){
+  mStep=0; mNext=ac.currentTime+0.1; clearInterval(musicTimer);
+  musicTimer=setInterval(()=>{
+    if(!ac) return;
+    while(mNext<ac.currentTime+0.15){
+      const t=mNext;
+      if(sndOn){
+        const bf=bassPat[mStep%16];
+        if(bf){const o=ac.createOscillator(),g=ac.createGain(),f=ac.createBiquadFilter();
+          o.type='sawtooth';o.frequency.value=bf;f.type='lowpass';f.frequency.value=420;
+          g.gain.setValueAtTime(0.0001,t);g.gain.exponentialRampToValueAtTime(0.16,t+0.02);
+          g.gain.exponentialRampToValueAtTime(0.0001,t+mTempo*0.9);
+          o.connect(f);f.connect(g);g.connect(musicGain);o.start(t);o.stop(t+mTempo);}
+        if(mStep%2===0){const af=arpPat[mStep%16];const o=ac.createOscillator(),g=ac.createGain();
+          o.type='triangle';o.frequency.value=af;
+          g.gain.setValueAtTime(0.0001,t);g.gain.exponentialRampToValueAtTime(0.045,t+0.01);
+          g.gain.exponentialRampToValueAtTime(0.0001,t+mTempo*0.8);
+          o.connect(g);g.connect(musicGain);o.start(t);o.stop(t+mTempo);}
+      }
+      mNext+=mTempo; mStep++;
+    }
+  },40);
+}
+
+/* ============================ THREE SCENE ============================ */
+const app=document.getElementById('app');
+const renderer=new THREE.WebGLRenderer({antialias:true});
+renderer.setPixelRatio(Math.min(devicePixelRatio,2));
+renderer.setSize(innerWidth,innerHeight);
+renderer.shadowMap.enabled=true; renderer.shadowMap.type=THREE.PCFSoftShadowMap;
+app.appendChild(renderer.domElement);
+
+const scene=new THREE.Scene();
+scene.background=new THREE.Color(0x0c0f16);
+scene.fog=new THREE.Fog(0x0c0f16,34,95);
+
+// QUARTER VIEW camera: looks down at an angle, follows player
+const camera=new THREE.PerspectiveCamera(50,innerWidth/innerHeight,0.1,300);
+const CAM_OFF=new THREE.Vector3(0,30,22); // height & back offset -> ~54° down tilt
+
+// base lighting: bright enough to always read terrain, dim enough that the
+// vision cone still pops. Enemies are hidden separately (enemyVisible), not by darkness.
+scene.add(new THREE.AmbientLight(0x5a6788,0.62));
+const dl=new THREE.DirectionalLight(0x9fb0d8,0.5); dl.position.set(30,60,20); dl.castShadow=true;
+dl.shadow.camera.left=-70;dl.shadow.camera.right=70;dl.shadow.camera.top=70;dl.shadow.camera.bottom=-70;
+dl.shadow.camera.near=1;dl.shadow.camera.far=160;dl.shadow.mapSize.set(2048,2048); scene.add(dl);
+const muzzleLight=new THREE.PointLight(0xffcc66,0,14); scene.add(muzzleLight);
+
+// === VISION CONE (덕코프식 시야): spotlight projected forward along aim ===
+const visionLight=new THREE.SpotLight(0xffe9b8,3.6,40,0.5,0.5,1.0);
+visionLight.castShadow=false;
+const visionTarget=new THREE.Object3D(); scene.add(visionTarget); visionLight.target=visionTarget;
+scene.add(visionLight);
+// small always-lit bubble right around the player
+const playerLight=new THREE.PointLight(0xaebfe6,0.55,11,1.6); scene.add(playerLight);
+
+const ARENA={w:74,d:58};
+const HW=ARENA.w/2,HD=ARENA.d/2;
+const floor=new THREE.Mesh(new THREE.PlaneGeometry(ARENA.w,ARENA.d),
+  new THREE.MeshStandardMaterial({color:0x2a2e36,roughness:1,emissive:0x141821,emissiveIntensity:1}));
+floor.rotation.x=-Math.PI/2; floor.receiveShadow=true; scene.add(floor);
+const grid=new THREE.GridHelper(ARENA.w,ARENA.w/4,0x3a4150,0x232a33); grid.position.y=0.02; scene.add(grid);
+
+// ---------- walls / cover ----------
+const wallMeshes=[]; const aabbs=[];
+const wallMat=new THREE.MeshStandardMaterial({color:0x3a414c,roughness:.9,emissive:0x20262f,emissiveIntensity:1});
+const crateMat=new THREE.MeshStandardMaterial({color:0x5a4632,roughness:.95,emissive:0x2a2014,emissiveIntensity:1});
+function addBox(x,z,w,d,h,mat){
+  const m=new THREE.Mesh(new THREE.BoxGeometry(w,h,d),mat||wallMat);
+  m.position.set(x,h/2,z); m.castShadow=true; m.receiveShadow=true;
+  scene.add(m); wallMeshes.push(m);
+  aabbs.push({minX:x-w/2,maxX:x+w/2,minZ:z-d/2,maxZ:z+d/2,h:h}); return m;
+}
+// boundary
+addBox(0,-HD,ARENA.w,1.2,6); addBox(0,HD,ARENA.w,1.2,6);
+addBox(-HW,0,1.2,ARENA.d,6); addBox(HW,0,1.2,ARENA.d,6);
+// interior cover layout
+addBox(-20,-10,2,16,3.4); addBox(-12,-18,14,2,3.4);
+addBox(10,-12,2,18,3.4); addBox(20,-19,14,2,3.4);
+addBox(-6,8,18,2,3.4); addBox(-16,14,2,10,3.4);
+addBox(14,9,2,16,3.4); addBox(22,16,12,2,3.4);
+// crates (low cover)
+[[-14,4],[4,1],[16,-5],[-5,16],[9,18],[-22,9],[2,-19],[24,2]].forEach(p=>addBox(p[0],p[1],2.6,2.6,2.4,crateMat));
+
+/* ============================ DUCK MODEL ============================ */
+function makeDuck(color){
+  const g=new THREE.Group();
+  const bodyMat=new THREE.MeshStandardMaterial({color,roughness:.6});
+  const body=new THREE.Mesh(new THREE.SphereGeometry(1,16,14),bodyMat);
+  body.scale.set(1,0.85,1.15); body.position.y=1; body.castShadow=true; g.add(body);
+  const head=new THREE.Mesh(new THREE.SphereGeometry(0.6,16,14),bodyMat);
+  head.position.set(0,2.0,0.35); head.castShadow=true; g.add(head);
+  const beak=new THREE.Mesh(new THREE.ConeGeometry(0.27,0.66,8),
+    new THREE.MeshStandardMaterial({color:0xff8c2b})); beak.rotation.x=Math.PI/2;
+  beak.position.set(0,1.95,1.0); g.add(beak);
+  const eyeMat=new THREE.MeshStandardMaterial({color:0x111317});
+  [-0.24,0.24].forEach(x=>{const e=new THREE.Mesh(new THREE.SphereGeometry(0.1,8,8),eyeMat);e.position.set(x,2.16,0.82);g.add(e);});
+  // little gun stub so it reads as armed
+  const gunStub=new THREE.Mesh(new THREE.BoxGeometry(0.16,0.16,0.9),
+    new THREE.MeshStandardMaterial({color:0x23262c,metalness:.5,roughness:.5}));
+  gunStub.position.set(0.5,1.05,0.6); g.add(gunStub);
+  g.userData.bodyMat=bodyMat;
+  return g;
+}
+
+/* ============================ PLAYER ============================ */
+const player={x:-HW+6,z:HD-6,r:0.8,hp:100,hp_max:100,
+  fireCd:0,reloading:0,aim:0,
+  rollT:0,rollCd:0,rollDX:0,rollDZ:0,invuln:0};
+const playerModel=makeDuck(0x49b36b); playerModel.scale.setScalar(0.95);
+const pBodyMat=playerModel.userData.bodyMat;
+const playerDuck=new THREE.Group(); playerDuck.add(playerModel); scene.add(playerDuck);
+
+// ---------- WEAPONS ----------
+const WEAPONS={
+  rifle:{id:'rifle',name:'소총',slot:1,owned:true,mag:30,magMax:30,reserve:150,
+    fireCd:0.11,reload:1.15,auto:true,pellets:1,spread:0.035,dmg:1,bulletSpeed:48,visAngle:0.50,visRange:34,sound:'rifle'},
+  shotgun:{id:'shotgun',name:'샷건',slot:2,owned:false,mag:6,magMax:6,reserve:30,
+    fireCd:0.7,reload:1.5,auto:false,pellets:8,spread:0.34,dmg:1,bulletSpeed:40,visAngle:0.85,visRange:21,sound:'shotgun'},
+  sniper:{id:'sniper',name:'저격총',slot:3,owned:false,mag:5,magMax:5,reserve:20,
+    fireCd:1.0,reload:1.6,auto:false,pellets:1,spread:0,dmg:5,bulletSpeed:95,visAngle:0.27,visRange:62,sound:'sniper'},
+};
+const slots={1:WEAPONS.rifle,2:WEAPONS.shotgun,3:WEAPONS.sniper};
+let cur=WEAPONS.rifle;
+
+/* ============================ ENEMIES ============================ */
+const enemies=[];
+function spawnEnemy(x,z){
+  const g=makeDuck(0xd65a5a); g.position.set(x,0,z); g.scale.setScalar(0.85); scene.add(g);
+  const hb=new THREE.Mesh(new THREE.CylinderGeometry(1.0,1.0,3,8),
+    new THREE.MeshBasicMaterial({visible:false})); hb.position.y=1.3; g.add(hb);
+  const e={group:g,hb,x,z,hp:3,cd:0.6+Math.random()*1.5,flash:0,alive:true,hop:Math.random()*6};
+  hb.userData.enemy=e; enemies.push(e);
+}
+const SPAWNS=[[-20,-20],[6,-21],[20,-20],[-21,15],[-7,15],[12,17],[24,7],[-22,-3],[3,5],[17,-3],[-12,2],[26,-14]];
+SPAWNS.forEach(p=>spawnEnemy(p[0],p[1]));
+let enemyTotal=enemies.length;
+
+/* ============================ PROJECTILES ============================ */
+const bulletGeo=new THREE.SphereGeometry(0.16,6,6);
+const pBulletMat=new THREE.MeshBasicMaterial({color:0xffe27a});
+const eBulletMat=new THREE.MeshBasicMaterial({color:0xff6a6a});
+const bullets=[]; // {mesh,vx,vz,life,from,dmg}
+function spawnBullet(x,z,dx,dz,speed,from,dmg,range){
+  const m=new THREE.Mesh(bulletGeo,from==='player'?pBulletMat:eBulletMat);
+  m.position.set(x,1.3,z); scene.add(m);
+  bullets.push({mesh:m,vx:dx*speed,vz:dz*speed,life:(range||60)/speed,from,dmg:dmg||1});
+}
+
+/* ============================ WEAPON PICKUPS ============================ */
+const pickups=[];
+function spawnWeaponPickup(x,z,wid){
+  const col = wid==='shotgun'?0xffa23f:0x6ad6ff;
+  const grp=new THREE.Group();
+  const box=new THREE.Mesh(new THREE.BoxGeometry(1.5,0.32,0.32),
+    new THREE.MeshStandardMaterial({color:col,emissive:col,emissiveIntensity:0.55,metalness:.5,roughness:.4}));
+  grp.add(box);
+  const ring=new THREE.Mesh(new THREE.TorusGeometry(0.95,0.06,8,26),new THREE.MeshBasicMaterial({color:col}));
+  ring.rotation.x=-Math.PI/2; grp.add(ring);
+  grp.position.set(x,1.4,z); scene.add(grp);
+  const lt=new THREE.PointLight(col,0.9,8); lt.position.set(x,1.6,z); scene.add(lt);
+  pickups.push({grp,lt,x,z,wid});
+}
+spawnWeaponPickup(-2,-7,'shotgun');
+spawnWeaponPickup(17,-11,'sniper');
+
+/* ============================ AIM (mouse -> ground) ============================ */
+const raycaster=new THREE.Raycaster();
+const mouseNDC=new THREE.Vector2(0,0);
+const aimPlane=new THREE.Plane(new THREE.Vector3(0,1,0),-1.3); // y=1.3
+let aimPoint=new THREE.Vector3(player.x,1.3,player.z+1);
+const ch=document.getElementById('ch');
+addEventListener('mousemove',e=>{
+  ch.style.left=e.clientX+'px'; ch.style.top=e.clientY+'px';
+  mouseNDC.x=(e.clientX/innerWidth)*2-1;
+  mouseNDC.y=-(e.clientY/innerHeight)*2+1;
+});
+let firing=false,triggerPulled=false;
+renderer.domElement.addEventListener('mousedown',e=>{if(e.button===0){firing=true;triggerPulled=true;}});
+addEventListener('mouseup',e=>{if(e.button===0)firing=false;});
+
+/* ============================ INPUT ============================ */
+const keys={};
+addEventListener('keydown',e=>{const k=e.key.toLowerCase();keys[k]=true;
+  if(k==='r')doReload(); if(k==='m')toggleSound();
+  if(k==='1')switchWeapon(1); if(k==='2')switchWeapon(2); if(k==='3')switchWeapon(3);
+  if(k===' '||e.code==='Space'){ e.preventDefault(); tryRoll(); }});
+addEventListener('keyup',e=>keys[e.key.toLowerCase()]=false);
+document.getElementById('snd').onclick=toggleSound;
+function toggleSound(){sndOn=!sndOn;document.getElementById('snd').textContent=sndOn?'🔊 사운드 ON':'🔇 사운드 OFF';}
+
+/* ============================ COLLISION ============================ */
+function blocked(x,z,r){
+  if(x<-HW+r||x>HW-r||z<-HD+r||z>HD-r) return true;
+  return aabbs.some(a=>x>a.minX-r&&x<a.maxX+r&&z>a.minZ-r&&z<a.maxZ+r);
+}
+function moveEntity(ent,nx,nz,r){
+  if(!blocked(nx,ent.z,r)) ent.x=nx;
+  if(!blocked(ent.x,nz,r)) ent.z=nz;
+}
+
+/* ============================ COMBAT ============================ */
+let kills=0,state='start';
+function sfxShoot(type){
+  if(!ac||!sndOn) return;
+  if(type==='shotgun'){
+    // big boomy blast: sharp crack + heavy low body + deep thump + pellet rattle
+    noise(0.05,'highpass',4200,0.5,0.03);
+    noise(0.36,'lowpass',520,0.8,0.32);
+    noise(0.26,'bandpass',900,0.35,0.22);
+    noise(0.2,'highpass',3000,0.14,0.18);
+    tone(85,0.24,'square',0.42,36);
+  } else if(type==='sniper'){
+    // high-powered crack with a canyon echo tail
+    noise(0.04,'highpass',5200,0.7,0.025);
+    noise(0.3,'lowpass',1100,0.65,0.26);
+    tone(150,0.2,'sawtooth',0.4,52);
+    setTimeout(()=>{noise(0.26,'bandpass',680,0.26,0.24);},120);
+    setTimeout(()=>{noise(0.22,'bandpass',460,0.13,0.2);},270);
+  } else {
+    // rifle: tight snappy pop
+    noise(0.1,'highpass',2600,0.5,0.05);
+    noise(0.16,'lowpass',950,0.4,0.12);
+    tone(165,0.08,'square',0.28,55);
+  }
+}
+function shoot(){
+  if(state!=='playing'||player.reloading>0||player.fireCd>0||player.rollT>0) return;
+  if(cur.mag<=0){ sfx.empty(); doReload(); return; }
+  cur.mag--; player.fireCd=cur.fireCd; updateHUD(); sfxShoot(cur.sound);
+  for(let i=0;i<cur.pellets;i++){
+    const a=player.aim+(Math.random()-0.5)*cur.spread*2;
+    const dx=Math.sin(a),dz=Math.cos(a);
+    spawnBullet(player.x+dx*1.2,player.z+dz*1.2,dx,dz,cur.bulletSpeed,'player',cur.dmg,cur.visRange*1.15);
+  }
+  const bx=Math.sin(player.aim),bz=Math.cos(player.aim);
+  muzzleLight.position.set(player.x+bx*1.2,1.4,player.z+bz*1.2); muzzleLight.intensity=2.2;
+}
+function doReload(){
+  if(state!=='playing'||player.reloading>0||cur.mag===cur.magMax||cur.reserve<=0) return;
+  player.reloading=cur.reload; sfx.reload(); toast('재장전…');
+}
+function switchWeapon(slot){
+  const w=slots[slot]; if(!w||!w.owned||w===cur) return;
+  cur=w; player.reloading=0; player.fireCd=0.15; updateHUD(); toast(w.name+' 장착');
+}
+function tryRoll(){
+  if(state!=='playing'||player.rollT>0||player.rollCd>0) return;
+  let dx=0,dz=0;
+  if(keys['w'])dz-=1; if(keys['s'])dz+=1; if(keys['a'])dx-=1; if(keys['d'])dx+=1;
+  if(!dx&&!dz){ dx=Math.sin(player.aim); dz=Math.cos(player.aim); }
+  const l=Math.hypot(dx,dz); player.rollDX=dx/l; player.rollDZ=dz/l;
+  player.rollT=0.38; player.rollCd=1.5; player.invuln=0.42; sfx.roll();
+}
+// is an enemy inside the current weapon's vision cone (or close awareness bubble)?
+function enemyVisible(e){
+  const dx=e.x-player.x, dz=e.z-player.z; const d=Math.hypot(dx,dz);
+  if(d<8.5) return true;
+  if(d>cur.visRange) return false;
+  const ang=Math.atan2(dx,dz);
+  let diff=Math.abs(((ang-player.aim+Math.PI)%(Math.PI*2)+Math.PI*2)%(Math.PI*2)-Math.PI);
+  return diff < cur.visAngle*1.08;
+}
+function hurtPlayer(dmg){
+  player.hp-=dmg; sfx.hurt(); updateHUD();
+  const v=document.getElementById('vig');
+  v.style.boxShadow='inset 0 0 200px 55px rgba(255,40,40,0.55)';
+  setTimeout(()=>v.style.boxShadow='inset 0 0 200px 40px rgba(255,40,40,0)',150);
+  if(player.hp<=0) lose();
+}
+function killEnemy(e){
+  e.alive=false; sfx.death(); kills++;
+  // death pop
+  e.group.scale.multiplyScalar(1.0);
+  scene.remove(e.group);
+  updateHUD();
+  if(enemies.every(x=>!x.alive)) win();
+}
+
+/* ============================ LOOP ============================ */
+const clock=new THREE.Clock();
+let camPos=new THREE.Vector3(player.x+CAM_OFF.x,CAM_OFF.y,player.z+CAM_OFF.z);
+camera.position.copy(camPos); camera.lookAt(player.x,1,player.z);
+
+function tick(){
+  requestAnimationFrame(tick);
+  const dt=Math.min(clock.getDelta(),0.05);
+  if(state==='playing') step(dt);
+
+  // visual decays
+  if(muzzleLight.intensity>0) muzzleLight.intensity=Math.max(0,muzzleLight.intensity-dt*14);
+  enemies.forEach(e=>{ if(e.alive){
+    const em=e.flash>0?0.85:0; e.group.userData.bodyMat.emissive.setRGB(em,0,0);
+    e.flash=Math.max(0,e.flash-dt);
+  }});
+  renderer.render(scene,camera);
+}
+
+function step(dt){
+  // ----- aim from mouse -----
+  raycaster.setFromCamera(mouseNDC,camera);
+  raycaster.ray.intersectPlane(aimPlane,aimPoint);
+  if(aimPoint){
+    const ax=aimPoint.x-player.x, az=aimPoint.z-player.z;
+    if(ax*ax+az*az>0.04) player.aim=Math.atan2(ax,az);
+  }
+  // ----- roll & movement -----
+  if(player.rollCd>0) player.rollCd-=dt;
+  if(player.invuln>0) player.invuln-=dt;
+  if(player.rollT>0){
+    // rolling: dash in roll direction, spin the model, brief i-frames
+    player.rollT-=dt;
+    const rs=15.5; moveEntity(player,player.x+player.rollDX*rs*dt,player.z+player.rollDZ*rs*dt,player.r);
+    playerDuck.rotation.y=Math.atan2(player.rollDX,player.rollDZ);
+    playerModel.rotation.x=(1-clamp(player.rollT,0,0.38)/0.38)*Math.PI*2;
+    if(player.rollT<=0) playerModel.rotation.x=0;
+  } else {
+    let mx=0,mz=0;
+    if(keys['w'])mz-=1; if(keys['s'])mz+=1;
+    if(keys['a'])mx-=1; if(keys['d'])mx+=1;
+    if(mx||mz){ const l=Math.hypot(mx,mz); mx/=l; mz/=l;
+      const sp=6.2; moveEntity(player,player.x+mx*sp*dt,player.z+mz*sp*dt,player.r);
+    }
+    playerDuck.rotation.y=player.aim;
+  }
+  playerDuck.position.set(player.x,0,player.z);
+  pBodyMat.emissive.setRGB(player.invuln>0?0.12:0, player.invuln>0?0.22:0, player.invuln>0?0.45:0);
+
+  // ----- vision cone follows aim; scaled by current weapon -----
+  const adx=Math.sin(player.aim), adz=Math.cos(player.aim);
+  visionLight.angle=cur.visAngle; visionLight.distance=cur.visRange+8;
+  visionLight.position.set(player.x-adx*3,13,player.z-adz*3);
+  visionTarget.position.set(player.x+adx*cur.visRange,0.4,player.z+adz*cur.visRange);
+  playerLight.position.set(player.x,3,player.z);
+
+  // ----- firing -----
+  if(player.fireCd>0) player.fireCd-=dt;
+  if(cur.auto){ if(firing) shoot(); }
+  else { if(triggerPulled){ shoot(); triggerPulled=false; } }
+  if(player.reloading>0){ player.reloading-=dt;
+    if(player.reloading<=0){ const need=cur.magMax-cur.mag,take=Math.min(need,cur.reserve);
+      cur.mag+=take; cur.reserve-=take; updateHUD(); } }
+
+  // ----- weapon pickups -----
+  for(let i=pickups.length-1;i>=0;i--){ const p=pickups[i];
+    p.grp.rotation.y+=dt*1.6; p.grp.position.y=1.4+Math.sin(performance.now()*0.003+p.x)*0.12;
+    if(Math.hypot(p.x-player.x,p.z-player.z)<1.8){
+      const w=WEAPONS[p.wid]; w.owned=true; w.mag=w.magMax; w.reserve=Math.max(w.reserve,w.magMax*4);
+      scene.remove(p.grp); scene.remove(p.lt); pickups.splice(i,1);
+      cur=w; player.fireCd=0.2; player.reloading=0; sfx.pickup(); toast(w.name+' 획득!  ['+w.slot+'키]'); updateHUD();
+    }
+  }
+
+  // ----- roll cooldown indicator -----
+  const ri=document.getElementById('rollind');
+  if(player.rollT>0) ri.innerHTML='구르기 <span class="amber">…굴러!</span>';
+  else if(player.rollCd>0) ri.innerHTML='구르기 <span class="dim">'+player.rollCd.toFixed(1)+'s</span>';
+  else ri.innerHTML='구르기 <span class="green">READY</span>';
+
+  // ----- camera follow -----
+  const want=new THREE.Vector3(player.x+CAM_OFF.x,CAM_OFF.y,player.z+CAM_OFF.z);
+  camPos.lerp(want,1-Math.pow(0.0015,dt)); camera.position.copy(camPos);
+  camera.lookAt(player.x,1,player.z);
+
+  // ----- bullets -----
+  for(let i=bullets.length-1;i>=0;i--){
+    const b=bullets[i]; b.mesh.position.x+=b.vx*dt; b.mesh.position.z+=b.vz*dt; b.life-=dt;
+    const bx=b.mesh.position.x,bz=b.mesh.position.z; let dead=b.life<=0;
+    // wall hit
+    if(!dead && (bx<-HW||bx>HW||bz<-HD||bz>HD || aabbs.some(a=>bx>a.minX&&bx<a.maxX&&bz>a.minZ&&bz<a.maxZ))){
+      dead=true;
+    }
+    if(!dead && b.from==='player'){
+      for(const e of enemies){ if(!e.alive)continue;
+        if(Math.hypot(e.x-bx,e.z-bz)<1.1){ e.hp-=b.dmg; e.flash=0.12; sfx.hit(); dead=true;
+          if(e.hp<=0) killEnemy(e); break; } }
+    }
+    if(!dead && b.from==='enemy'){
+      const hitR=player.rollT>0?0.6:0.9;
+      if(Math.hypot(player.x-bx,player.z-bz)<hitR){ dead=true; if(player.invuln<=0) hurtPlayer(b.dmg); }
+    }
+    if(dead){ scene.remove(b.mesh); bullets.splice(i,1); }
+  }
+
+  // ----- enemies AI -----
+  enemies.forEach(e=>{
+    if(!e.alive) return;
+    const dx=player.x-e.x, dz=player.z-e.z; const d=Math.hypot(dx,dz);
+    e.group.rotation.y=Math.atan2(dx,dz);
+    // only render enemies inside the vision cone (덕코프식 시야)
+    e.group.visible=enemyVisible(e);
+    // hop animation
+    e.hop+=dt*8; e.group.position.y=Math.abs(Math.sin(e.hop))*0.12;
+    if(d<46){
+      const ux=dx/d, uz=dz/d;
+      // line of sight
+      raycaster.set(new THREE.Vector3(e.x,1.3,e.z),new THREE.Vector3(ux,0,uz));
+      const wh=raycaster.intersectObjects(wallMeshes,false);
+      const los=!(wh.length&&wh[0].distance<d);
+      if(los){
+        if(d>15){ moveEntity(e,e.x+ux*3.0*dt,e.z+uz*3.0*dt,0.9); }
+        e.cd-=dt;
+        if(e.cd<=0 && d<40){ e.cd=1.1+Math.random()*0.9; sfx.enemyShoot();
+          // lead slightly + spread
+          const sp=(Math.random()-0.5)*0.12;
+          const a=Math.atan2(ux,uz)+sp;
+          spawnBullet(e.x+Math.sin(a)*1.1,e.z+Math.cos(a)*1.1,Math.sin(a),Math.cos(a),26,'enemy',9,60);
+        }
+      } else {
+        // no LoS: still creep closer
+        if(d>2) moveEntity(e,e.x+ux*2.2*dt,e.z+uz*2.2*dt,0.9);
+      }
+    }
+    e.group.position.x=e.x; e.group.position.z=e.z;
+  });
+}
+
+/* ============================ HUD / STATES ============================ */
+function updateHUD(){
+  document.getElementById('hp').textContent=Math.max(0,Math.round(player.hp));
+  document.getElementById('hpf').style.width=clamp(player.hp,0,100)+'%';
+  document.getElementById('ammo').textContent=cur.mag;
+  document.getElementById('res').textContent=' / '+cur.reserve;
+  document.getElementById('kill').textContent=kills;
+  document.getElementById('left').textContent=enemies.filter(e=>e.alive).length;
+  document.getElementById('wname').textContent=cur.name;
+  document.getElementById('wslots').innerHTML=[1,2,3].map(n=>{const w=slots[n];
+    const c=w===cur?'amber':(w.owned?'green':'dim');
+    return '<span class="'+c+'">'+n+'</span>';}).join(' ');
+}
+let toastT=null;
+function toast(msg){const t=document.getElementById('toast');t.textContent=msg;t.style.opacity='1';
+  clearTimeout(toastT);toastT=setTimeout(()=>t.style.opacity='0',900);}
+
+const ov=document.getElementById('ov');
+function startGame(){
+  initAudio(); if(ac.state==='suspended')ac.resume();
+  state='playing'; ov.classList.add('hidden');
+}
+function endScreen(won){
+  state=won?'won':'lost'; if(won)sfx.win();
+  const score=won?kills*100+Math.round(player.hp)*5:kills*50;
+  ov.classList.remove('hidden');
+  ov.innerHTML=`
+    <div class="result ${won?'win':'lose'}">${won?'STAGE 1 CLEAR':'작전 실패 — KIA'}</div>
+    <p>${won
+      ?`적 <b class="amber">${enemyTotal}</b>기 전멸 · 잔여 HP <b class="amber">${Math.round(player.hp)}</b><br><br>최종 점수 <b class="green" style="font-size:24px">${score}</b>`
+      :`처치 <b class="amber">${kills}</b> / ${enemyTotal}. 다시 시도하라.`}</p>
+    <button id="again">${won?'다시 플레이':'재시도'}</button>`;
+  document.getElementById('again').onclick=()=>location.reload();
+}
+function win(){ endScreen(true); }
+function lose(){ endScreen(false); }
+
+document.getElementById('start').onclick=startGame;
+addEventListener('resize',()=>{camera.aspect=innerWidth/innerHeight;camera.updateProjectionMatrix();renderer.setSize(innerWidth,innerHeight);});
+updateHUD(); tick();
+</script>
+</body>
+</html>
